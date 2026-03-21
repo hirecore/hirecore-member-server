@@ -1,0 +1,77 @@
+name: 'User Story'
+description: 'Epic 아래에서 사용자 가치 또는 요구사항을 정의하는 단위입니다.'
+title: '[UserStory] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **제목 작성 가이드**
+        > `[UserStory] ${user-value}`
+        >
+        > 예시
+        > - `[UserStory] 사용자는 카카오 계정으로 로그인 할 수 있다.`
+        > - `[UserStory] 사용자는 카카오 연동 계정을 해제할 수 있다.`
+
+  - type: input
+    id: primary-context
+    attributes:
+      label: Primary Context
+      description: 주도하는 컨텍스트를 작성해주십시오.
+      placeholder: "예: account, profile, policy, storage, cross-context"
+    validations:
+      required: true
+
+  - type: input
+    id: planning-reference
+    attributes:
+      label: 기획 문서 참조 코드 (선택)
+      description: Epic과 연결되는 Notion 문서의 식별자와 링크를 작성해주십시오.
+      placeholder: '예: HMS-MEMBER-ACCOUNT-001: ${url}'
+
+  - type: textarea
+    id: story
+    attributes:
+      label: 스토리 정의
+      description: '`As a / I want to / So that` 형식 또는 이에 준하는 구조로 작성해주십시오.'
+      placeholder: |
+        **As a** 일반 사용자
+        **I want to** 카카오 계정으로 로그인할 수 있다.
+        **So that** 회원가입 절차를 단축하고 바로 서비스를 이용할 수 있다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: 완료 판정 기준을 구체적으로 작성해주십시오.
+      placeholder: |
+        - [ ] 카카오 OAuth 인증 성공 시 로그인 처리된다.
+        - [ ] 최초 로그인 사용자는 회원 생성 정책에 따라 가입된다.
+        - [ ] 예외 상황에서는 정의된 오류 응답을 반환한다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: 구현 메모
+      description: 하위 Task로 분해하기 전에 확인해야 할 제약 사항이나 참고 사항을 작성해주십시오.
+      placeholder: |
+        - account 컨텍스트와 profile 컨텍스트를 함께 검토해야 합니다.
+        - 외부 OAuth 연동 정책을 확인해야 합니다.
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        **반드시 다음 항목을 확인해주십시오.**
+        - [ ] 제목을 `[UserStory] ...` 형식으로 작성해주십시오.
+        - [ ] 상위 Epic이 있다면 Parent 관계를 연결해주십시오.
+        - [ ] Issue Type을 `UserStory`로 설정해주십시오.
+        - [ ] Milestone을 설정해주십시오.
+        - [ ] Assignees를 설정해주십시오. 담당자가 없다면 비워둘 수 있으나, 다음 회의에서 담당자를 정해주십시오.
+        - [ ] Project를 지정해주십시오.
+        - [ ] 이슈 생성 후 Project 속성값을 입력해주십시오.
+        - [ ] `Release Status`를 사용하는 경우, 적용 대상인지 검토 후 함께 입력해주십시오.

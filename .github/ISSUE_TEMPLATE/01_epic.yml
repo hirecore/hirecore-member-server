@@ -1,0 +1,69 @@
+name: 'Epic'
+description: '하나 이상의 UserStory 또는 Task를 자식으로 가지는 상위 기능 단위입니다.'
+title: '[Epic] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **제목 작성 가이드**
+        > `[Epic] ${feature-goal}`
+        >
+        > 예시
+        > - `[Epic] 사용자 소셜 계정 기능 제공`
+
+  - type: input
+    id: primary-context
+    attributes:
+      label: Primary Context
+      description: 주도하는 컨텍스트를 작성해주십시오.
+      placeholder: "예: account, profile, policy, storage, cross-context"
+    validations:
+      required: true
+
+  - type: input
+    id: planning-reference
+    attributes:
+      label: 기획 문서 참조 코드 (선택)
+      description: Epic과 연결되는 Notion 문서의 식별자와 링크를 작성해주십시오.
+      placeholder: '예: HMS-MEMBER-ACCOUNT: ${url}'
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 개요
+      description: Epic이 필요한 이유와 해결하려는 문제를 작성해주십시오.
+      placeholder: |
+        사용자 소셜 계정과 관련된 로그인, 연결, 해제, 탈퇴 기능을 제공하기 위한 상위 기능 단위입니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: 기대 효과
+      description: 이 Epic이 제공하는 비즈니스 가치 또는 사용자 가치를 작성해주십시오.
+      placeholder: |
+        - 카카오 계정으로 빠르게 로그인할 수 있습니다.
+        - 계정 인증 진입 장벽을 낮출 수 있습니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: 범위 제외 / 주의사항
+      description: 이번 Epic 범위에 포함하지 않는 내용이나 혼동 방지용 메모를 작성해주십시오.
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        **반드시 다음 항목을 확인해주십시오.**
+        - [ ] 제목을 `[Epic] ...` 형식으로 작성해주십시오.
+        - [ ] Issue Type을 `Epic`으로 설정해주십시오.
+        - [ ] Milestone을 설정해주십시오.
+        - [ ] 한 명의 담당자가 Epic을 모두 처리한다면 Assignees를 설정해주십시오.
+        - [ ] Project를 지정해주십시오.
+        - [ ] 이슈 생성 후 Project 속성값을 입력해주십시오.
+        - [ ] `Release Status`를 사용하는 경우, 적용 대상인지 검토 후 함께 입력해주십시오.

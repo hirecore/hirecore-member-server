@@ -1,0 +1,72 @@
+name: 'Task'
+description: '구체적인 구현 작업을 정의합니다. 단, 버그 수정의 경우는 Fix 템플릿으로 작성합니다.'
+title: ''
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **제목 작성 가이드**
+        > `${type}(${primary-context}): ${detailed-description}`
+        >
+        > 허용 type 예시
+        > - `feat(account): 사용자 인증 계정 도메인 MemberAccount 정의`
+        > - `fix(account): 카카오 로그인 이메일 매핑 오류 수정`
+        > - `refactor(account): MemberAccount 도메인에 email 필드 추가`
+        > - `docs(account): 인증 계정 도메인 설계 문서 정리`
+
+  - type: input
+    id: primary-context
+    attributes:
+      label: Primary Context
+      description: 주도하는 컨텍스트를 작성해주십시오.
+      placeholder: "예: account, profile, policy, storage, cross-context"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 작업 개요
+      description: 수행해야 할 작업의 목적과 배경을 기술적으로 설명해주십시오.
+      placeholder: |
+        MemberAccount 도메인을 정의하고, 소셜 로그인 계정 식별을 위한 핵심 필드와 생성 규칙을 설계합니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-specs
+    attributes:
+      label: 기술 상세
+      description: 구현 시 참고할 API 명세, 도메인 규칙, 스키마, 라이브러리 등을 작성해주십시오.
+      placeholder: |
+        - account 컨텍스트 도메인 규칙 준수
+        - OAuth 공급자 식별자 저장 필요
+        - 테스트 케이스 포함
+
+  - type: textarea
+    id: todo-list
+    attributes:
+      label: To-Do List
+      description: 작업 완료를 위한 세부 단계를 작성해주십시오.
+      placeholder: |
+        - [ ] 엔티티 및 값 객체 정의
+        - [ ] 리포지토리 인터페이스 작성
+        - [ ] 서비스 로직 구현
+        - [ ] 테스트 코드 작성
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        **반드시 다음 항목을 확인해주십시오.**
+        - [ ] 제목을 `${type}(${primary-context}): ...` 형식으로 작성해주십시오.
+        - [ ] 상위 UserStory 또는 Epic이 있다면 Parent 관계를 연결해주십시오.
+        - [ ] Issue Type을 `Task`로 설정해주십시오.
+        - [ ] Milestone을 설정해주십시오.
+        - [ ] Assignees를 설정해주십시오. 담당자가 없다면 비워둘 수 있으나, 다음 회의에서 담당자를 정해주십시오.
+        - [ ] Project를 지정해주십시오.
+        - [ ] 이슈 생성 후 Project 속성값을 입력해주십시오.
+        - [ ] `Release Status`를 사용하는 경우, 적용 대상인지 검토 후 함께 입력해주십시오.

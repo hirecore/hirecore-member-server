@@ -32,7 +32,7 @@ body:
     id: story
     attributes:
       label: 스토리 정의
-      description: '`As a / I want to / So that` 형식 또는 이에 준하는 구조로 작성해주십시오.'
+      description: `As a / I want to / So that` 형식 또는 이에 준하는 구조로 작성해주십시오.
       placeholder: |
         **As a** 일반 사용자
         **I want to** 카카오 계정으로 로그인할 수 있다.

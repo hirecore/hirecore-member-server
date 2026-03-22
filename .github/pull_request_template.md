@@ -1,19 +1,19 @@
-## Related Issue
+## 📌 Related Issue
 Closes #123
 
-## 변경 내용 (Summary)
+## ✨ 변경 내용 (Summary)
 - [ ] 핵심 변경 사항 1
 - [ ] 핵심 변경 사항 2
 - [ ] 핵심 변경 사항 3
 
-## 스크린샷 (Optional)
+## 📸 스크린샷 (Optional)
 <img src="" width="300" />
 
-## 리뷰어 참고사항 (Reviewer Notes)
+## 📚 리뷰어 참고사항 (Reviewer Notes)
 - 리뷰 시 먼저 확인해주면 좋은 포인트를 작성해주십시오.
 - 설계상 고민이 있거나 검토가 필요한 부분을 작성해주십시오.
 
-## 체크리스트
+## ✅ 체크리스트
 - [ ] 빌드와 테스트를 통과해주십시오.
 - [ ] 불필요한 로그와 주석을 제거해주십시오.
 - [ ] PR base branch가 `dev`인지 확인해주십시오.

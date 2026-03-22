@@ -1,6 +1,5 @@
 name: 'Fix'
 description: '서비스 동작 중 발견한 문제를 Task 성격의 수정 이슈로 등록합니다.'
-title: ''
 body:
   - type: markdown
     attributes:

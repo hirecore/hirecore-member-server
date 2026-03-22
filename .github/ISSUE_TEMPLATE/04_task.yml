@@ -1,6 +1,5 @@
 name: 'Task'
 description: '구체적인 구현 작업을 정의합니다. 단, 버그 수정의 경우는 Fix 템플릿으로 작성합니다.'
-title: ''
 body:
   - type: markdown
     attributes:

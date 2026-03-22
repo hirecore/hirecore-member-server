@@ -42,6 +42,7 @@ public class SocialAccountJpaEntity extends AbstractPersistableAggregateRoot<Lon
     private String email;
 
     @Comment("소셜 로그인 서비스 연동 일자")
+    @Column(name = "connected_at")
     private Instant connectedAt;
 
     @Comment("이메일 동의여부")

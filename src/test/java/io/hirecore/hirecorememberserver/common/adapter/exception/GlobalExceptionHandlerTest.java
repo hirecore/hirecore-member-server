@@ -3,6 +3,8 @@ package io.hirecore.hirecorememberserver.common.adapter.exception;
 import io.hirecore.hirecorememberserver.common.adapter.in.logging.StructuredErrorLogger;
 import io.hirecore.hirecorememberserver.common.application.exception.ApplicationExceptionCode;
 import io.hirecore.hirecorememberserver.common.application.exception.BaseApplicationException;
+import io.hirecore.hirecorememberserver.common.application.port.out.TokenBlacklistPort;
+import io.hirecore.hirecorememberserver.common.application.port.out.TokenResolverPort;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.common.domain.exception.BaseDomainException;
 import io.hirecore.hirecorememberserver.common.domain.exception.DomainExceptionCode;
@@ -48,6 +50,14 @@ class GlobalExceptionHandlerTest {
 
     @MockitoBean
     private StructuredErrorLogger structuredErrorLogger;
+
+    // JwtAuthenticationFilter(@Component)가 @WebMvcTest 스캔 대상에 포함되므로
+    // 해당 필터의 의존성인 TokenResolverPort, TokenBlacklistPort를 모킹하여 컨텍스트 로딩을 허용한다.
+    @MockitoBean
+    private TokenResolverPort tokenResolverPort;
+
+    @MockitoBean
+    private TokenBlacklistPort tokenBlacklistPort;
 
     // =========================================================================
     // 테스트 전용 예외 코드 (계층 경계 위반 방지 — modules 패키지 임포트 금지)

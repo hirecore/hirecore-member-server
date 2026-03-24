@@ -4,9 +4,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,13 +21,11 @@ import java.util.List;
  * {@code Repository.save()} 호출 시 Spring이 이벤트를 자동으로 발행합니다.
  * 도메인 POJO에서 발생한 이벤트는 {@link #recordPersistenceEvent(Object)}로 전달받습니다.</p>
  */
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractJpaEntityEventPublisher {
 
-    @Builder.Default
     @Transient
     private transient List<Object> domainEvents = new ArrayList<>();
 

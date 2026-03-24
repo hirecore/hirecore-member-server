@@ -5,9 +5,7 @@ import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.Transient;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.springframework.data.domain.Persistable;
 
 /**
@@ -18,14 +16,12 @@ import org.springframework.data.domain.Persistable;
  * 도메인 이벤트 발행 기능을 포함합니다.
  * </p>
  */
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
 public abstract class AbstractPersistableAggregateRoot<ID>
         extends AbstractJpaEntityEventPublisher
         implements Persistable<ID> {
 
-    @Builder.Default
     @Transient
     private boolean isNew = true;
 

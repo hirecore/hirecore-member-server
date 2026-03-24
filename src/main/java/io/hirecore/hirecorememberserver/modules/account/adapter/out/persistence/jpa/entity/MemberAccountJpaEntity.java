@@ -4,9 +4,11 @@ import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.Abstr
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+
 import org.hibernate.annotations.Comment;
 
 /**
@@ -15,7 +17,8 @@ import org.hibernate.annotations.Comment;
 @Entity
 @Table(name="member_accounts")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-@SuperBuilder
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@Builder
 @Getter
 public class MemberAccountJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Id

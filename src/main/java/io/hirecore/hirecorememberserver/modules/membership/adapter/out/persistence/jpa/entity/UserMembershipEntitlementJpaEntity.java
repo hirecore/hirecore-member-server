@@ -25,7 +25,7 @@ public class UserMembershipEntitlementJpaEntity extends AbstractPersistableAggre
     @Column(name = "member_account_id", nullable = false)
     private Long memberAccountId;
 
-    @Comment("사용자 멤버십 정책 아이디")
+    @Comment("어떤 멤버십 정책을 기준으로 생성되었는지 나타내는 출처 식별자")
     @Column(name = "user_membership_policy_id", nullable = false)
     private Long userMembershipPolicyId;
 
@@ -34,19 +34,19 @@ public class UserMembershipEntitlementJpaEntity extends AbstractPersistableAggre
     @Column(name = "status", nullable = false)
     private MembershipStatus status;
 
-    @Comment("스토리지 용량 스냅샷(바이트)")
+    @Comment("권리 부여 시점의 스토리지 바이트 용량")
     @Column(name = "storage_quota_byte_snapshot", nullable = false)
     private Long storageQuotaByteSnapshot;
 
-    @Comment("멤버십 이름 스냅샷")
+    @Comment("권리 부여 시점의 멤버십 이름")
     @Column(name = "membership_name_snapshot", nullable = false)
     private String membershipNameSnapshot;
 
-    @Comment("멤버십 내용 스냅샷")
+    @Comment("권리 부여 시점의 멤버십 설명")
     @Column(name = "membership_content_snapshot", nullable = false, columnDefinition = "TEXT")
     private String membershipContentSnapshot;
 
-    @Comment("할당 사유")
+    @Comment("권리 부여 시점의 할당 사유")
     @Enumerated(EnumType.STRING)
     @Column(name = "assignment_reason", nullable = false)
     private AssignmentReason assignmentReason;

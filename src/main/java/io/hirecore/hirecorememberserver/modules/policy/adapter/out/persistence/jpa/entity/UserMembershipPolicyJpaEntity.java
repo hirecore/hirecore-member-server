@@ -3,15 +3,17 @@ package io.hirecore.hirecorememberserver.modules.policy.adapter.out.persistence.
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "user_membership_policies")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-@SuperBuilder
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@Builder
 @Getter
 public class UserMembershipPolicyJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Id

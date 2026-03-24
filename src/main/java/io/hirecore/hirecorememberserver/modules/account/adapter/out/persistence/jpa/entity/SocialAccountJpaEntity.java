@@ -4,21 +4,19 @@ import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.Abstr
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 
 import java.time.Instant;
 
 @Entity
-@Table(
-        name="social_accounts",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"provider", "provider_id", "email"}
-        ))
+@Table(name="social_accounts")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-@SuperBuilder
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@Builder
 @Getter
 public class SocialAccountJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Id

@@ -17,6 +17,10 @@ public class UserMembershipPolicyJpaEntity extends AbstractPersistableAggregateR
     @Id
     private Long id;
 
+    @Comment("멤버십 고유 식별 코드")
+    @Column(name = "code", nullable = false)
+    private String code;
+
     @Comment("멤버십 이름")
     @Column(name = "name", nullable = false)
     private String name;

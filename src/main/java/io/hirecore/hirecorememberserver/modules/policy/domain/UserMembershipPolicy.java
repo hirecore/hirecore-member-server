@@ -13,6 +13,7 @@ import lombok.Getter;
 @Getter
 public class UserMembershipPolicy extends AbstractDomainEventPublisher implements DomainAggregateRoot {
     private final Long id;
+    private final String code;
     private final String name;
     private final String content;
     private final Long amount;
@@ -23,6 +24,7 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
     @Builder(access = AccessLevel.PUBLIC)
     private UserMembershipPolicy(
             Long id,
+            String code,
             String name,
             String content,
             Long amount,
@@ -30,9 +32,10 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
             Boolean active,
             AuditingInfo auditingInfo
     ){
-        ensureInvariants(id, name, content, amount, storageQuotaByte, active, auditingInfo);
+        ensureInvariants(id, code, name, content, amount, storageQuotaByte, active, auditingInfo);
 
         this.id = id;
+        this.code = code;
         this.name = name;
         this.content = content;
         this.amount = amount;
@@ -43,6 +46,7 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
 
     private static void ensureInvariants(
             Long id,
+            String code,
             String name,
             String content,
             Long amount,
@@ -52,6 +56,11 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
     ) {
         AssertionUtils.notNull(
                 id,
+                UserMembershipPolicyDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
+                UserMembershipPolicyDomainException::new
+        );
+        AssertionUtils.notNull(
+                code,
                 UserMembershipPolicyDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
                 UserMembershipPolicyDomainException::new
         );

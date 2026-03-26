@@ -30,6 +30,7 @@ public class MemberAccount extends AbstractDomainEventPublisher implements Domai
     private final String email;
     private final String password;
     private final MemberRole role;
+    private final int tokenVersion;
     private final AuditingInfo auditingInfo;
 
     /**
@@ -43,6 +44,7 @@ public class MemberAccount extends AbstractDomainEventPublisher implements Domai
             String email,
             String password,
             MemberRole role,
+            int tokenVersion,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(id, email, role, auditingInfo);
@@ -51,6 +53,7 @@ public class MemberAccount extends AbstractDomainEventPublisher implements Domai
         this.email = email;
         this.password = password;
         this.role = role;
+        this.tokenVersion = tokenVersion;
         this.auditingInfo = auditingInfo;
     }
 

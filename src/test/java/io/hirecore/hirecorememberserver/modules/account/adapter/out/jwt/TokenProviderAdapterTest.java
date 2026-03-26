@@ -27,7 +27,7 @@ class TokenProviderAdapterTest {
     );
 
     private final TokenClaimsRequest validClaims = new TokenClaimsRequest(
-            42L, "user@test.com", MemberRole.USER
+            42L, "user@test.com", MemberRole.USER, 0
     );
 
     @Nested
@@ -55,7 +55,7 @@ class TokenProviderAdapterTest {
         @DisplayName("모든 MemberRole에 대해 토큰을 발급할 수 있다")
         void should_issue_token_for_all_roles() {
             for (MemberRole role : MemberRole.values()) {
-                TokenClaimsRequest claims = new TokenClaimsRequest(1L, "e@test.com", role);
+                TokenClaimsRequest claims = new TokenClaimsRequest(1L, "e@test.com", role, 0);
                 PairTokenResponse pair = adapter.issueTokenPair(claims);
 
                 assertThat(pair.accessToken()).isNotBlank();
@@ -77,6 +77,7 @@ class TokenProviderAdapterTest {
             assertThat(principal.id()).isEqualTo(42L);
             assertThat(principal.email()).isEqualTo("user@test.com");
             assertThat(principal.role()).isEqualTo(MemberRole.USER.name());
+            assertThat(principal.tokenVersion()).isZero();
         }
 
         @Test

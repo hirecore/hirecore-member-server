@@ -5,6 +5,7 @@ import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 public record TokenClaimsRequest(
         Long id,
         String email,
-        MemberRole role
+        MemberRole role,
+        int tokenVersion
 ){
 }

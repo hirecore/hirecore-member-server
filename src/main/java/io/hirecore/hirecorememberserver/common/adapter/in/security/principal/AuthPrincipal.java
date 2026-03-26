@@ -9,7 +9,8 @@ import java.util.Collections;
 public record AuthPrincipal(
         Long id,
         String email,
-        String role
+        String role,
+        int tokenVersion
 ) {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String authority = "ROLE_" + role;

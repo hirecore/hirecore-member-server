@@ -37,6 +37,7 @@ public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort, 
 
     private static final String CLAIM_EMAIL = "email";
     private static final String CLAIM_ROLE = "role";
+    private static final String CLAIM_TOKEN_VERSION = "tv";
 
     public TokenProviderAdapter(JwtProperties jwtProperties) {
         byte[] keyBytes = jwtProperties.secret().getBytes(StandardCharsets.UTF_8);
@@ -63,9 +64,10 @@ public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort, 
             Long id = Long.parseLong(claims.getSubject());
             String email = claims.get(CLAIM_EMAIL, String.class);
             String roleStr = claims.get(CLAIM_ROLE, String.class);
+            int tokenVersion = claims.get(CLAIM_TOKEN_VERSION, Integer.class);
 
             validateRole(roleStr);
-            return new AuthPrincipal(id, email, roleStr);
+            return new AuthPrincipal(id, email, roleStr, tokenVersion);
 
         } catch (NumberFormatException e) {
             log.warn("Invalid Subject (MemberId) format in JWT: {}", claims.getSubject());
@@ -78,6 +80,7 @@ public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort, 
                 .subject(String.valueOf(claims.id()))
                 .claim(CLAIM_EMAIL, claims.email())
                 .claim(CLAIM_ROLE, claims.role().name())
+                .claim(CLAIM_TOKEN_VERSION, claims.tokenVersion())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(expirationMillis, ChronoUnit.MILLIS)))
                 .signWith(key)

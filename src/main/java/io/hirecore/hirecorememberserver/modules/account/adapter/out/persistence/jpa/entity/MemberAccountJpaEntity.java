@@ -36,6 +36,10 @@ public class MemberAccountJpaEntity extends AbstractPersistableAggregateRoot<Lon
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
+    @Comment("토큰 버전 (로그아웃 시 증가하여 기존 토큰을 무효화)")
+    @Column(name = "token_version", nullable = false)
+    private Integer tokenVersion;
+
     @Embedded
     private AuditingJpaInfo auditingInfo;
 }

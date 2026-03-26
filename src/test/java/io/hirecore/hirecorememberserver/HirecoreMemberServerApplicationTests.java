@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 		"spring.datasource.password=",
 		"spring.jpa.hibernate.ddl-auto=create-drop",
 		"spring.jpa.defer-datasource-initialization=true",
-		"spring.data.redis.host=localhost",
-		"spring.data.redis.port=6379",
 		"hirecore.jwt.secret=test-secret-key-for-unit-testing-only",
 		"hirecore.jwt.access-expiration-millis=10800000",
 		"hirecore.jwt.refresh-expiration-millis=604800000",

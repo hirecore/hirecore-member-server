@@ -4,7 +4,6 @@ import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
 import io.hirecore.hirecorememberserver.common.adapter.out.jwt.properties.JwtProperties;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
-import io.hirecore.hirecorememberserver.common.application.port.out.TokenExpirationResolverPort;
 import io.hirecore.hirecorememberserver.common.application.port.out.TokenResolverPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.TokenUtilsPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
@@ -23,13 +22,12 @@ import java.util.Date;
 /**
  * JJWT 기반의 JWT 토큰 발급·검증 어댑터.
  *
- * <p>{@link TokenUtilsPort}(토큰 발급), {@link TokenResolverPort}(토큰 검증),
- * {@link TokenExpirationResolverPort}(토큰 만료 시간 조회) 포트를 구현합니다.
+ * <p>{@link TokenUtilsPort}(토큰 발급), {@link TokenResolverPort}(토큰 검증) 포트를 구현합니다.
  * HMAC-SHA 알고리즘으로 서명된 액세스 토큰과 리프레시 토큰을 생성하고 파싱합니다.</p>
  */
 @Slf4j
 @Component
-public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort, TokenExpirationResolverPort {
+public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort {
 
     private final SecretKey key;
     private final long accessTokenExpirationMills;
@@ -37,6 +35,7 @@ public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort, 
 
     private static final String CLAIM_EMAIL = "email";
     private static final String CLAIM_ROLE = "role";
+    private static final String CLAIM_TOKEN_VERSION = "tv";
 
     public TokenProviderAdapter(JwtProperties jwtProperties) {
         byte[] keyBytes = jwtProperties.secret().getBytes(StandardCharsets.UTF_8);
@@ -63,9 +62,10 @@ public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort, 
             Long id = Long.parseLong(claims.getSubject());
             String email = claims.get(CLAIM_EMAIL, String.class);
             String roleStr = claims.get(CLAIM_ROLE, String.class);
+            int tokenVersion = claims.get(CLAIM_TOKEN_VERSION, Integer.class);
 
             validateRole(roleStr);
-            return new AuthPrincipal(id, email, roleStr);
+            return new AuthPrincipal(id, email, roleStr, tokenVersion);
 
         } catch (NumberFormatException e) {
             log.warn("Invalid Subject (MemberId) format in JWT: {}", claims.getSubject());
@@ -78,18 +78,11 @@ public class TokenProviderAdapter implements TokenResolverPort, TokenUtilsPort, 
                 .subject(String.valueOf(claims.id()))
                 .claim(CLAIM_EMAIL, claims.email())
                 .claim(CLAIM_ROLE, claims.role().name())
+                .claim(CLAIM_TOKEN_VERSION, claims.tokenVersion())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(expirationMillis, ChronoUnit.MILLIS)))
                 .signWith(key)
                 .compact();
-    }
-
-    @Override
-    public long getRemainingMillis(String token) {
-        Claims claims = parseClaims(token);
-        long expirationMillis = claims.getExpiration().getTime();
-        long remaining = expirationMillis - System.currentTimeMillis();
-        return Math.max(remaining, 0);
     }
 
     private Claims parseClaims(String token) {

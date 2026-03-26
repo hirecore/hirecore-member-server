@@ -43,4 +43,9 @@ public class MemberAccountJpaCommandAdapter implements MemberAccountCommandPort 
         MemberAccountJpaEntity savedEntity = memberAccountJpaCommandRepository.save(entity);
         return memberAccountJpaEntityMapper.toDomain(savedEntity);
     }
+
+    @Override
+    public void incrementTokenVersion(Long memberId) {
+        memberAccountJpaCommandRepository.incrementTokenVersion(memberId);
+    }
 }

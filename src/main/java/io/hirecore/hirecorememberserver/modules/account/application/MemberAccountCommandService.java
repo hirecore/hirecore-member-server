@@ -15,4 +15,9 @@ public class MemberAccountCommandService {
     public MemberAccount saveMemberAccount(MemberAccount memberAccount) {
         return memberAccountCommandPort.save(memberAccount);
     }
+
+    @Transactional
+    public void incrementTokenVersion(Long memberId) {
+        memberAccountCommandPort.incrementTokenVersion(memberId);
+    }
 }

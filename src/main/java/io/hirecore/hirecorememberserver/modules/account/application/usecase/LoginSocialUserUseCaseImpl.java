@@ -55,7 +55,8 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
         return tokenUtilsPort.issueTokenPair(new TokenClaimsRequest(
                 memberAccount.getId(),
                 memberAccount.getEmail(),
-                memberAccount.getRole()
+                memberAccount.getRole(),
+                memberAccount.getTokenVersion()
         ));
     }
 

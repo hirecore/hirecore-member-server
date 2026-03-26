@@ -68,7 +68,7 @@ class UserProfileQueryControllerTest {
     private UserProfileQueryWebMapper userProfileQueryWebMapper;
 
     private static UsernamePasswordAuthenticationToken createAuthToken() {
-        AuthPrincipal principal = new AuthPrincipal(MEMBER_ID, EMAIL, ROLE);
+        AuthPrincipal principal = new AuthPrincipal(MEMBER_ID, EMAIL, ROLE, 0);
         return new UsernamePasswordAuthenticationToken(
                 principal, null, List.of(new SimpleGrantedAuthority("ROLE_" + ROLE))
         );

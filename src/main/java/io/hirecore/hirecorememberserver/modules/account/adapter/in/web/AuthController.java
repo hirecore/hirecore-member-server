@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.in.web;
 
+import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
 import io.hirecore.hirecorememberserver.common.utils.AuthCookieUtils;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.request.SocialLoginApiRequest;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapper;
@@ -7,16 +8,13 @@ import io.hirecore.hirecorememberserver.modules.account.application.port.in.Logi
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LogoutUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.WebUtils;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 인증 관련 엔드포인트를 담당하는 컨트롤러.
@@ -51,11 +49,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
-        Cookie accessTokenCookie = WebUtils.getCookie(request, "accessToken");
-        if (accessTokenCookie != null) {
-            logoutUseCase.execute(accessTokenCookie.getValue());
-        }
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal AuthPrincipal principal) {
+        logoutUseCase.execute(principal.id());
 
         ResponseCookie expiredAccessToken = authCookieUtils.createExpiredAccessTokenCookie();
         ResponseCookie expiredRefreshToken = authCookieUtils.createExpiredRefreshTokenCookie();

@@ -4,4 +4,5 @@ import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 
 public interface MemberAccountCommandPort {
     MemberAccount save(MemberAccount memberAccount);
+    void incrementTokenVersion(Long memberId);
 }

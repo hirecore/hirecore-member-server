@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.common.adapter.in.security.filter;
 
 import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
-import io.hirecore.hirecorememberserver.common.application.port.out.TokenBlacklistPort;
 import io.hirecore.hirecorememberserver.common.application.port.out.TokenResolverPort;
+import io.hirecore.hirecorememberserver.common.application.port.out.TokenVersionValidationPort;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String EXCEPTION_ATTRIBUTE = "exception";
 
     private final TokenResolverPort tokenResolverPort;
-    private final TokenBlacklistPort tokenBlacklistPort;
+    private final TokenVersionValidationPort tokenVersionValidationPort;
 
     /**
      * JWT 토큰 검증 및 인증 처리를 수행합니다.
@@ -58,15 +58,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token)) {
-            if (tokenBlacklistPort.isBlacklisted(token)) {
-                log.debug("Blacklisted JWT token detected");
-                SecurityContextHolder.clearContext();
-                filterChain.doFilter(request, response);
-                return;
-            }
-
             try {
-                Authentication authentication = resolveAuthentication(token);
+                AuthPrincipal principal = tokenResolverPort.resolveToken(token);
+
+                if (!tokenVersionValidationPort.isValidTokenVersion(principal.id(), principal.tokenVersion())) {
+                    log.debug("Invalidated JWT token detected (token version mismatch) for user: '{}'", principal.id());
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        principal, token, principal.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("Security Context set for user: '{}'", authentication.getName());
 
@@ -91,13 +94,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, ACCESS_TOKEN_COOKIE_NAME);
         return (cookie != null) ? cookie.getValue() : null;
-    }
-
-    /**
-     * 토큰을 파싱하여 Spring Security 인증 객체({@link Authentication})를 생성합니다.
-     */
-    private Authentication resolveAuthentication(String token) {
-        AuthPrincipal principal = tokenResolverPort.resolveToken(token);
-        return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
     }
 }

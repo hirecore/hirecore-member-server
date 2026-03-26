@@ -3,8 +3,8 @@ package io.hirecore.hirecorememberserver.common.adapter.exception;
 import io.hirecore.hirecorememberserver.common.adapter.in.logging.StructuredErrorLogger;
 import io.hirecore.hirecorememberserver.common.application.exception.ApplicationExceptionCode;
 import io.hirecore.hirecorememberserver.common.application.exception.BaseApplicationException;
-import io.hirecore.hirecorememberserver.common.application.port.out.TokenBlacklistPort;
 import io.hirecore.hirecorememberserver.common.application.port.out.TokenResolverPort;
+import io.hirecore.hirecorememberserver.common.application.port.out.TokenVersionValidationPort;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.common.domain.exception.BaseDomainException;
 import io.hirecore.hirecorememberserver.common.domain.exception.DomainExceptionCode;
@@ -57,7 +57,7 @@ class GlobalExceptionHandlerTest {
     private TokenResolverPort tokenResolverPort;
 
     @MockitoBean
-    private TokenBlacklistPort tokenBlacklistPort;
+    private TokenVersionValidationPort tokenVersionValidationPort;
 
     // =========================================================================
     // 테스트 전용 예외 코드 (계층 경계 위반 방지 — modules 패키지 임포트 금지)

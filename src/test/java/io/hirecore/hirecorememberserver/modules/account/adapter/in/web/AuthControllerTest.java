@@ -22,7 +22,9 @@ import io.hirecore.hirecorememberserver.modules.account.domain.exception.SocialA
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LogoutUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
-import jakarta.servlet.http.Cookie;
+import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -46,7 +48,6 @@ import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -398,9 +399,13 @@ class AuthControllerTest {
     class LogoutSuccessTest {
 
         @Test
-        @DisplayName("[200 OK] accessToken 쿠키가 존재하면 블랙리스트 등록 후 만료 쿠키를 반환한다.")
-        void logout_success_with_access_token_cookie() throws Exception {
+        @DisplayName("[200 OK] 인증된 사용자가 로그아웃하면 토큰 버전을 증가시키고 만료 쿠키를 반환한다.")
+        void logout_success_with_authenticated_user() throws Exception {
             // given
+            AuthPrincipal principal = new AuthPrincipal(1L, "user@example.com", "USER", 0);
+            var auth = new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
             given(authCookieUtils.createExpiredAccessTokenCookie())
                     .willReturn(ResponseCookie.from("accessToken", "")
                             .httpOnly(true).secure(true).sameSite("Strict").path("/").maxAge(0).build());
@@ -409,8 +414,7 @@ class AuthControllerTest {
                             .httpOnly(true).secure(true).sameSite("Strict").path("/").maxAge(0).build());
 
             // when & then
-            mockMvc.perform(post("/api/auth/logout")
-                            .cookie(new Cookie("accessToken", "test-access-token")))
+            mockMvc.perform(post("/api/auth/logout"))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(cookie().exists("accessToken"))
@@ -430,17 +434,16 @@ class AuthControllerTest {
                                                     로그아웃 시 서버에서 수행하는 작업:
 
                                                         [처리 흐름]
-                                                         1. 요청 쿠키에서 accessToken을 추출합니다.
-                                                         2. 해당 토큰을 Redis 블랙리스트에 등록합니다 (남은 만료 시간을 TTL로 설정).
+                                                         1. 인증된 사용자의 토큰 버전을 DB에서 증가시킵니다.
+                                                         2. 기존에 발급된 모든 토큰이 즉시 무효화됩니다.
                                                          3. accessToken, refreshToken 쿠키를 maxAge=0으로 설정하여 브라우저에서 삭제합니다.
 
                                                         [응답 방식]
                                                          - 200 OK: 응답 본문 없이 Set-Cookie 헤더로 만료된 쿠키가 전달됩니다.
 
                                                         [특이 사항]
-                                                         - 블랙리스트에 등록된 토큰은 JwtAuthenticationFilter에서 인증이 거부됩니다.
-                                                         - 토큰 만료 시 Redis에서 자동 삭제되어 메모리를 절약합니다.
-                                                         - accessToken 쿠키가 없어도 200 OK를 반환합니다 (쿠키 삭제만 수행).
+                                                         - 토큰 버전이 증가하면 JwtAuthenticationFilter에서 기존 토큰의 인증이 거부됩니다.
+                                                         - 해당 사용자의 모든 기기에서 동시에 로그아웃됩니다.
                                                     """)
                                             .responseHeaders(
                                                     headerWithName("Set-Cookie")
@@ -450,30 +453,7 @@ class AuthControllerTest {
                             )
                     ));
 
-            verify(logoutUseCase).execute("test-access-token");
-        }
-
-        @Test
-        @DisplayName("[200 OK] accessToken 쿠키가 없어도 만료 쿠키를 반환한다 (UseCase 호출 없음).")
-        void logout_success_without_access_token_cookie() throws Exception {
-            // given
-            given(authCookieUtils.createExpiredAccessTokenCookie())
-                    .willReturn(ResponseCookie.from("accessToken", "")
-                            .httpOnly(true).secure(true).sameSite("Strict").path("/").maxAge(0).build());
-            given(authCookieUtils.createExpiredRefreshTokenCookie())
-                    .willReturn(ResponseCookie.from("refreshToken", "")
-                            .httpOnly(true).secure(true).sameSite("Strict").path("/").maxAge(0).build());
-
-            // when & then
-            mockMvc.perform(post("/api/auth/logout"))
-                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andExpect(cookie().exists("accessToken"))
-                    .andExpect(cookie().maxAge("accessToken", 0))
-                    .andExpect(cookie().exists("refreshToken"))
-                    .andExpect(cookie().maxAge("refreshToken", 0));
-
-            verify(logoutUseCase, never()).execute(any());
+            verify(logoutUseCase).execute(1L);
         }
     }
 }

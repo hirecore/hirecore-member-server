@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.common.adapter.in;
 
 import io.hirecore.hirecorememberserver.common.adapter.in.logging.StructuredErrorLogger;
-import io.hirecore.hirecorememberserver.common.application.port.out.TokenBlacklistPort;
 import io.hirecore.hirecorememberserver.common.application.port.out.TokenResolverPort;
+import io.hirecore.hirecorememberserver.common.application.port.out.TokenVersionValidationPort;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -20,8 +20,8 @@ public class WebMvcSecuritySupport {
     }
 
     @Bean
-    public TokenBlacklistPort tokenBlacklistPort() {
-        return Mockito.mock(TokenBlacklistPort.class);
+    public TokenVersionValidationPort tokenVersionValidationPort() {
+        return Mockito.mock(TokenVersionValidationPort.class);
     }
 
     @Bean

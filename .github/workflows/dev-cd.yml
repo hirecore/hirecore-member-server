@@ -32,23 +32,6 @@ concurrency:
   # 이전 실행이 아직 끝나지 않았으면 취소하고 최신 실행만 유지
   cancel-in-progress: true
 
-# =========================
-# 4) GitHub Variables -> workflow 공통 env 매핑
-# =========================
-# 여기서 한 번 env로 꺼내 두면,
-# 이후 step에서 ${{ env.xxx }} 또는 shell의 $XXX 형태로 재사용하기 쉬워진다.
-# [개념]
-#  - ${{..}} == GitHub Actions 표현식이다.
-#  - ${{..}}가 steps 같은곳에서 그대로 사용된다면, GitHub Actions가 먼저 문자열로 치환하고 전달함을 기억한다.defaults:
-#    반면, ${..}로 사용되면 시스템의 환경변수의 값으로 들어가 있는 값을 사용하는 형태로 이해하면 된다.
-env:
-  AWS_REGION: ${{ vars.AWS_REGION }}
-  AWS_ROLE_TO_ASSUME: ${{ vars.AWS_ROLE_TO_ASSUME }}
-  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-  DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
-  SSM_TARGET_TAG_KEY: ${{ vars.SSM_TARGET_TAG_KEY }}
-  SSM_TARGET_TAG_VALUE: ${{ vars.SSM_TARGET_TAG_VALUE }}
-
 jobs:
   deploy:
     name: Build, Push and Deploy
@@ -58,6 +41,24 @@ jobs:
 
     # 너무 오래 걸리면 40분 후 강제 종료
     timeout-minutes: 40
+    environment: dev
+
+    # =========================
+    # 4) GitHub Variables -> workflow 공통 env 매핑
+    # =========================
+    # 여기서 한 번 env로 꺼내 두면,
+    # 이후 step에서 ${{ env.xxx }} 또는 shell의 $XXX 형태로 재사용하기 쉬워진다.
+    # [개념]
+    #  - ${{..}} == GitHub Actions 표현식이다.
+    #  - ${{..}}가 steps 같은곳에서 그대로 사용된다면, GitHub Actions가 먼저 문자열로 치환하고 전달함을 기억한다.defaults:
+    #    반면, ${..}로 사용되면 시스템의 환경변수의 값으로 들어가 있는 값을 사용하는 형태로 이해하면 된다.
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ROLE_TO_ASSUME: ${{ vars.AWS_ROLE_TO_ASSUME }}
+      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+      DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
+      SSM_TARGET_TAG_KEY: ${{ vars.SSM_TARGET_TAG_KEY }}
+      SSM_TARGET_TAG_VALUE: ${{ vars.SSM_TARGET_TAG_VALUE }}
 
     steps:
       # =========================

@@ -1,0 +1,66 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ${DEV_DB_URL}
+    username: ${DEV_DB_USERNAME}
+    password: ${DEV_DB_PASSWORD}
+
+  sql:
+    init:
+      mode: never
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: false
+        jdbc:
+          time_zone: UTC
+    defer-datasource-initialization: false
+
+hirecore:
+  cors:
+    allowed-origins: ${DEV_CORS_ALLOWED_ORIGINS}
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "PATCH"
+      - "DELETE"
+      - "OPTIONS"
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+
+  cookie:
+    http-only: true
+    secure: false
+    same-site: Lax
+
+  jwt:
+    secret: ${DEV_JWT_SECRET}
+    access-expiration-millis: 10800000
+    refresh-expiration-millis: 604800000
+
+  oauth2:
+    kakao:
+      client-redirect-url: ${DEV_KAKAO_CLIENT_REDIRECT_URL}
+      client-id: ${DEV_KAKAO_CLIENT_ID}
+      client-secret: ${DEV_KAKAO_CLIENT_SECRET}
+      grant-type: authorization_code
+      token-issue-url: https://kauth.kakao.com/oauth/token
+      user-profile-url: https://kapi.kakao.com/v2/user/me
+
+  object-storage:
+    region: ${DEV_OBJECT_STORAGE_REGION}
+    bucket: ${DEV_OBJECT_STORAGE_BUCKET}
+    endpoint: ${DEV_OBJECT_STORAGE_ENDPOINT}
+    access-key: ${DEV_OBJECT_STORAGE_ACCESS_KEY}
+    secret-key: ${DEV_OBJECT_STORAGE_SECRET_KEY}
+    path-style-access: false

@@ -40,12 +40,6 @@ out/
 .claude/
 
 ## ==========================================
-## [application.yml]
-## ==========================================
-src/main/resources/application.yml
-src/test/resources/application.yml
-
-## ==========================================
 ## [log]
 ## ==========================================
 /logs/
@@ -60,3 +54,15 @@ src/main/resources/static/docs/openapi3.yaml
 ## [generated]
 ## ==========================================
 src/main/generated/
+
+## ==========================================
+## [docker-env]: 민감한 정보
+## ==========================================
+/docker/local/.env.local.mysql
+/docker/local/.env.local.app
+
+/docker/dev/.env.dev.app
+/docker/dev/.env.dev.deploy
+/docker/dev/.env.dev.mysql
+
+/docker/prod/.env.prod

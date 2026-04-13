@@ -30,7 +30,7 @@
         </rollingPolicy>
     </appender>
 
-    <springProfile name="default | local">
+    <springProfile name="default | local | local-docker">
         <root level="INFO">
             <appender-ref ref="CONSOLE_TEXT" />
         </root>

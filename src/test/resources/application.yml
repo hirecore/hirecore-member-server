@@ -1,0 +1,69 @@
+spring:
+  # 가상 스레드 설정 (메인과 동일하게 유지하거나 필요 없으면 제거 가능)
+  threads:
+    virtual:
+      enabled: true
+  jackson:
+    mapper:
+      allow-coercion-of-scalars: false # 스칼라 값(숫자, 불리언)의 강제 변환 금지
+
+  sql:
+    init:
+      mode: never # 테스트 환경에서는 data.sql 실행 불필요
+
+  datasource:
+    # [변경] 테스트는 메모리 DB(H2)를 사용합니다.
+    # MODE=MySQL: MySQL 쿼리 문법을 호환하도록 설정
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    # [변경] 실행되는 SQL을 콘솔에 보여줍니다.
+    show-sql: true
+    hibernate:
+      # [변경] 테스트 시작 시 테이블 생성, 종료 시 삭제 (항상 깨끗한 상태 유지)
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: true       # SQL 예쁘게 출력
+        use_sql_comments: true # SQL 주석 출력
+        # dialect: org.hibernate.dialect.H2Dialect # 필요시 명시 (보통 자동 감지됨)
+
+# [커스텀 설정] 메인 코드와 구조를 100% 동일하게 맞춰야 함
+hirecore:
+  cors:
+    allowed-origins:
+      - "http://localhost:3000"
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "PATCH"
+      - "DELETE"
+      - "OPTIONS"
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+
+  cookie:
+    http-only: true
+    secure: false # 운영 환경에서는 true
+    same-site: Lax
+
+  jwt:
+    secret: tempscret-djasldlrkjalksjdrnm3jkljdlkasndlkjf
+    access-expiration-millis: 10800000
+    refresh-expiration-millis: 604800000
+
+  oauth2:
+    kakao:
+      client-redirect-url: http://localhost:3000/auth/social/callback/kakao
+      client-id: TEST_KAKAO_CLIENT_ID
+      client-secret: TEST_KAKAO_CLIENT_SECRET
+      grant-type: authorization_code
+      token-issue-url: https://kauth.kakao.com/oauth/token
+      user-profile-url: https://kapi.kakao.com/v2/user/me

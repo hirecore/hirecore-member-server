@@ -1,0 +1,64 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${PROD_DB_URL}
+    username: ${PROD_DB_USERNAME}
+    password: ${PROD_DB_PASSWORD}
+
+  sql:
+    init:
+      mode: never
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        jdbc:
+          time_zone: UTC
+    defer-datasource-initialization: false
+
+hirecore:
+  cors:
+    allowed-origins: ${PROD_CORS_ALLOWED_ORIGINS}
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "PATCH"
+      - "DELETE"
+      - "OPTIONS"
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+
+  cookie:
+    http-only: true
+    secure: true
+    same-site: None
+
+  jwt:
+    secret: ${PROD_JWT_SECRET}
+    access-expiration-millis: 10800000
+    refresh-expiration-millis: 604800000
+
+  oauth2:
+    kakao:
+      client-redirect-url: ${PROD_KAKAO_CLIENT_REDIRECT_URL}
+      client-id: ${PROD_KAKAO_CLIENT_ID}
+      client-secret: ${PROD_KAKAO_CLIENT_SECRET}
+      grant-type: authorization_code
+      token-issue-url: https://kauth.kakao.com/oauth/token
+      user-profile-url: https://kapi.kakao.com/v2/user/me
+
+  object-storage:
+    endpoint: ${PROD_OBJECT_STORAGE_ENDPOINT}
+    access-key: ${PROD_OBJECT_STORAGE_ACCESS_KEY}
+    secret-key: ${PROD_OBJECT_STORAGE_SECRET_KEY}
+    path-style-access: false

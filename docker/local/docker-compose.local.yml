@@ -1,0 +1,21 @@
+name: hirecore-member-server-local
+
+services:
+  mysql:
+    image: mysql:8.4.8
+    container_name: hirecore-member-server-mysql-local
+    ports:
+      - "3307:3306"
+    env_file:
+      - ./.env.local.mysql
+    environment:
+      TZ: UTC
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - hirecore-member-server-local-mysql-data:/var/lib/mysql
+
+volumes:
+  hirecore-member-server-local-mysql-data:
+    name: hirecore-member-server-local-mysql-data

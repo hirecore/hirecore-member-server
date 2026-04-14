@@ -18,9 +18,8 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeContext>true</includeContext>
             <timestampPattern>yyyy-MM-dd HH:mm:ss.SSS</timestampPattern>
-            <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
             <fieldNames>
-                <message>[ignore]</message>  <!-- <levelValue>[ignore]</levelValue> -->
+                <message>[ignore]</message>
             </fieldNames>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -30,14 +29,14 @@
         </rollingPolicy>
     </appender>
 
-    <springProfile name="default | local | local-docker">
+    <springProfile name="default | local | local-docker | dev">
         <root level="INFO">
             <appender-ref ref="CONSOLE_TEXT" />
         </root>
         <logger name="io.hirecore.hirecorememberserver" level="DEBUG" />
     </springProfile>
 
-    <springProfile name="dev | prod">
+    <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="FILE_JSON"/>
         </root>

@@ -103,16 +103,21 @@ tasks.named('test') {
 }
 
 // 태스크: 생성된 OpenAPI YAML 파일을 Swagger UI가 접근할 수 있는 정적 경로로 복사
-// 접근 URL: http://localhost:8080/docs/openapi3.yaml
+// 로컬 개발(bootRun) 시 접근 URL: http://localhost:8080/docs/openapi3.yaml
 tasks.register('copySwaggerUI', Copy) {
 	dependsOn 'openapi3' // openapi3 태스크가 먼저 실행되어야 함
 	from("build/api-spec/openapi3.yaml")
 	into("src/main/resources/static/docs")
 }
 
-// 패키징(bootJar) 실행 전에 Swagger 문서가 준비되도록 설정
+// 패키징(bootJar) 실행 전에 openapi3.yaml을 JAR에 직접 포함
+// processResources보다 늦게 생성되므로 bootJar에 직접 추가한다
 tasks.named('bootJar') {
 	dependsOn 'copySwaggerUI'
+	from("build/api-spec/openapi3.yaml") {
+		into("BOOT-INF/classes/static/docs")
+	}
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 // [수정] 모든 설정이 완료된 후(afterEvaluate)에 태스크를 찾도록 변경

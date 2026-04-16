@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import io.hirecore.hirecorememberserver.sharedkernel.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.DomainAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
@@ -24,10 +25,15 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private final String title;
     private final String previewSummary;
     private final PortfolioContent portfolioContent;
-    private final String status;
+    private final PortfolioStatus status;
     private final Boolean visibility;
     private final AuditingInfo auditingInfo;
 
+    /**
+     * [복원용 빌더]
+     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
+     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
+     */
     @Builder(access = AccessLevel.PUBLIC)
     private Portfolio(
             Long id,
@@ -39,7 +45,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String title,
             String previewSummary,
             PortfolioContent portfolioContent,
-            String status,
+            PortfolioStatus status,
             Boolean visibility,
             AuditingInfo auditingInfo
     ) {
@@ -69,7 +75,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String title,
             String previewSummary,
             PortfolioContent portfolioContent,
-            String status,
+            PortfolioStatus status,
             Boolean visibility,
             AuditingInfo auditingInfo
     ) {

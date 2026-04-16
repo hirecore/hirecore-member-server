@@ -35,9 +35,4 @@ public class PortfolioContentJpaEntity extends AbstractPersistableEntity<Long> {
     void setPortfolio(PortfolioJpaEntity portfolio) {
         this.portfolio = portfolio;
     }
-
-    public void changeContent(String contentJson, String contentHtml) {
-        this.contentJson = contentJson;
-        this.contentHtml = contentHtml;
-    }
 }

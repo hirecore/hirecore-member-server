@@ -2,9 +2,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.persistence.j
 
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
@@ -55,8 +53,9 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     private String previewSummary;
 
     @Comment("포트폴리오 상태")
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(30)")
-    private String status;
+    private PortfolioStatus status;
 
     @Comment("공개 여부")
     @Column(name = "visibility", nullable = false)
@@ -65,19 +64,14 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Embedded
     private AuditingJpaInfo auditingInfo;
 
+    /**
+     * 양방향 @OneToOne 관계의 양쪽 참조를 동기화하는 JPA 메커니즘 헬퍼.
+     * cascade/orphanRemoval이 정상 동작하도록 매퍼에서 사용됩니다.
+     */
     public void syncPortfolioContent(PortfolioContentJpaEntity newContent) {
         this.portfolioContent = newContent;
         if (newContent != null) {
             newContent.setPortfolio(this);
         }
-    }
-
-    public void changePortfolioContent(String contentJson, String contentHtml) {
-        AssertionUtils.notNull(
-                this.portfolioContent,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_CONTENT_NOT_ATTACHED,
-                PortfolioDomainException::new
-        );
-        this.portfolioContent.changeContent(contentJson, contentHtml);
     }
 }

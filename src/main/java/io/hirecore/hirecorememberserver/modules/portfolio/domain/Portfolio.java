@@ -10,8 +10,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.Instant;
-
 @Getter
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
     private final Long id;
@@ -28,7 +26,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private final PortfolioContent portfolioContent;
     private final String status;
     private final Boolean visibility;
-    private final Instant updatedAt;
     private final AuditingInfo auditingInfo;
 
     @Builder(access = AccessLevel.PUBLIC)
@@ -44,13 +41,11 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             PortfolioContent portfolioContent,
             String status,
             Boolean visibility,
-            Instant updatedAt,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
                 id, memberAccountId, portfolioCategoryId, title,
-                previewSummary, portfolioContent, status, visibility,
-                updatedAt, auditingInfo
+                previewSummary, portfolioContent, status, visibility, auditingInfo
         );
 
         this.id = id;
@@ -64,7 +59,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.portfolioContent = portfolioContent;
         this.status = status;
         this.visibility = visibility;
-        this.updatedAt = updatedAt;
         this.auditingInfo = auditingInfo;
     }
 
@@ -77,7 +71,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             PortfolioContent portfolioContent,
             String status,
             Boolean visibility,
-            Instant updatedAt,
             AuditingInfo auditingInfo
     ) {
         AssertionUtils.notNull(
@@ -118,11 +111,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         AssertionUtils.notNull(
                 visibility,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.VISIBILITY_MISSING,
-                PortfolioDomainException::new
-        );
-        AssertionUtils.notNull(
-                updatedAt,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.UPDATED_AT_MISSING,
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(

@@ -9,8 +9,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
-import java.time.Instant;
-
 @Entity
 @Table(name = "portfolios")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -63,10 +61,6 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Comment("공개 여부")
     @Column(name = "visibility", nullable = false)
     private Boolean visibility;
-
-    @Comment("최종 수정 시각")
-    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME(6)")
-    private Instant updatedAt;
 
     @Embedded
     private AuditingJpaInfo auditingInfo;

@@ -15,7 +15,7 @@ import lombok.Getter;
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
     private final Long id;
     private final Long memberAccountId;
-    private final PortfolioJobCategory portfolioJobCategoryId;
+    private final PortfolioJobCategory portfolioJobCategory;
     /** (선택) 포트폴리오 썸네일 null가능 */
     private final Long thumbnailImageId;
     /** (선택) 연결된 자기소개서, null가능 */
@@ -38,7 +38,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private Portfolio(
             Long id,
             Long memberAccountId,
-            PortfolioJobCategory portfolioJobCategoryId,
+            PortfolioJobCategory portfolioJobCategory,
             Long thumbnailImageId,
             Long coverLetterId,
             Long resumeId,
@@ -50,13 +50,13 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
-                id, memberAccountId, portfolioJobCategoryId, title,
+                id, memberAccountId, portfolioJobCategory, title,
                 previewSummary, portfolioContent, status, visibility, auditingInfo
         );
 
         this.id = id;
         this.memberAccountId = memberAccountId;
-        this.portfolioJobCategoryId = portfolioJobCategoryId;
+        this.portfolioJobCategory = portfolioJobCategory;
         this.thumbnailImageId = thumbnailImageId;
         this.coverLetterId = coverLetterId;
         this.resumeId = resumeId;
@@ -71,7 +71,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private static void ensureInvariants(
             Long id,
             Long memberAccountId,
-            PortfolioJobCategory portfolioJobCategoryId,
+            PortfolioJobCategory portfolioJobCategory,
             String title,
             String previewSummary,
             PortfolioContent portfolioContent,
@@ -90,8 +90,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(
-                portfolioJobCategoryId,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_JOB_CATEGORY_ID_MISSING,
+                portfolioJobCategory,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_JOB_CATEGORY_MISSING,
                 PortfolioDomainException::new
         );
         AssertionUtils.notBlank(

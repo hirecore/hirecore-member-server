@@ -21,9 +21,9 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Column(name = "member_account_id", nullable = false)
     private Long memberAccountId;
 
-    @Comment("포트폴리오 카테고리 ID")
-    @Column(name = "portfolio_category_id", nullable = false)
-    private Long portfolioCategoryId;
+    @Comment("포트폴리오 직무 카테고리 ID")
+    @Column(name = "portfolio_job_category_id", nullable = false)
+    private Long portfolioJobCategoryId;
 
     @Comment("썸네일 이미지 ID")
     @Column(name = "thumbnail_image_id")

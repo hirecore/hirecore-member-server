@@ -2,10 +2,16 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.persistence.j
 
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "portfolios")
@@ -56,6 +62,11 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(30)")
     private PortfolioStatus status;
+
+    @Comment("사용자 입력 외부 링크")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "external_link_json", columnDefinition = "json")
+    private List<ExternalLink> externalLinks = new ArrayList<>();
 
     @Comment("공개 여부")
     @Column(name = "visibility", nullable = false)

@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.common.utils;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * 도메인 불변성(Invariants) 및 데이터 유효성 검증을 위한 공통 유틸리티 클래스입니다.
@@ -82,6 +83,20 @@ public class AssertionUtils {
         try {
             Enum.valueOf(enumClass, value.toUpperCase());
         } catch (IllegalArgumentException e) {
+            throw exceptionFunction.apply(errorCode);
+        }
+    }
+
+    /**
+     * 대상 문자열이 주어진 정규표현식 패턴과 일치함을 보장합니다.
+     */
+    public static <C, E extends RuntimeException> void matches(
+            String str,
+            String regex,
+            C errorCode,
+            Function<C, E> exceptionFunction) {
+
+        if (str == null || !Pattern.matches(regex, str)) {
             throw exceptionFunction.apply(errorCode);
         }
     }

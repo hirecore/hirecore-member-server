@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import io.hirecore.hirecorememberserver.sharedkernel.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.DomainAggregateRoot;
@@ -10,6 +11,9 @@ import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
@@ -25,6 +29,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private final String title;
     private final String previewSummary;
     private final PortfolioContent portfolioContent;
+    private final List<ExternalLink> externalLinks;
     private final PortfolioStatus status;
     private final Boolean visibility;
     private final AuditingInfo auditingInfo;
@@ -45,6 +50,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String title,
             String previewSummary,
             PortfolioContent portfolioContent,
+            List<ExternalLink> externalLinks,
             PortfolioStatus status,
             Boolean visibility,
             AuditingInfo auditingInfo
@@ -63,6 +69,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.title = title;
         this.previewSummary = previewSummary;
         this.portfolioContent = portfolioContent;
+        this.externalLinks = externalLinks;
         this.status = status;
         this.visibility = visibility;
         this.auditingInfo = auditingInfo;

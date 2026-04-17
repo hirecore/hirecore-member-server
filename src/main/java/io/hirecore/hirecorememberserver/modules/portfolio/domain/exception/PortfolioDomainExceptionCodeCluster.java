@@ -61,7 +61,28 @@ public class PortfolioDomainExceptionCodeCluster {
         AUDITING_INFO_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Portfolio 도메인 객체 생성에서 auditingInfo 필드가 누락되었습니다.",
-                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요.");
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        // ------ ExternalLink ---------
+        // EXTERNAL_LINK_PAIR_INCOMPLETE
+        EXTERNAL_LINK_PAIR_INCOMPLETE(
+                HttpStatus.BAD_REQUEST,
+                "ExternalLink vo 객체 생성에서 label과 url이 쌍으로 제공되지 않았습니다.",
+                "외부 링크의 이름과 URL을 모두 입력해주세요."),
+
+        // EXTERNAL_URL_INVALID
+        EXTERNAL_URL_INVALID(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "External vo 객체 생성에서 externalUrl 필드가 유효하지 않습니다.",
+                "유효하지 않은 외부 링크 URL입니다. 올바른 형식으로 입력해주세요."),
+
+        // EXTERNAL_LABEL
+        EXTERNAL_LABEL_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "External vo 객체 생성에서 externalLabel 필드가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."
+        ),
+        ;
 
         private final HttpStatus httpStatus;
         private final String logMessage;

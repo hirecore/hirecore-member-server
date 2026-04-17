@@ -144,7 +144,9 @@ jobs:
         run: |
           IMAGE_TAG="dev-${GITHUB_SHA::12}-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
           IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${IMAGE_TAG}"
+          SHORT_COMMENT_INFO="$ap-northeast-2.amazonaws.com/{ECR_REPOSITORY}:${IMAGE_TAG}"
 
+          echo "short_comment_info=${SHORT_COMMENT_INFO}" >> "$GITHUB_OUTPUT"
           echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
           echo "image_uri=${IMAGE_URI}" >> "$GITHUB_OUTPUT"
 
@@ -245,6 +247,7 @@ jobs:
         env:
           REMOTE_SCRIPT_B64: ${{ steps.remote.outputs.remote_script_b64 }}
           IMAGE_URI: ${{ steps.image.outputs.image_uri }}
+          SHORT_COMMNET_INFO: ${{steps.image.outputs.short_comment_info}}
 
         # https://docs.aws.amazon.com/cli/latest/reference/ssm/send-command.html 참고
         run: |

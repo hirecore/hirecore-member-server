@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
 import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioContentDomainException;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioContentDomainExceptionCodeCluster;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,18 +41,18 @@ public class PortfolioContent {
     ) {
         AssertionUtils.notNull(
                 id,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_CONTENT_ID_MISSING,
-                PortfolioDomainException::new
+                PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
+                PortfolioContentDomainException::new
         );
         AssertionUtils.notBlank(
                 contentJson,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_CONTENT_JSON_MISSING,
-                PortfolioDomainException::new
+                PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.CONTENT_JSON_MISSING,
+                PortfolioContentDomainException::new
         );
         AssertionUtils.notBlank(
                 contentHtml,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_CONTENT_HTML_MISSING,
-                PortfolioDomainException::new
+                PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.CONTENT_HTML_MISSING,
+                PortfolioContentDomainException::new
         );
     }
 }

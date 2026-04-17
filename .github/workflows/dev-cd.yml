@@ -278,7 +278,7 @@ jobs:
                   ]
               },
               # 콘솔/로그 상에서 이번 명령이 어떤 배포였는지 식별하기 위한 설명
-              "Comment": f"Deploy {os.environ['IMAGE_URI']}"
+              "Comment": f"Deploy {os.environ['SHORT_COMMENT_INFO']}"
           }
 
           print(json.dumps(payload))

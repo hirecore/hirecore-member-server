@@ -247,7 +247,7 @@ jobs:
         env:
           REMOTE_SCRIPT_B64: ${{ steps.remote.outputs.remote_script_b64 }}
           IMAGE_URI: ${{ steps.image.outputs.image_uri }}
-          SHORT_COMMNET_INFO: ${{steps.image.outputs.short_comment_info}}
+          SHORT_COMMENT_INFO: ${{steps.image.outputs.short_comment_info}}
 
         # https://docs.aws.amazon.com/cli/latest/reference/ssm/send-command.html 참고
         run: |

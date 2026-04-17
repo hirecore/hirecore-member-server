@@ -15,10 +15,10 @@ public class JobCategoryDomainExceptionCodeCluster {
                 "JobCategory 도메인 객체 생성에서 id 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // JOB_CATEGORY_CODE
-        JOB_CATEGORY_CODE_MISSING(
+        // CATEGORY_CODE
+        CATEGORY_CODE_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "JobCategory 도메인 객체 생성에서 jobCategoryCode 필드가 누락되었습니다.",
+                "JobCategory 도메인 객체 생성에서 categoryCode 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
         // CATEGORY_NAME
@@ -33,10 +33,10 @@ public class JobCategoryDomainExceptionCodeCluster {
                 "JobCategory 도메인 객체 생성에서 depth 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // IS_ACTIVITY
-        JOB_CATEGORY_IS_ACTIVITY_MISSING(
+        // IS_ACTIVE
+        JOB_CATEGORY_IS_ACTIVE_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "JobCategory 도메인 객체 생성에서 isActivity 필드가 누락되었습니다.",
+                "JobCategory 도메인 객체 생성에서 isActive 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
         // IS_ASSIGNABLE

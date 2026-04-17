@@ -14,10 +14,10 @@ import lombok.Getter;
 public class JobCategory extends AbstractDomainEventPublisher implements DomainAggregateRoot {
     private final Long id;
     private final Long parentId;
-    private final String jobCategoryCode;
+    private final String categoryCode;
     private final String categoryName;
     private final Integer depth;
-    private final Boolean isActivity;
+    private final Boolean isActive;
     private final Boolean isAssignable;
     private final Boolean allowsCustomInput;
     private final Integer sortOrder;
@@ -32,10 +32,10 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
     private JobCategory(
         Long id,
         Long parentId,
-        String jobCategoryCode,
+        String categoryCode,
         String categoryName,
         Integer depth,
-        Boolean isActivity,
+        Boolean isActive,
         Boolean isAssignable,
         Boolean allowsCustomInput,
         Integer sortOrder,
@@ -43,16 +43,16 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
     ) {
 
         ensureInvariants(
-                id, jobCategoryCode, categoryName, depth, isActivity,
+                id, categoryCode, categoryName, depth, isActive,
                 isAssignable, allowsCustomInput, sortOrder, auditingInfo
         );
 
         this.id = id;
         this.parentId = parentId;
-        this.jobCategoryCode = jobCategoryCode;
+        this.categoryCode = categoryCode;
         this.categoryName = categoryName;
         this.depth = depth;
-        this.isActivity = isActivity;
+        this.isActive = isActive;
         this.isAssignable = isAssignable;
         this.allowsCustomInput = allowsCustomInput;
         this.sortOrder = sortOrder;
@@ -61,10 +61,10 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
 
     private static void ensureInvariants(
             Long id,
-            String jobCategoryCode,
+            String categoryCode,
             String categoryName,
             Integer depth,
-            Boolean isActivity,
+            Boolean isActive,
             Boolean isAssignable,
             Boolean allowsCustomInput,
             Integer sortOrder,
@@ -76,8 +76,8 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
                 JobCategoryDomainException::new
         );
         AssertionUtils.notBlank(
-                jobCategoryCode,
-                JobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_CODE_MISSING,
+                categoryCode,
+                JobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.CATEGORY_CODE_MISSING,
                 JobCategoryDomainException::new
         );
         AssertionUtils.notBlank(
@@ -91,8 +91,8 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
                 JobCategoryDomainException::new
         );
         AssertionUtils.notNull(
-                isActivity,
-                JobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_IS_ACTIVITY_MISSING,
+                isActive,
+                JobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_IS_ACTIVE_MISSING,
                 JobCategoryDomainException::new
         );
         AssertionUtils.notNull(

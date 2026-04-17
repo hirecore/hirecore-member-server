@@ -36,6 +36,10 @@ public class JobCategoryJpaEntity extends AbstractPersistableAggregateRoot<Long>
     @Column(name = "is_activity", nullable = false)
     private Boolean isActivity;
 
+    @Comment("직접 매핑 가능 여부")
+    @Column(name = "is_assignable", nullable = false)
+    private Boolean isAssignable;
+
     @Comment("사용자 정의 입력 허용 여부")
     @Column(name = "allows_custom_input", nullable = false)
     private Boolean allowsCustomInput;

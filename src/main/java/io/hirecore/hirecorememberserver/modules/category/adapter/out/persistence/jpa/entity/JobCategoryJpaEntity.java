@@ -7,7 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "job_categories")
+@Table(name = "job_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -21,8 +21,8 @@ public class JobCategoryJpaEntity extends AbstractPersistableAggregateRoot<Long>
     private Long parentId;
 
     @Comment("직무 카테고리 코드")
-    @Column(name = "job_category_code", nullable = false, columnDefinition = "VARCHAR(30)")
-    private String jobCategoryCode;
+    @Column(name = "category_code", nullable = false, columnDefinition = "VARCHAR(30)")
+    private String categoryCode;
 
     @Comment("카테고리 이름")
     @Column(name = "category_name", nullable = false, columnDefinition = "VARCHAR(30)")
@@ -33,8 +33,8 @@ public class JobCategoryJpaEntity extends AbstractPersistableAggregateRoot<Long>
     private Integer depth;
 
     @Comment("활성 여부")
-    @Column(name = "is_activity", nullable = false)
-    private Boolean isActivity;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 
     @Comment("직접 매핑 가능 여부")
     @Column(name = "is_assignable", nullable = false)

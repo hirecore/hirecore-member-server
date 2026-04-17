@@ -18,6 +18,7 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
     private final String categoryName;
     private final Integer depth;
     private final Boolean isActivity;
+    private final Boolean isAssignable;
     private final Boolean allowsCustomInput;
     private final Integer sortOrder;
     private final AuditingInfo auditingInfo;
@@ -35,6 +36,7 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
         String categoryName,
         Integer depth,
         Boolean isActivity,
+        Boolean isAssignable,
         Boolean allowsCustomInput,
         Integer sortOrder,
         AuditingInfo auditingInfo
@@ -42,7 +44,7 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
 
         ensureInvariants(
                 id, jobCategoryCode, categoryName, depth, isActivity,
-                allowsCustomInput, sortOrder, auditingInfo
+                isAssignable, allowsCustomInput, sortOrder, auditingInfo
         );
 
         this.id = id;
@@ -51,6 +53,7 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
         this.categoryName = categoryName;
         this.depth = depth;
         this.isActivity = isActivity;
+        this.isAssignable = isAssignable;
         this.allowsCustomInput = allowsCustomInput;
         this.sortOrder = sortOrder;
         this.auditingInfo = auditingInfo;
@@ -62,6 +65,7 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
             String categoryName,
             Integer depth,
             Boolean isActivity,
+            Boolean isAssignable,
             Boolean allowsCustomInput,
             Integer sortOrder,
             AuditingInfo auditingInfo
@@ -89,6 +93,11 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
         AssertionUtils.notNull(
                 isActivity,
                 JobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_IS_ACTIVITY_MISSING,
+                JobCategoryDomainException::new
+        );
+        AssertionUtils.notNull(
+                isAssignable,
+                JobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_IS_ASSIGNABLE_MISSING,
                 JobCategoryDomainException::new
         );
         AssertionUtils.notNull(

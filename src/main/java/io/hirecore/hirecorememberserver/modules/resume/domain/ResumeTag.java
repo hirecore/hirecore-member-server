@@ -1,0 +1,77 @@
+package io.hirecore.hirecorememberserver.modules.resume.domain;
+
+import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeTagDomainException;
+import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeTagDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.Instant;
+
+@Getter
+public class ResumeTag {
+    private final Long id;
+    private final Long resumeId;
+    private final String userInputTag;
+    private final String normalizedTag;
+    private final Boolean isDeleted;
+    private final Instant deletedAt;
+    private final AuditingInfo auditingInfo;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private ResumeTag(
+            Long id,
+            Long resumeId,
+            String userInputTag,
+            String normalizedTag,
+            Boolean isDeleted,
+            Instant deletedAt,
+            AuditingInfo auditingInfo
+    ) {
+        ensureInvariants(id, resumeId, userInputTag, normalizedTag, auditingInfo);
+
+        this.id = id;
+        this.resumeId = resumeId;
+        this.userInputTag = userInputTag;
+        this.normalizedTag = normalizedTag;
+        this.isDeleted = isDeleted;
+        this.deletedAt = deletedAt;
+        this.auditingInfo = auditingInfo;
+    }
+
+    private static void ensureInvariants(
+            Long id,
+            Long resumeId,
+            String userInputTag,
+            String normalizedTag,
+            AuditingInfo auditingInfo
+    ) {
+        AssertionUtils.notNull(
+                id,
+                ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
+                ResumeTagDomainException::new
+        );
+        AssertionUtils.notNull(
+                resumeId,
+                ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.RESUME_ID_MISSING,
+                ResumeTagDomainException::new
+        );
+        AssertionUtils.notBlank(
+                userInputTag,
+                ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.USER_INPUT_TAG_MISSING,
+                ResumeTagDomainException::new
+        );
+        AssertionUtils.notBlank(
+                normalizedTag,
+                ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.NORMALIZED_TAG_MISSING,
+                ResumeTagDomainException::new
+        );
+        AssertionUtils.notNull(
+                auditingInfo,
+                ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_INFO_MISSING,
+                ResumeTagDomainException::new
+        );
+    }
+}

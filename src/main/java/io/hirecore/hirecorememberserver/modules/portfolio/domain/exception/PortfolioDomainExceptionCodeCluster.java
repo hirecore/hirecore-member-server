@@ -21,10 +21,10 @@ public class PortfolioDomainExceptionCodeCluster {
                 "Portfolio 도메인 객체 생성에서 memberAccountId 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // PORTFOLIO_JOB_CATEGORY_ID
-        PORTFOLIO_JOB_CATEGORY_ID_MISSING(
+        // PORTFOLIO_JOB_CATEGORY
+        PORTFOLIO_JOB_CATEGORY_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Portfolio 도메인 객체 생성에서 portfolioJobCategoryId 필드가 누락되었습니다.",
+                "Portfolio 도메인 객체 생성에서 portfolioJobCategory 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
         // TITLE

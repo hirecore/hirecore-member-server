@@ -17,9 +17,9 @@ public class ResumeJobCategoryJpaEntity extends AbstractPersistableEntity<Long> 
     @Id
     private Long id;
 
-    @Comment("이력서 ID")
-    @Column(name = "resume_id", nullable = false)
-    private Long resumeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id", nullable = false)
+    private ResumeJpaEntity resume;
 
     @Comment("직무 카테고리 ID")
     @Column(name = "job_category_id", nullable = false)

@@ -30,6 +30,10 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private final String previewSummary;
     private final PortfolioContent portfolioContent;
     private final List<ExternalLink> externalLinks;
+    /** (선택) 나만보기 메모, null가능 */
+    private final String secretNote;
+    /** (선택) 포트폴리오 태그 목록, null가능 */
+    private final List<PortfolioTag> portfolioTags;
     private final PortfolioStatus status;
     private final Boolean visibility;
     private final AuditingInfo auditingInfo;
@@ -51,6 +55,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String previewSummary,
             PortfolioContent portfolioContent,
             List<ExternalLink> externalLinks,
+            String secretNote,
+            List<PortfolioTag> portfolioTags,
             PortfolioStatus status,
             Boolean visibility,
             AuditingInfo auditingInfo
@@ -70,6 +76,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.previewSummary = previewSummary;
         this.portfolioContent = portfolioContent;
         this.externalLinks = externalLinks;
+        this.secretNote = secretNote;
+        this.portfolioTags = portfolioTags;
         this.status = status;
         this.visibility = visibility;
         this.auditingInfo = auditingInfo;

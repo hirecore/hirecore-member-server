@@ -18,9 +18,9 @@ public class CoverLetterTagJpaEntity extends AbstractPersistableEntity<Long> {
     @Id
     private Long id;
 
-    @Comment("자기소개서 ID")
-    @Column(name = "cover_letter_id", nullable = false)
-    private Long coverLetterId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cover_letter_id", nullable = false)
+    private CoverLetterJpaEntity coverLetter;
 
     @Comment("사용자 입력 태그")
     @Column(name = "user_input_tag", nullable = false, columnDefinition = "VARCHAR(50)")

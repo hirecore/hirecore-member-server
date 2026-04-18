@@ -1,6 +1,7 @@
-package io.hirecore.hirecorememberserver.modules.profile.application;
+package io.hirecore.hirecorememberserver.modules.profile.adapter.in.event;
 
-import io.hirecore.hirecorememberserver.modules.profile.application.handler.ProfileEventHandler;
+import io.hirecore.hirecorememberserver.modules.profile.application.ProfileCommandService;
+import io.hirecore.hirecorememberserver.modules.profile.application.ProfileQueryService;
 import io.hirecore.hirecorememberserver.modules.profile.domain.Profile;
 import io.hirecore.hirecorememberserver.modules.profile.domain.UserProfileDetail;
 import io.hirecore.hirecorememberserver.sharedkernel.event.MemberRegisteredEvent;
@@ -24,12 +25,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-@DisplayName("ProfileEventHandler 단위 테스트")
+@DisplayName("MemberRegisteredProfileHandler 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class ProfileEventHandlerTest {
+class MemberRegisteredProfileHandlerTest {
 
     @InjectMocks
-    private ProfileEventHandler handler;
+    private MemberRegisteredProfileHandler handler;
 
     @Mock
     private ProfileCommandService profileCommandService;

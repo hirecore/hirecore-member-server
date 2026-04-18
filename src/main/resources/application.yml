@@ -22,7 +22,9 @@ spring:
 
 hirecore:
   object-storage:
-    presigned-expiration-minutes: 5
+    aws:
+      s3:
+        presigned-expiration-minutes: 5
 
 logging:
   level:

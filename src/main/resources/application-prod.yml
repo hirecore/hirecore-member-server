@@ -58,7 +58,9 @@ hirecore:
       user-profile-url: https://kapi.kakao.com/v2/user/me
 
   object-storage:
-    endpoint: ${PROD_OBJECT_STORAGE_ENDPOINT}
-    access-key: ${PROD_OBJECT_STORAGE_ACCESS_KEY}
-    secret-key: ${PROD_OBJECT_STORAGE_SECRET_KEY}
-    path-style-access: false
+    aws:
+      region: ${PROD_OBJECT_STORAGE_REGION}
+      s3:
+        bucket: ${PROD_OBJECT_STORAGE_BUCKET}
+        endpoint: ${PROD_OBJECT_STORAGE_ENDPOINT}
+        path-style-access: false

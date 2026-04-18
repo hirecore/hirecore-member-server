@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.modules.account.application.handler;
+package io.hirecore.hirecorememberserver.modules.account.adapter.in.event;
 
 import io.hirecore.hirecorememberserver.modules.account.application.SocialAccountCommandService;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SocialAccountEventHandler {
+public class MemberRegisteredSocialAccountHandler {
 
     private final SocialAccountCommandService socialAccountCommandService;
 

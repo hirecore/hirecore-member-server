@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.modules.profile.application.handler;
+package io.hirecore.hirecorememberserver.modules.profile.adapter.in.event;
 
 import io.hirecore.hirecorememberserver.modules.profile.application.ProfileCommandService;
 import io.hirecore.hirecorememberserver.modules.profile.application.ProfileQueryService;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ProfileEventHandler {
+public class MemberRegisteredProfileHandler {
 
     private final ProfileCommandService profileCommandService;
     private final ProfileQueryService profileQueryService;

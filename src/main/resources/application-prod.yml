@@ -59,8 +59,10 @@ hirecore:
 
   object-storage:
     aws:
-      region: ${PROD_OBJECT_STORAGE_REGION}
+      region: ${PROD_OBJECT_STORAGE_AWS_REGION}
       s3:
-        bucket: ${PROD_OBJECT_STORAGE_BUCKET}
-        endpoint: ${PROD_OBJECT_STORAGE_ENDPOINT}
+        bucket: ${PROD_OBJECT_STORAGE_AWS_S3_BUCKET}
+        endpoint: ${PROD_OBJECT_STORAGE_AWS_S3_ENDPOINT}
         path-style-access: false
+      cloud-front:
+        public-base-url: ${PROD_OBJECT_STORAGE_AWS_CF_PUBLIC_BASE_URL}

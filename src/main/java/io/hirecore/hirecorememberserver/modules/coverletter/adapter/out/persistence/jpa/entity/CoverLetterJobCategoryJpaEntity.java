@@ -17,9 +17,9 @@ public class CoverLetterJobCategoryJpaEntity extends AbstractPersistableEntity<L
     @Id
     private Long id;
 
-    @Comment("자기소개서 ID")
-    @Column(name = "cover_letter_id", nullable = false)
-    private Long coverLetterId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cover_letter_id", nullable = false)
+    private CoverLetterJpaEntity coverLetter;
 
     @Comment("직무 카테고리 ID")
     @Column(name = "job_category_id", nullable = false)

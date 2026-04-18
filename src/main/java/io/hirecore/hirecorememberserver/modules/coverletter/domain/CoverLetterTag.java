@@ -13,7 +13,6 @@ import java.time.Instant;
 @Getter
 public class CoverLetterTag {
     private final Long id;
-    private final Long coverLetterId;
     private final String userInputTag;
     private final String normalizedTag;
     private final Boolean isDeleted;
@@ -23,17 +22,15 @@ public class CoverLetterTag {
     @Builder(access = AccessLevel.PRIVATE)
     private CoverLetterTag(
             Long id,
-            Long coverLetterId,
             String userInputTag,
             String normalizedTag,
             Boolean isDeleted,
             Instant deletedAt,
             AuditingInfo auditingInfo
     ) {
-        ensureInvariants(id, coverLetterId, userInputTag, normalizedTag, auditingInfo);
+        ensureInvariants(id, userInputTag, normalizedTag, auditingInfo);
 
         this.id = id;
-        this.coverLetterId = coverLetterId;
         this.userInputTag = userInputTag;
         this.normalizedTag = normalizedTag;
         this.isDeleted = isDeleted;
@@ -43,7 +40,6 @@ public class CoverLetterTag {
 
     private static void ensureInvariants(
             Long id,
-            Long coverLetterId,
             String userInputTag,
             String normalizedTag,
             AuditingInfo auditingInfo
@@ -51,11 +47,6 @@ public class CoverLetterTag {
         AssertionUtils.notNull(
                 id,
                 CoverLetterTagDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
-                CoverLetterTagDomainException::new
-        );
-        AssertionUtils.notNull(
-                coverLetterId,
-                CoverLetterTagDomainExceptionCodeCluster.HiddenDetailResponse.COVER_LETTER_ID_MISSING,
                 CoverLetterTagDomainException::new
         );
         AssertionUtils.notBlank(

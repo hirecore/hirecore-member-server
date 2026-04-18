@@ -17,9 +17,9 @@ public class PortfolioJobCategoryJpaEntity extends AbstractPersistableEntity<Lon
     @Id
     private Long id;
 
-    @Comment("포트폴리오 ID")
-    @Column(name = "portfolio_id", nullable = false)
-    private Long portfolioId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "portfolio_id", nullable = false)
+    private PortfolioJpaEntity portfolio;
 
     @Comment("직무 카테고리 ID")
     @Column(name = "job_category_id", nullable = false)

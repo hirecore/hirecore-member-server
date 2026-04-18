@@ -1,7 +1,7 @@
-package io.hirecore.hirecorememberserver.modules.account.application;
+package io.hirecore.hirecorememberserver.modules.account.adapter.in.event;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import io.hirecore.hirecorememberserver.modules.account.application.handler.SocialAccountEventHandler;
+import io.hirecore.hirecorememberserver.modules.account.application.SocialAccountCommandService;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
 import io.hirecore.hirecorememberserver.sharedkernel.event.MemberRegisteredEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
@@ -20,14 +20,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("SocialAccountEventHandler 단위 테스트")
+@DisplayName("MemberRegisteredSocialAccountHandler 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class SocialAccountEventHandlerTest {
+class MemberRegisteredSocialAccountHandlerTest {
 
     private final FixtureMonkey fm = FixtureMonkeyFactory.monkey();
 
     @InjectMocks
-    private SocialAccountEventHandler handler;
+    private MemberRegisteredSocialAccountHandler handler;
 
     @Mock
     private SocialAccountCommandService socialAccountCommandService;

@@ -18,9 +18,9 @@ public class PortfolioTagJpaEntity extends AbstractPersistableEntity<Long> {
     @Id
     private Long id;
 
-    @Comment("포트폴리오 ID")
-    @Column(name = "portfolio_id", nullable = false)
-    private Long portfolioId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "portfolio_id", nullable = false)
+    private PortfolioJpaEntity portfolio;
 
     @Comment("사용자 입력 태그")
     @Column(name = "user_input_tag", nullable = false, columnDefinition = "VARCHAR(50)")

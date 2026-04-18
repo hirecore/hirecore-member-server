@@ -11,7 +11,6 @@ import java.time.Instant;
 @Getter
 public class PortfolioJobCategory  {
     private final Long id;
-    private final Long portfolioId;
     private final Long jobCategoryId;
     private final String customJobCategoryName;
     private final Instant isDeleted;
@@ -21,17 +20,15 @@ public class PortfolioJobCategory  {
     @Builder(access = lombok.AccessLevel.PUBLIC)
     private PortfolioJobCategory(
             Long id,
-            Long portfolioId,
             Long jobCategoryId,
             String customJobCategoryName,
             Instant isDeleted,
             Instant deletedAt,
             Instant connectedAt
     ) {
-        ensureInvariants(id, portfolioId, jobCategoryId, isDeleted, connectedAt);
+        ensureInvariants(id, jobCategoryId, isDeleted, connectedAt);
 
         this.id = id;
-        this.portfolioId = portfolioId;
         this.jobCategoryId = jobCategoryId;
         this.customJobCategoryName = customJobCategoryName;
         this.isDeleted = isDeleted;
@@ -41,7 +38,6 @@ public class PortfolioJobCategory  {
 
     private static void ensureInvariants(
             Long id,
-            Long portfolioId,
             Long jobCategoryId,
             Instant isDeleted,
             Instant connectedAt
@@ -49,11 +45,6 @@ public class PortfolioJobCategory  {
         AssertionUtils.notNull(
                 id,
                 PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
-                PortfolioJobCategoryDomainException::new
-        );
-        AssertionUtils.notNull(
-                portfolioId,
-                PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_ID_MISSING,
                 PortfolioJobCategoryDomainException::new
         );
         AssertionUtils.notNull(

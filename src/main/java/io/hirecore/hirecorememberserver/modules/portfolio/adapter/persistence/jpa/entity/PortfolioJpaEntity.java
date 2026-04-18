@@ -68,6 +68,10 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Column(name = "external_link_json", columnDefinition = "json")
     private List<ExternalLink> externalLinks = new ArrayList<>();
 
+    @Comment("나만보기 메모")
+    @Column(name = "secret_note", columnDefinition = "TEXT")
+    private String secretNote;
+
     @Comment("공개 여부")
     @Column(name = "visibility", nullable = false)
     private Boolean visibility;

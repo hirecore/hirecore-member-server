@@ -13,7 +13,6 @@ import java.time.Instant;
 @Getter
 public class ResumeTag {
     private final Long id;
-    private final Long resumeId;
     private final String userInputTag;
     private final String normalizedTag;
     private final Boolean isDeleted;
@@ -23,17 +22,15 @@ public class ResumeTag {
     @Builder(access = AccessLevel.PRIVATE)
     private ResumeTag(
             Long id,
-            Long resumeId,
             String userInputTag,
             String normalizedTag,
             Boolean isDeleted,
             Instant deletedAt,
             AuditingInfo auditingInfo
     ) {
-        ensureInvariants(id, resumeId, userInputTag, normalizedTag, auditingInfo);
+        ensureInvariants(id, userInputTag, normalizedTag, auditingInfo);
 
         this.id = id;
-        this.resumeId = resumeId;
         this.userInputTag = userInputTag;
         this.normalizedTag = normalizedTag;
         this.isDeleted = isDeleted;
@@ -43,7 +40,6 @@ public class ResumeTag {
 
     private static void ensureInvariants(
             Long id,
-            Long resumeId,
             String userInputTag,
             String normalizedTag,
             AuditingInfo auditingInfo
@@ -51,11 +47,6 @@ public class ResumeTag {
         AssertionUtils.notNull(
                 id,
                 ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
-                ResumeTagDomainException::new
-        );
-        AssertionUtils.notNull(
-                resumeId,
-                ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.RESUME_ID_MISSING,
                 ResumeTagDomainException::new
         );
         AssertionUtils.notBlank(

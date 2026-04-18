@@ -11,7 +11,6 @@ import java.time.Instant;
 @Getter
 public class CoverLetterJobCategory {
     private final Long id;
-    private final Long coverLetterId;
     private final Long jobCategoryId;
     private final String customJobCategoryName;
     private final Instant isDeleted;
@@ -21,17 +20,15 @@ public class CoverLetterJobCategory {
     @Builder(access = lombok.AccessLevel.PUBLIC)
     private CoverLetterJobCategory(
             Long id,
-            Long coverLetterId,
             Long jobCategoryId,
             String customJobCategoryName,
             Instant isDeleted,
             Instant deletedAt,
             Instant connectedAt
     ) {
-        ensureInvariants(id, coverLetterId, jobCategoryId, isDeleted, connectedAt);
+        ensureInvariants(id, jobCategoryId, isDeleted, connectedAt);
 
         this.id = id;
-        this.coverLetterId = coverLetterId;
         this.jobCategoryId = jobCategoryId;
         this.customJobCategoryName = customJobCategoryName;
         this.isDeleted = isDeleted;
@@ -41,7 +38,6 @@ public class CoverLetterJobCategory {
 
     private static void ensureInvariants(
             Long id,
-            Long coverLetterId,
             Long jobCategoryId,
             Instant isDeleted,
             Instant connectedAt
@@ -49,11 +45,6 @@ public class CoverLetterJobCategory {
         AssertionUtils.notNull(
                 id,
                 CoverLetterJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
-                CoverLetterJobCategoryDomainException::new
-        );
-        AssertionUtils.notNull(
-                coverLetterId,
-                CoverLetterJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.COVER_LETTER_ID_MISSING,
                 CoverLetterJobCategoryDomainException::new
         );
         AssertionUtils.notNull(

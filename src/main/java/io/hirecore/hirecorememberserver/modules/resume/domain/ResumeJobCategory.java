@@ -11,7 +11,6 @@ import java.time.Instant;
 @Getter
 public class ResumeJobCategory {
     private final Long id;
-    private final Long resumeId;
     private final Long jobCategoryId;
     private final String customJobCategoryName;
     private final Instant isDeleted;
@@ -21,17 +20,15 @@ public class ResumeJobCategory {
     @Builder(access = lombok.AccessLevel.PUBLIC)
     private ResumeJobCategory(
             Long id,
-            Long resumeId,
             Long jobCategoryId,
             String customJobCategoryName,
             Instant isDeleted,
             Instant deletedAt,
             Instant connectedAt
     ) {
-        ensureInvariants(id, resumeId, jobCategoryId, isDeleted, connectedAt);
+        ensureInvariants(id, jobCategoryId, isDeleted, connectedAt);
 
         this.id = id;
-        this.resumeId = resumeId;
         this.jobCategoryId = jobCategoryId;
         this.customJobCategoryName = customJobCategoryName;
         this.isDeleted = isDeleted;
@@ -41,7 +38,6 @@ public class ResumeJobCategory {
 
     private static void ensureInvariants(
             Long id,
-            Long resumeId,
             Long jobCategoryId,
             Instant isDeleted,
             Instant connectedAt
@@ -49,11 +45,6 @@ public class ResumeJobCategory {
         AssertionUtils.notNull(
                 id,
                 ResumeJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
-                ResumeJobCategoryDomainException::new
-        );
-        AssertionUtils.notNull(
-                resumeId,
-                ResumeJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.RESUME_ID_MISSING,
                 ResumeJobCategoryDomainException::new
         );
         AssertionUtils.notNull(

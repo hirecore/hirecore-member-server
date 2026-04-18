@@ -15,12 +15,6 @@ public class ResumeTagDomainExceptionCodeCluster {
                 "ResumeTag 도메인 객체 생성에서 id 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // RESUME_ID
-        RESUME_ID_MISSING(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "ResumeTag 도메인 객체 생성에서 resumeId 필드가 누락되었습니다.",
-                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
-
         // USER_INPUT_TAG
         USER_INPUT_TAG_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,

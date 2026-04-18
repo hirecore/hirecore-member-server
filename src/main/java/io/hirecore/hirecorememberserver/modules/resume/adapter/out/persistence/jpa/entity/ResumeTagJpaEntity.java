@@ -18,9 +18,9 @@ public class ResumeTagJpaEntity extends AbstractPersistableEntity<Long> {
     @Id
     private Long id;
 
-    @Comment("이력서 ID")
-    @Column(name = "resume_id", nullable = false)
-    private Long resumeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id", nullable = false)
+    private ResumeJpaEntity resume;
 
     @Comment("사용자 입력 태그")
     @Column(name = "user_input_tag", nullable = false, columnDefinition = "VARCHAR(50)")

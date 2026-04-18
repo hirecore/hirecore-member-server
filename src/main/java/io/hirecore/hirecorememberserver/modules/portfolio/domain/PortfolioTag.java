@@ -13,7 +13,6 @@ import java.time.Instant;
 @Getter
 public class PortfolioTag {
     private final Long id;
-    private final Long portfolioId;
     private final String userInputTag;
     private final String normalizedTag;
     private final Boolean isDeleted;
@@ -23,17 +22,15 @@ public class PortfolioTag {
     @Builder(access = AccessLevel.PRIVATE)
     private PortfolioTag(
             Long id,
-            Long portfolioId,
             String userInputTag,
             String normalizedTag,
             Boolean isDeleted,
             Instant deletedAt,
             AuditingInfo auditingInfo
     ) {
-        ensureInvariants(id, portfolioId, userInputTag, normalizedTag, auditingInfo);
+        ensureInvariants(id, userInputTag, normalizedTag, auditingInfo);
 
         this.id = id;
-        this.portfolioId = portfolioId;
         this.userInputTag = userInputTag;
         this.normalizedTag = normalizedTag;
         this.isDeleted = isDeleted;
@@ -43,7 +40,6 @@ public class PortfolioTag {
 
     private static void ensureInvariants(
             Long id,
-            Long portfolioId,
             String userInputTag,
             String normalizedTag,
             AuditingInfo auditingInfo
@@ -51,11 +47,6 @@ public class PortfolioTag {
         AssertionUtils.notNull(
                 id,
                 PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
-                PortfolioTagDomainException::new
-        );
-        AssertionUtils.notNull(
-                portfolioId,
-                PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_ID_MISSING,
                 PortfolioTagDomainException::new
         );
         AssertionUtils.notBlank(

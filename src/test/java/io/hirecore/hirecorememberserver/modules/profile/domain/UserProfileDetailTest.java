@@ -20,7 +20,7 @@ class UserProfileDetailTest {
             String email = "user@example.com";
 
             // when
-            UserProfileDetail profile = UserProfileDetail.builder().marketingEmail(email).build();
+            UserProfileDetail profile = UserProfileDetail.builder().profileId(1L).marketingEmail(email).build();
 
             // then
             assertThat(profile.getMarketingEmail()).isEqualTo(email);
@@ -30,7 +30,7 @@ class UserProfileDetailTest {
         @DisplayName("빈 문자열(마케팅 이메일 미동의)로 UserProfileDetail을 생성할 수 있다")
         void should_create_user_profile_with_empty_marketing_email() {
             // when
-            UserProfileDetail profile = UserProfileDetail.builder().marketingEmail(null).build();
+            UserProfileDetail profile = UserProfileDetail.builder().profileId(1L).marketingEmail(null).build();
 
             // then
             assertThat(profile.getMarketingEmail()).isNull();

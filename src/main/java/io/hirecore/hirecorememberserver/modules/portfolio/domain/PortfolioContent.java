@@ -12,7 +12,7 @@ public class PortfolioContent {
     /**
      * Portfolio Aggregate의 식별자와 동일한 값을 사용합니다 (JPA @MapsId 매핑).
      */
-    private final Long id;
+    private final Long portfolioId;
     private final String contentJson;
     private final String contentHtml;
 
@@ -23,25 +23,25 @@ public class PortfolioContent {
      */
     @Builder(access = AccessLevel.PUBLIC)
     private PortfolioContent(
-            Long id,
+            Long portfolioId,
             String contentJson,
             String contentHtml
     ) {
-        ensureInvariants(id, contentJson, contentHtml);
+        ensureInvariants(portfolioId, contentJson, contentHtml);
 
-        this.id = id;
+        this.portfolioId = portfolioId;
         this.contentJson = contentJson;
         this.contentHtml = contentHtml;
     }
 
     private static void ensureInvariants(
-            Long id,
+            Long portfolioId,
             String contentJson,
             String contentHtml
     ) {
         AssertionUtils.notNull(
-                id,
-                PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
+                portfolioId,
+                PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_ID_MISSING,
                 PortfolioContentDomainException::new
         );
         AssertionUtils.notBlank(

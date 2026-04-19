@@ -73,15 +73,16 @@ public class Profile extends AbstractDomainEventPublisher implements DomainAggre
             String phoneNumber,
             String marketingEmail
     ) {
+        Long profileId = TsidCreator.getTsid().toLong();
         return Profile.builder()
-                .id(TsidCreator.getTsid().toLong())
+                .id(profileId)
                 .memberAccountId(memberAccountId)
                 .publicCodeInfo(publicCodeInfo)
                 .nickname(nickname)
                 .profileImageInfo(ProfileImageInfo.init())
                 .phoneNumber(phoneNumber)
                 .auditingInfo(AuditingInfo.create())
-                .profileDetail(UserProfileDetail.create(marketingEmail))
+                .profileDetail(UserProfileDetail.create(profileId, marketingEmail))
                 .build();
     }
 

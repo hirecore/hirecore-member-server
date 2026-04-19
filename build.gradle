@@ -67,8 +67,15 @@ dependencies {
 	// 로깅 (Logstash 인코더 - ELK 스택 연동용)
 	implementation 'net.logstash.logback:logstash-logback-encoder:9.0'
 
-	//
+	// TSID (도메인 식별자 값 할당 라이브러리)
 	implementation 'com.github.f4b6a3:tsid-creator:5.2.6'
+
+	// ============ aws ============
+	//AWS SDK for Java 2.42.36 (https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/home.html)
+	implementation(platform("software.amazon.awssdk:bom:2.42.36"))
+	// S3 라이브러리
+	implementation 'software.amazon.awssdk:s3'
+
 
 	// =================================================================================
 	// 4. 테스트 & 문서화 전략 (Testing & Documentation Strategy)
@@ -96,6 +103,8 @@ dependencies {
 
 	// Junit Launcher: Junit실행기
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
 }
 
 tasks.named('test') {

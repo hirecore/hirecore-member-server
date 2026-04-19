@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public final class UserProfileDetail implements ProfileDetail {
+    private final Long profileId;
     private final String marketingEmail;
 
     /**
@@ -15,18 +16,20 @@ public final class UserProfileDetail implements ProfileDetail {
      */
     @Builder(access = AccessLevel.PUBLIC)
     private UserProfileDetail(
+            Long profileId,
             String marketingEmail
     ) {
-        ensureInvariants(marketingEmail);
+        ensureInvariants(profileId);
 
+        this.profileId = profileId;
         this.marketingEmail = marketingEmail;
     }
 
-    public static UserProfileDetail create(String marketingEmail) {
-        return UserProfileDetail.builder().marketingEmail(marketingEmail).build();
+    public static UserProfileDetail create(Long profileId, String marketingEmail) {
+        return UserProfileDetail.builder().profileId(profileId).marketingEmail(marketingEmail).build();
     }
 
     // VALIDATION
-    private static void ensureInvariants(String marketingEmail) {
+    private static void ensureInvariants(Long profileId) {
     }
 }

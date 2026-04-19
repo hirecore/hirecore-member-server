@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.common.utils;
 
 import io.hirecore.hirecorememberserver.common.adapter.out.jwt.properties.JwtProperties;
-import io.hirecore.hirecorememberserver.common.properties.AuthCookieProperties;
+import io.hirecore.hirecorememberserver.common.adapter.in.security.properties.AuthCookieProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.ResponseCookie;

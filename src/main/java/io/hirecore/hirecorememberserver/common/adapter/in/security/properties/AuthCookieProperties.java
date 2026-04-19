@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.common.properties;
+package io.hirecore.hirecorememberserver.common.adapter.in.security.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

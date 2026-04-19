@@ -5,26 +5,26 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-public class PortfolioContentDomainExceptionCodeCluster {
+public class PortfolioInterestDomainExceptionCodeCluster {
     @Getter
     @RequiredArgsConstructor
     public enum HiddenDetailResponse implements DomainExceptionCode {
-        // PORTFOLIO_ID
-        PORTFOLIO_ID_MISSING(
+        // ID
+        ID_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "PortfolioContent 도메인 객체 생성에서 portfolioId 필드가 누락되었습니다.",
+                "PortfolioInterest 도메인 객체 생성에서 id 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // CONTENT_JSON
-        CONTENT_JSON_MISSING(
+        // MEMBER_ACCOUNT_ID
+        MEMBER_ACCOUNT_ID_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "PortfolioContent 도메인 객체 생성에서 contentJson 필드가 누락되었습니다.",
+                "PortfolioInterest 도메인 객체 생성에서 memberAccountId 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // CONTENT_HTML
-        CONTENT_HTML_MISSING(
+        // INTEREST_AT
+        INTEREST_AT_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "PortfolioContent 도메인 객체 생성에서 contentHtml 필드가 누락되었습니다.",
+                "PortfolioInterest 도메인 객체 생성에서 interestAt 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요.");
 
         private final HttpStatus httpStatus;

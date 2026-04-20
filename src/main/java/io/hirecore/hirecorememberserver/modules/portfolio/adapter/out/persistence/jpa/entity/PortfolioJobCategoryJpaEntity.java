@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.modules.portfolio.adapter.persistence.jpa.entity;
+package io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity;
 
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.AbstractPersistableEntity;
 import jakarta.persistence.*;

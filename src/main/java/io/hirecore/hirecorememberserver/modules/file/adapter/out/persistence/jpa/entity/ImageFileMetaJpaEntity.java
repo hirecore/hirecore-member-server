@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.modules.file.adapter.persistence.jpa.entity;
+package io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jpa.entity;
 
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;

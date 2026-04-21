@@ -27,8 +27,8 @@ public class UserStorageUsageJpaEntity extends AbstractPersistableAggregateRoot<
     private Long memberAccountId;
 
     @Comment("현재 사용 중인 스토리지 용량 (바이트)")
-    @Column(name = "used_quota_byte", nullable = false)
-    private Long usedQuotaByte;
+    @Column(name = "used_quota_bytes", nullable = false)
+    private Long usedQuotaBytes;
 
     @Embedded
     private AuditingJpaInfo auditingInfo;

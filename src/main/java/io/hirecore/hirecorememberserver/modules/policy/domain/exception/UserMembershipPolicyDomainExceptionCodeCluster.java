@@ -38,10 +38,10 @@ public class UserMembershipPolicyDomainExceptionCodeCluster {
                 "UserMembershipPolicy 객체 생성에서 amount 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // STORAGE_QUOTA_BYTE
-        STORAGE_QUOTA_BYTE_MISSING(
+        // STORAGE_QUOTA_BYTES
+        STORAGE_QUOTA_BYTES_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "UserMembershipPolicy 객체 생성에서 storageQuotaByte 필드가 누락되었습니다.",
+                "UserMembershipPolicy 객체 생성에서 storageQuotaBytes 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
         // ACTIVE

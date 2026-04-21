@@ -52,7 +52,7 @@ public class ImageFileMetaJpaEntity extends AbstractPersistableAggregateRoot<Lon
     @Comment("MIME 타입")
     @Enumerated(EnumType.STRING)
     @Column(name = "content_type", nullable = false, columnDefinition = "VARCHAR(50)")
-    private ContentType contentType;
+    private MimeType mimeType;
 
     @Comment("파일 확장자")
     @Enumerated(EnumType.STRING)
@@ -60,8 +60,8 @@ public class ImageFileMetaJpaEntity extends AbstractPersistableAggregateRoot<Lon
     private FileExtension fileExtension;
 
     @Comment("파일 크기 (바이트)")
-    @Column(name = "filesize_byte", nullable = false)
-    private Long filesizeByte;
+    @Column(name = "file_size_bytes", nullable = false)
+    private Long fileSizeBytes;
 
     @Comment("이미지 가로 해상도")
     @Column(name = "width", nullable = false)

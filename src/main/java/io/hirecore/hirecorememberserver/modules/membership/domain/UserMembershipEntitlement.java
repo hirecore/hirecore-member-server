@@ -32,7 +32,7 @@ public class UserMembershipEntitlement extends AbstractDomainEventPublisher impl
     private final Long memberAccountId;
     private final Long userMembershipPolicyId;
     private final MembershipStatus status;
-    private final Long storageQuotaByteSnapshot;
+    private final Long storageQuotaBytesSnapshot;
     private final String membershipNameSnapshot;
     private final String membershipContentSnapshot;
     private final AssignmentReason assignmentReason;
@@ -46,7 +46,7 @@ public class UserMembershipEntitlement extends AbstractDomainEventPublisher impl
             Long memberAccountId,
             Long userMembershipPolicyId,
             MembershipStatus status,
-            Long storageQuotaByteSnapshot,
+            Long storageQuotaBytesSnapshot,
             String membershipNameSnapshot,
             String membershipContentSnapshot,
             AssignmentReason assignmentReason,
@@ -58,7 +58,7 @@ public class UserMembershipEntitlement extends AbstractDomainEventPublisher impl
         this.memberAccountId = memberAccountId;
         this.userMembershipPolicyId = userMembershipPolicyId;
         this.status = status;
-        this.storageQuotaByteSnapshot = storageQuotaByteSnapshot;
+        this.storageQuotaBytesSnapshot = storageQuotaBytesSnapshot;
         this.membershipNameSnapshot = membershipNameSnapshot;
         this.membershipContentSnapshot = membershipContentSnapshot;
         this.assignmentReason = assignmentReason;

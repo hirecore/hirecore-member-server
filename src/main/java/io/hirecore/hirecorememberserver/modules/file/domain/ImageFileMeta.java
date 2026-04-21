@@ -53,10 +53,10 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
     private final String objectKey;
     private final String originalFileName;
     /** MIME TYPE */
-    private final ContentType contentType;
+    private final MimeType mimeType;
     /** 파일의 확장자 */
     private final FileExtension fileExtension;
-    private final Long filesizeByte;
+    private final Long fileSizeBytes;
     private final Integer width;
     private final Integer height;
     private final UploadStatus uploadStatus;
@@ -74,9 +74,9 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
             String bucketName,
             String objectKey,
             String originalFileName,
-            ContentType contentType,
+            MimeType mimeType,
             FileExtension fileExtension,
-            Long filesizeByte,
+            Long fileSizeBytes,
             Integer width,
             Integer height,
             UploadStatus uploadStatus,
@@ -86,8 +86,8 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
     ) {
         ensureInvariants(
                 id, memberAccountId, domainType, purpose, storageProvider,
-                bucketName, objectKey, originalFileName, contentType, fileExtension,
-                filesizeByte, width, height, uploadStatus, auditingInfo
+                bucketName, objectKey, originalFileName, mimeType, fileExtension,
+                fileSizeBytes, width, height, uploadStatus, auditingInfo
         );
 
         this.id = id;
@@ -98,9 +98,9 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.originalFileName = originalFileName;
-        this.contentType = contentType;
+        this.mimeType = mimeType;
         this.fileExtension = fileExtension;
-        this.filesizeByte = filesizeByte;
+        this.fileSizeBytes = fileSizeBytes;
         this.width = width;
         this.height = height;
         this.uploadStatus = uploadStatus;
@@ -118,9 +118,9 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
             String bucketName,
             String objectKey,
             String originalFileName,
-            ContentType contentType,
+            MimeType mimeType,
             FileExtension fileExtension,
-            Long filesizeByte,
+            Long fileSizeBytes,
             Integer width,
             Integer height,
             UploadStatus uploadStatus,
@@ -167,7 +167,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
                 ImageFileMetaDomainException::new
         );
         AssertionUtils.notNull(
-                contentType,
+                mimeType,
                 ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.CONTENT_TYPE_MISSING,
                 ImageFileMetaDomainException::new
         );
@@ -177,8 +177,8 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
                 ImageFileMetaDomainException::new
         );
         AssertionUtils.notNull(
-                filesizeByte,
-                ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.FILESIZE_BYTE_MISSING,
+                fileSizeBytes,
+                ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.FILE_SIZE_BYTES_MISSING,
                 ImageFileMetaDomainException::new
         );
         AssertionUtils.notNull(

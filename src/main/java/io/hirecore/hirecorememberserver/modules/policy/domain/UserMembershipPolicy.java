@@ -17,7 +17,7 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
     private final String name;
     private final String content;
     private final Long amount;
-    private final Long storageQuotaByte;
+    private final Long storageQuotaBytes;
     private final Boolean active;
     private final AuditingInfo auditingInfo;
 
@@ -28,18 +28,18 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
             String name,
             String content,
             Long amount,
-            Long storageQuotaByte,
+            Long storageQuotaBytes,
             Boolean active,
             AuditingInfo auditingInfo
     ){
-        ensureInvariants(id, code, name, content, amount, storageQuotaByte, active, auditingInfo);
+        ensureInvariants(id, code, name, content, amount, storageQuotaBytes, active, auditingInfo);
 
         this.id = id;
         this.code = code;
         this.name = name;
         this.content = content;
         this.amount = amount;
-        this.storageQuotaByte = storageQuotaByte;
+        this.storageQuotaBytes = storageQuotaBytes;
         this.active = active;
         this.auditingInfo = auditingInfo;
     }
@@ -50,7 +50,7 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
             String name,
             String content,
             Long amount,
-            Long storageQuotaByte,
+            Long storageQuotaBytes,
             Boolean active,
             AuditingInfo auditingInfo
     ) {
@@ -80,8 +80,8 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
                 UserMembershipPolicyDomainException::new
         );
         AssertionUtils.notNull(
-                storageQuotaByte,
-                UserMembershipPolicyDomainExceptionCodeCluster.HiddenDetailResponse.STORAGE_QUOTA_BYTE_MISSING,
+                storageQuotaBytes,
+                UserMembershipPolicyDomainExceptionCodeCluster.HiddenDetailResponse.STORAGE_QUOTA_BYTES_MISSING,
                 UserMembershipPolicyDomainException::new
         );
         AssertionUtils.notNull(

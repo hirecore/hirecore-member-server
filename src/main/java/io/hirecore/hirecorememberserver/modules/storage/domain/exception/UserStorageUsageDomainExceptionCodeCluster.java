@@ -22,15 +22,15 @@ public class UserStorageUsageDomainExceptionCodeCluster {
                 "UserStorageUsage 도메인 객체 생성에서 memberAccountId 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // USED_QUOTA_BYTE
-        USED_QUOTA_BYTE_MISSING(
+        // USED_QUOTA_BYTES
+        USED_QUOTA_BYTES_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "UserStorageUsage 도메인 객체 생성에서 usedQuotaByte 필드가 누락되었습니다.",
+                "UserStorageUsage 도메인 객체 생성에서 usedQuotaBytes 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        USED_QUOTA_BYTE_NEGATIVE(
+        USED_QUOTA_BYTES_NEGATIVE(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "UserStorageUsage 도메인 객체 생성에서 usedQuotaByte 필드가 음수입니다.",
+                "UserStorageUsage 도메인 객체 생성에서 usedQuotaBytes 필드가 음수입니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요.")
         ;
 

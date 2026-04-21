@@ -69,10 +69,10 @@ public class ImageFileMetaDomainExceptionCodeCluster {
                 "ImageFileMeta 도메인 객체 생성에서 fileExtension 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // FILESIZE_BYTE
-        FILESIZE_BYTE_MISSING(
+        // FILE_SIZE_BYTES
+        FILE_SIZE_BYTES_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "ImageFileMeta 도메인 객체 생성에서 filesizeByte 필드가 누락되었습니다.",
+                "ImageFileMeta 도메인 객체 생성에서 fileSizeBytes 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
         // WIDTH

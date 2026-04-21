@@ -48,13 +48,13 @@ public class UserStorageUsageLog {
      *
      * <p>양수는 증가, 음수는 감소를 의미합니다.</p>
      */
-    private final Long changeByte;
+    private final Long changeBytes;
 
     /** 변경 반영 직전의 총 사용량(byte)입니다. */
-    private final Long beforeUsedQuotaByte;
+    private final Long beforeUsedQuotaBytes;
 
     /** 변경 반영 직후의 총 사용량(byte)입니다. */
-    private final Long afterUsedQuotaByte;
+    private final Long afterUsedQuotaBytes;
 
     /**
      * 동일 요청의 중복 반영을 방지하기 위한 멱등 키입니다.
@@ -74,9 +74,9 @@ public class UserStorageUsageLog {
      * @param usageChangeReason 사용량 변경을 발생시킨 행위 유형
      * @param resourceKind 사용량 변경 대상 리소스 유형
      * @param resourceKindId 사용량 변경 대상 리소스 식별자
-     * @param changeByte 이번 변경으로 증감된 사용량(byte)
-     * @param beforeUsedQuotaByte 변경 반영 직전 총 사용량(byte)
-     * @param afterUsedQuotaByte 변경 반영 직후 총 사용량(byte)
+     * @param changeBytes 이번 변경으로 증감된 사용량(byte)
+     * @param beforeUsedQuotaBytes 변경 반영 직전 총 사용량(byte)
+     * @param afterUsedQuotaBytes 변경 반영 직후 총 사용량(byte)
      * @param idempotencyKey 동일 요청 중복 반영 방지 키
      * @param auditingInfo 감사 정보
      */
@@ -87,16 +87,16 @@ public class UserStorageUsageLog {
             UsageChangeReason usageChangeReason,
             ResourceKind resourceKind,
             Long resourceKindId,
-            Long changeByte,
-            Long beforeUsedQuotaByte,
-            Long afterUsedQuotaByte,
+            Long changeBytes,
+            Long beforeUsedQuotaBytes,
+            Long afterUsedQuotaBytes,
             String idempotencyKey,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
                 id, memberAccountId, usageChangeReason, resourceKind,
-                resourceKindId, changeByte, beforeUsedQuotaByte,
-                afterUsedQuotaByte, idempotencyKey, auditingInfo
+                resourceKindId, changeBytes, beforeUsedQuotaBytes,
+                afterUsedQuotaBytes, idempotencyKey, auditingInfo
         );
 
         this.id = id;
@@ -104,9 +104,9 @@ public class UserStorageUsageLog {
         this.usageChangeReason = usageChangeReason;
         this.resourceKind = resourceKind;
         this.resourceKindId = resourceKindId;
-        this.changeByte = changeByte;
-        this.beforeUsedQuotaByte = beforeUsedQuotaByte;
-        this.afterUsedQuotaByte = afterUsedQuotaByte;
+        this.changeBytes = changeBytes;
+        this.beforeUsedQuotaBytes = beforeUsedQuotaBytes;
+        this.afterUsedQuotaBytes = afterUsedQuotaBytes;
         this.idempotencyKey = idempotencyKey;
         this.auditingInfo = auditingInfo;
     }
@@ -117,9 +117,9 @@ public class UserStorageUsageLog {
             UsageChangeReason usageChangeReason,
             ResourceKind resourceKind,
             Long resourceKindId,
-            Long changeByte,
-            Long beforeUsedQuotaByte,
-            Long afterUsedQuotaByte,
+            Long changeBytes,
+            Long beforeUsedQuotaBytes,
+            Long afterUsedQuotaBytes,
             String idempotencyKey,
             AuditingInfo auditingInfo
     ) {
@@ -149,28 +149,28 @@ public class UserStorageUsageLog {
                 UserStorageUsageLogDomainException::new
         );
         AssertionUtils.notNull(
-                changeByte,
-                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.CHANGE_BYTE_MISSING,
+                changeBytes,
+                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.CHANGE_BYTES_MISSING,
                 UserStorageUsageLogDomainException::new
         );
         AssertionUtils.notNull(
-                beforeUsedQuotaByte,
-                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.BEFORE_USED_QUOTA_BYTE_MISSING,
+                beforeUsedQuotaBytes,
+                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.BEFORE_USED_QUOTA_BYTES_MISSING,
                 UserStorageUsageLogDomainException::new
         );
         AssertionUtils.isTrue(
-                beforeUsedQuotaByte >= 0,
-                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.BEFORE_USED_QUOTA_BYTE_NEGATIVE,
+                beforeUsedQuotaBytes >= 0,
+                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.BEFORE_USED_QUOTA_BYTES_NEGATIVE,
                 UserStorageUsageLogDomainException::new
         );
         AssertionUtils.notNull(
-                afterUsedQuotaByte,
-                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.AFTER_USED_QUOTA_BYTE_MISSING,
+                afterUsedQuotaBytes,
+                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.AFTER_USED_QUOTA_BYTES_MISSING,
                 UserStorageUsageLogDomainException::new
         );
         AssertionUtils.isTrue(
-                afterUsedQuotaByte >= 0,
-                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.AFTER_USED_QUOTA_BYTE_NEGATIVE,
+                afterUsedQuotaBytes >= 0,
+                UserStorageUsageLogDomainExceptionCodeCluster.HiddenDetailResponse.AFTER_USED_QUOTA_BYTES_NEGATIVE,
                 UserStorageUsageLogDomainException::new
         );
         AssertionUtils.notBlank(

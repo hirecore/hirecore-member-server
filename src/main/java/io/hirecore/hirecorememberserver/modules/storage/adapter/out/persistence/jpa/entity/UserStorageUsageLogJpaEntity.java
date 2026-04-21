@@ -40,16 +40,16 @@ public class UserStorageUsageLogJpaEntity extends AbstractPersistableEntity<Long
     private Long resourceKindId;
 
     @Comment("변경 용량 (바이트, 양수=증가/음수=감소)")
-    @Column(name = "change_byte", nullable = false)
-    private Long changeByte;
+    @Column(name = "change_bytes", nullable = false)
+    private Long changeBytes;
 
     @Comment("변경 전 총 사용량 (바이트)")
-    @Column(name = "before_used_quota_byte", nullable = false)
-    private Long beforeUsedQuotaByte;
+    @Column(name = "before_used_quota_bytes", nullable = false)
+    private Long beforeUsedQuotaBytes;
 
     @Comment("변경 후 총 사용량 (바이트)")
-    @Column(name = "after_used_quota_byte", nullable = false)
-    private Long afterUsedQuotaByte;
+    @Column(name = "after_used_quota_bytes", nullable = false)
+    private Long afterUsedQuotaBytes;
 
     @Comment("멱등 키 (중복 처리 방지)")
     @Column(name = "idempotency_key", nullable = false, unique = true)

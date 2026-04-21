@@ -35,8 +35,8 @@ public class UserMembershipEntitlementJpaEntity extends AbstractPersistableAggre
     private MembershipStatus status;
 
     @Comment("권리 부여 시점의 스토리지 바이트 용량")
-    @Column(name = "storage_quota_byte_snapshot", nullable = false)
-    private Long storageQuotaByteSnapshot;
+    @Column(name = "storage_quota_bytes_snapshot", nullable = false)
+    private Long storageQuotaBytesSnapshot;
 
     @Comment("권리 부여 시점의 멤버십 이름")
     @Column(name = "membership_name_snapshot", nullable = false)

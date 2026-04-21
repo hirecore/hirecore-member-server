@@ -36,8 +36,8 @@ public class UserMembershipPolicyJpaEntity extends AbstractPersistableAggregateR
     private Long amount;
 
     @Comment("스토리지 할당량 (바이트)")
-    @Column(name = "storage_quota_byte", nullable = false)
-    private Long storageQuotaByte;
+    @Column(name = "storage_quota_bytes", nullable = false)
+    private Long storageQuotaBytes;
 
     @Comment("활성화 여부")
     @Column(name = "active", nullable = false)

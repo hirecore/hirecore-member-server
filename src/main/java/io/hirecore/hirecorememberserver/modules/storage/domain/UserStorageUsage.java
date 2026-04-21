@@ -16,7 +16,7 @@ public class UserStorageUsage extends AbstractDomainEventPublisher implements Do
     private final Long id;
     private final Long version;
     private final Long memberAccountId;
-    private final Long usedQuotaByte;
+    private final Long usedQuotaBytes;
     private final AuditingInfo auditingInfo;
 
     @Builder(access = AccessLevel.PUBLIC)
@@ -24,22 +24,22 @@ public class UserStorageUsage extends AbstractDomainEventPublisher implements Do
             Long id,
             Long version,
             Long memberAccountId,
-            Long usedQuotaByte,
+            Long usedQuotaBytes,
             AuditingInfo auditingInfo
     ) {
-        ensureInvariants(id, memberAccountId, usedQuotaByte, auditingInfo);
+        ensureInvariants(id, memberAccountId, usedQuotaBytes, auditingInfo);
 
         this.id = id;
         this.version = version;
         this.memberAccountId = memberAccountId;
-        this.usedQuotaByte = usedQuotaByte;
+        this.usedQuotaBytes = usedQuotaBytes;
         this.auditingInfo = auditingInfo;
     }
 
     private static void ensureInvariants(
             Long id,
             Long memberAccountId,
-            Long usedQuotaByte,
+            Long usedQuotaBytes,
             AuditingInfo auditingInfo
     ) {
         AssertionUtils.notNull(
@@ -53,13 +53,13 @@ public class UserStorageUsage extends AbstractDomainEventPublisher implements Do
                 UserStorageUsageDomainException::new
         );
         AssertionUtils.notNull(
-                usedQuotaByte,
-                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTE_MISSING,
+                usedQuotaBytes,
+                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTES_MISSING,
                 UserStorageUsageDomainException::new
         );
         AssertionUtils.isTrue(
-                usedQuotaByte >= 0,
-                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTE_NEGATIVE,
+                usedQuotaBytes >= 0,
+                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTES_NEGATIVE,
                 UserStorageUsageDomainException::new
         );
         AssertionUtils.notNull(

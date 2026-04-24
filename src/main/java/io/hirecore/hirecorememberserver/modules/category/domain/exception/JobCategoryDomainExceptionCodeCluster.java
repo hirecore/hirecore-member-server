@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.category.domain.exception;
 
-import io.hirecore.hirecorememberserver.common.domain.exception.DomainExceptionCode;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

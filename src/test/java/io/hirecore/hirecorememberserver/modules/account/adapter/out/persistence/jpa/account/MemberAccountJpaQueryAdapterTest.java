@@ -6,7 +6,7 @@ import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.mapper.MemberAccountJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.MemberAccountJpaQueryRepository;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.support.FixtureMonkeyFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

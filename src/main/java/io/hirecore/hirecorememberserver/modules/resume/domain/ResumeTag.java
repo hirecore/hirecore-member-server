@@ -1,9 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.resume.domain;
 
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeTagDomainException;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeTagDomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

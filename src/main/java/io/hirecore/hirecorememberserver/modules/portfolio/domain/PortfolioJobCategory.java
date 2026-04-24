@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioJobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioJobCategoryDomainExceptionCodeCluster;
 import lombok.Builder;

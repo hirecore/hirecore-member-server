@@ -1,9 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.mapper;
 
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.entity.SocialAccountJpaEntity;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

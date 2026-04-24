@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.in.web;
 
-import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
-import io.hirecore.hirecorememberserver.common.utils.AuthCookieUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
+import io.hirecore.hirecorememberserver.common.security.utils.AuthCookieUtils;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.request.SocialLoginApiRequest;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapper;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;

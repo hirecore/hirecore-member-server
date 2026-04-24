@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.in.web;
 
-import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
+import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.response.UserProfileSummaryApiResponse;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileQueryWebMapper;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.GetUserProfileSummaryUseCase;

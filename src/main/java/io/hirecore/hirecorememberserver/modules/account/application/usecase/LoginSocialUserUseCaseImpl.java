@@ -14,7 +14,7 @@ import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 import io.hirecore.hirecorememberserver.modules.account.application.mapper.SocialUserProfileInfoMapper;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.SocialUserProfileInfo;
-import io.hirecore.hirecorememberserver.sharedkernel.event.MemberRegisteredEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;

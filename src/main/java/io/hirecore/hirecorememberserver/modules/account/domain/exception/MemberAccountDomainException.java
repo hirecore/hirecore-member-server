@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.account.domain.exception;
 
-import io.hirecore.hirecorememberserver.common.domain.exception.BaseDomainException;
-import io.hirecore.hirecorememberserver.common.domain.exception.DomainExceptionCode;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.BaseDomainException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCode;
 
 import java.util.Map;
 

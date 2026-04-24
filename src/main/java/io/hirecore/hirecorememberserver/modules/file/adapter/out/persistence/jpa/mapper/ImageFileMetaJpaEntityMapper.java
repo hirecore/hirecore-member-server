@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jpa.mapper;
 
-import io.hirecore.hirecorememberserver.common.mapper.GlobalMapStructConfig;
+import io.hirecore.hirecorememberserver.common.config.GlobalMapStructConfig;
 import io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jpa.entity.ImageFileMetaJpaEntity;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import org.mapstruct.Mapper;

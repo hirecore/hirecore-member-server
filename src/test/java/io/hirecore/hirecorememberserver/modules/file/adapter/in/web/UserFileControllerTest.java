@@ -2,10 +2,10 @@ package io.hirecore.hirecorememberserver.modules.file.adapter.in.web;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.hirecore.hirecorememberserver.common.adapter.in.SwaggerDocs;
-import io.hirecore.hirecorememberserver.common.adapter.in.WebMvcSecuritySupport;
-import io.hirecore.hirecorememberserver.common.adapter.in.config.StrictJsonConfig;
-import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
+import io.hirecore.hirecorememberserver.common.web.SwaggerDocs;
+import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
+import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
+import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlMapperImpl;
 import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationException;
 import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationExceptionCodeCluster;

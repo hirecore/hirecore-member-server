@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.in.event;
 
 import io.hirecore.hirecorememberserver.modules.account.application.SocialAccountCommandService;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
-import io.hirecore.hirecorememberserver.sharedkernel.event.MemberRegisteredEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

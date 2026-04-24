@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper;
 
-import io.hirecore.hirecorememberserver.common.mapper.GlobalMapStructConfig;
+import io.hirecore.hirecorememberserver.common.config.GlobalMapStructConfig;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.request.ImagePresignedPutUrlApiRequest;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.response.ImagePresignedPutUrlApiResponse;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.request.ImagePresignedPutUrlCommand;

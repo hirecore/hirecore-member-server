@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.application.exception;
 
-import io.hirecore.hirecorememberserver.common.application.exception.ApplicationExceptionCode;
+import io.hirecore.hirecorememberserver.sharedkernel.application.exception.ApplicationExceptionCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

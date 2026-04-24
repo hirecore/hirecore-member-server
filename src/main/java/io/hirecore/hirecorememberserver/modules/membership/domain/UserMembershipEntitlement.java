@@ -2,9 +2,9 @@ package io.hirecore.hirecorememberserver.modules.membership.domain;
 
 import io.hirecore.hirecorememberserver.modules.membership.domain.vo.AssignmentReason;
 import io.hirecore.hirecorememberserver.modules.membership.domain.vo.MembershipStatus;
-import io.hirecore.hirecorememberserver.sharedkernel.AbstractDomainEventPublisher;
-import io.hirecore.hirecorememberserver.sharedkernel.DomainAggregateRoot;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import lombok.Builder;
 import lombok.Getter;
 

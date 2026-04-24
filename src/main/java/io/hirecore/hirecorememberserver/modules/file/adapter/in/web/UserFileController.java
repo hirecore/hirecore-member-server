@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.web;
 
-import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
+import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.request.ImagesPresignedPutUrlApiRequest;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.response.ImagePresignedPutUrlApiResponse;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.response.ImagesPresignedPutUrlApiResponse;

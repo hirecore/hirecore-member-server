@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.profile.domain.vo;
 
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.profile.domain.exception.ProfileDomainException;
 import io.hirecore.hirecorememberserver.modules.profile.domain.exception.ProfileDomainExceptionCodeCluster;
 

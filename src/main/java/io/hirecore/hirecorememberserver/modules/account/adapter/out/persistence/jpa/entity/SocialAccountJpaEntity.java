@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.entity;
 
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.AbstractPersistableAggregateRoot;
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

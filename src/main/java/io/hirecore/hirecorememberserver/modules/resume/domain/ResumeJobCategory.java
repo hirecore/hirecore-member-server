@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.resume.domain;
 
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeJobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeJobCategoryDomainExceptionCodeCluster;
 import lombok.Builder;

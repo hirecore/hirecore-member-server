@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.coverletter.domain;
 
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.coverletter.domain.exception.CoverLetterJobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.coverletter.domain.exception.CoverLetterJobCategoryDomainExceptionCodeCluster;
 import lombok.Builder;

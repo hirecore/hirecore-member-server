@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa;
 
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.config.JpaAuditingConfig;
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.vo.AuditingJpaInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.JpaAuditingConfig;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.ProfileJpaEntity;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.vo.ProfileImageJpaInfo;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.vo.PublicCodeJpaInfo;

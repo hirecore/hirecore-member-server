@@ -4,8 +4,8 @@ import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberA
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberAccountDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.SocialUserProfileInfo;
-import io.hirecore.hirecorememberserver.sharedkernel.event.MemberRegisteredEvent;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberRegisteredEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

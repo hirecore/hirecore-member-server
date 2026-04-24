@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.jwt;
 
-import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
-import io.hirecore.hirecorememberserver.common.adapter.out.jwt.properties.JwtProperties;
+import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
+import io.hirecore.hirecorememberserver.common.security.properties.JwtProperties;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;

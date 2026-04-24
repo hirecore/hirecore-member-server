@@ -1,9 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result;
 
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 
 import java.time.Instant;
 

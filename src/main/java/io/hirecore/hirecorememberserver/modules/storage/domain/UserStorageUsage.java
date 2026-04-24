@@ -1,12 +1,12 @@
 package io.hirecore.hirecorememberserver.modules.storage.domain;
 
-import io.hirecore.hirecorememberserver.common.domain.exception.DomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageDomainException;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageDomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.AbstractDomainEventPublisher;
-import io.hirecore.hirecorememberserver.sharedkernel.DomainAggregateRoot;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

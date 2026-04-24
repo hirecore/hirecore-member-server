@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.domain.vo;
 
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.SocialAccountDomainException;
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.SocialAccountDomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

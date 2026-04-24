@@ -1,13 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.file.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
-import io.hirecore.hirecorememberserver.sharedkernel.AbstractDomainEventPublisher;
-import io.hirecore.hirecorememberserver.sharedkernel.DomainAggregateRoot;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.account.repository;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.config.JpaAuditingConfig;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.JpaAuditingConfig;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.entity.MemberAccountJpaEntity;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.MemberAccountJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.MemberAccountJpaQueryRepository;

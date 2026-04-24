@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.account.application;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadMemberAccountPort;
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.support.FixtureMonkeyFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -1,13 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.account.repository;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.jpa.config.JpaAuditingConfig;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.JpaAuditingConfig;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.entity.MemberAccountJpaEntity;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.entity.SocialAccountJpaEntity;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.MemberAccountJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.SocialAccountJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.SocialAccountJpaQueryRepository;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import io.hirecore.hirecorememberserver.support.FixtureMonkeyFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.application.port.in.dto
 
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 
 public record SocialLoginCommand(
         String provider,

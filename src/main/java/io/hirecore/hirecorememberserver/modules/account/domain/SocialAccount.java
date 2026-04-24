@@ -1,15 +1,15 @@
 package io.hirecore.hirecorememberserver.modules.account.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import io.hirecore.hirecorememberserver.common.domain.exception.CommonDomainException;
-import io.hirecore.hirecorememberserver.common.domain.exception.DomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.AbstractDomainEventPublisher;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
-import io.hirecore.hirecorememberserver.sharedkernel.DomainAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.CommonDomainException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.SocialAccountDomainException;
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.SocialAccountDomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,8 @@
 package io.hirecore.hirecorememberserver.sharedkernel.vo;
 
-import io.hirecore.hirecorememberserver.sharedkernel.exception.SharedKernelException;
-import io.hirecore.hirecorememberserver.sharedkernel.exception.SharedKernelExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

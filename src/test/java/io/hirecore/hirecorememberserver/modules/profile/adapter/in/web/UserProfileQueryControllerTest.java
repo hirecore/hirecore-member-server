@@ -1,11 +1,11 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.in.web;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import io.hirecore.hirecorememberserver.common.adapter.in.SwaggerDocs;
-import io.hirecore.hirecorememberserver.common.adapter.in.WebMvcSecuritySupport;
-import io.hirecore.hirecorememberserver.common.adapter.in.config.StrictJsonConfig;
-import io.hirecore.hirecorememberserver.common.adapter.in.security.principal.AuthPrincipal;
-import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
+import io.hirecore.hirecorememberserver.common.web.SwaggerDocs;
+import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
+import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
+import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.response.UserProfileSummaryApiResponse;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileQueryWebMapper;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.GetUserProfileSummaryUseCase;

@@ -1,11 +1,11 @@
 package io.hirecore.hirecorememberserver.modules.category.domain;
 
-import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.category.domain.exception.JobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.category.domain.exception.JobCategoryDomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.AbstractDomainEventPublisher;
-import io.hirecore.hirecorememberserver.sharedkernel.DomainAggregateRoot;
-import io.hirecore.hirecorememberserver.sharedkernel.vo.AuditingInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

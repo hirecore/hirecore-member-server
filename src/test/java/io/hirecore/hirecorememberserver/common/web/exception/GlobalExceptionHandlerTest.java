@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.common.adapter.exception;
+package io.hirecore.hirecorememberserver.common.web.exception;
 
 import io.hirecore.hirecorememberserver.common.web.logging.StructuredErrorLogger;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.ApplicationExceptionCode;

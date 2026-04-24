@@ -1,6 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.policy.domain;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.policy.domain.exception.UserMembershipPolicyDomainException;
 import io.hirecore.hirecorememberserver.modules.policy.domain.exception.UserMembershipPolicyDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
@@ -91,7 +93,7 @@ public class UserMembershipPolicy extends AbstractDomainEventPublisher implement
         );
         AssertionUtils.notNull(
                 auditingInfo,
-                UserMembershipPolicyDomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_INFO_MISSING,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 UserMembershipPolicyDomainException::new
         );
     }

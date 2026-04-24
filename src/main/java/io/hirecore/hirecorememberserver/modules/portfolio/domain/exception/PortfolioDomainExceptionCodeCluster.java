@@ -57,12 +57,6 @@ public class PortfolioDomainExceptionCodeCluster {
                 "Portfolio 도메인 객체 생성에서 visibility 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // AUDITING_INFO
-        AUDITING_INFO_MISSING(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Portfolio 도메인 객체 생성에서 auditingInfo 필드가 누락되었습니다.",
-                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
-
         // ------ ExternalLink ---------
         // EXTERNAL_LINK_PAIR_INCOMPLETE
         EXTERNAL_LINK_PAIR_INCOMPLETE(

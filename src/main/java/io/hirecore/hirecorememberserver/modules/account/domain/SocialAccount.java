@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.account.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.CommonDomainException;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
@@ -141,8 +141,8 @@ public class SocialAccount extends AbstractDomainEventPublisher implements Domai
                 SocialAccountDomainException::new);
         AssertionUtils.notNull(
                 auditingInfo,
-                DomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
-                CommonDomainException::new
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
+                SharedKernelException::new
         );
     }
 }

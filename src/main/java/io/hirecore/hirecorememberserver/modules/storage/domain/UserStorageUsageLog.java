@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.storage.domain;
 
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageLogDomainException;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageLogDomainExceptionCodeCluster;
@@ -180,7 +180,7 @@ public class UserStorageUsageLog {
         );
         AssertionUtils.notNull(
                 auditingInfo,
-                DomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 UserStorageUsageLogDomainException::new
         );
     }

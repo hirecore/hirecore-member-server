@@ -1,6 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.category.domain;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.category.domain.exception.JobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.category.domain.exception.JobCategoryDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
@@ -112,7 +114,7 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
         );
         AssertionUtils.notNull(
                 auditingInfo,
-                JobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_AUDITING_INFO_MISSING,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 JobCategoryDomainException::new
         );
     }

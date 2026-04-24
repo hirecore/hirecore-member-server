@@ -7,7 +7,7 @@ import io.hirecore.hirecorememberserver.modules.account.application.SocialAccoun
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialUserProfilePort;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.TokenUtilsPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.application.mapper.SocialUserProfileInfoMapper;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
@@ -42,7 +42,7 @@ class LoginSocialUserUseCaseImplTest {
     private LoginSocialUserUseCaseImpl loginSocialUserUseCaseImpl;
 
     @Mock private LoadSocialUserProfilePort loadSocialUserProfilePort;
-    @Mock private TokenUtilsPort tokenUtilsPort;
+    @Mock private IssueTokenPort tokenUtilsPort;
     @Mock private SocialAccountQueryService socialAccountQueryService;
     @Mock private MemberAccountQueryService memberAccountQueryService;
     @Mock private MemberAccountCommandService memberAccountCommandService;

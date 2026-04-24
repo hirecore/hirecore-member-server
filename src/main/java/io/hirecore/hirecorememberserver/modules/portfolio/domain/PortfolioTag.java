@@ -1,6 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioTagDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioTagDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -61,7 +63,7 @@ public class PortfolioTag {
         );
         AssertionUtils.notNull(
                 auditingInfo,
-                PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_INFO_MISSING,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 PortfolioTagDomainException::new
         );
     }

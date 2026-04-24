@@ -1,6 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
@@ -135,7 +137,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         );
         AssertionUtils.notNull(
                 auditingInfo,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_INFO_MISSING,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 PortfolioDomainException::new
         );
     }

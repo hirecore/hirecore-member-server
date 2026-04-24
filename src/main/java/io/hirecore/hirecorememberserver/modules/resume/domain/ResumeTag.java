@@ -1,6 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.resume.domain;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeTagDomainException;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeTagDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -61,7 +63,7 @@ public class ResumeTag {
         );
         AssertionUtils.notNull(
                 auditingInfo,
-                ResumeTagDomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_INFO_MISSING,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 ResumeTagDomainException::new
         );
     }

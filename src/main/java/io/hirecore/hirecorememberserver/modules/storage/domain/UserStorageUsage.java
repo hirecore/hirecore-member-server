@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.storage.domain;
 
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageDomainException;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageDomainExceptionCodeCluster;
@@ -64,7 +64,7 @@ public class UserStorageUsage extends AbstractDomainEventPublisher implements Do
         );
         AssertionUtils.notNull(
                 auditingInfo,
-                DomainExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 UserStorageUsageDomainException::new
         );
     }

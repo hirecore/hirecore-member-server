@@ -14,6 +14,7 @@ import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 import io.hirecore.hirecorememberserver.modules.account.application.mapper.SocialUserProfileInfoMapper;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.SocialUserProfileInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.event.MemberRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -61,7 +62,7 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
     }
 
     /**
-     * 신규 회원을 생성하여 저장합니다. 저장 완료 후 {@link io.hirecore.hirecorememberserver.sharedkernel.event.MemberRegisteredEvent}가 발행됩니다.
+     * 신규 회원을 생성하여 저장합니다. 저장 완료 후 {@link MemberRegisteredEvent}가 발행됩니다.
      */
     private MemberAccount registerNewMember(SocialUserProfileResult profile) {
         SocialUserProfileInfo socialInfo = socialUserProfileInfoMapper.mapToSocialUserProfileInfo(profile);

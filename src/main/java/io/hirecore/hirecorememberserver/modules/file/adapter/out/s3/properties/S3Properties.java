@@ -6,6 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record S3Properties (
         Integer presignedExpirationMinutes,
         String bucket,
-        Boolean pathStyleAccess
+        Boolean pathStyleAccess,
+        String endpoint,
+        String accessKey,
+        String secretKey
 ){
 }

@@ -60,5 +60,8 @@ hirecore:
       s3:
         bucket: ${LOCAL_OBJECT_STORAGE_AWS_S3_BUCKET}
         path-style-access: true
+        endpoint: ${LOCAL_OBJECT_STORAGE_AWS_S3_ENDPOINT}
+        access-key: ${LOCAL_OBJECT_STORAGE_AWS_S3_ACCESS_KEY}
+        secret-key: ${LOCAL_OBJECT_STORAGE_AWS_S3_SECRET_KEY}
       cloud-front:
         public-base-url: ${LOCAL_OBJECT_STORAGE_AWS_CF_PUBLIC_BASE_URL}

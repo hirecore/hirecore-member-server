@@ -1,5 +1,5 @@
 package io.hirecore.hirecorememberserver.modules.membership.application.port.out;
 
-public interface LoadUserMembershipEntitlement {
+public interface LoadUserMembershipEntitlementPort {
     Long getStorageQuotaBytesSnapshot(Long memberAccountId);
 }

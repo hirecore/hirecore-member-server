@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.membership.application;
 
-import io.hirecore.hirecorememberserver.modules.membership.application.port.out.LoadUserMembershipEntitlement;
+import io.hirecore.hirecorememberserver.modules.membership.application.port.out.LoadUserMembershipEntitlementPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoadUserMembershipEntitlementService {
 
-    private final LoadUserMembershipEntitlement loadUserMembershipEntitlement;
+    private final LoadUserMembershipEntitlementPort loadUserMembershipEntitlement;
 
     public Long loadStorageQuotaBytesSnapshot(Long memberAccountId){
         loadUserMembershipEntitlement.getStorageQuotaBytesSnapshot(memberAccountId);

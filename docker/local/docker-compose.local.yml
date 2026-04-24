@@ -28,6 +28,20 @@ services:
     volumes:
       - hirecore-member-server-local-minio-data:/data
 
+  minio-init:
+    image: minio/mc:latest
+    container_name: hirecore-member-server-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 3;
+      mc alias set local http://minio:9000 minioadmin minioadmin;
+      mc mb --ignore-existing local/hirecore-member-server-local;
+      mc anonymous set download local/hirecore-member-server-local;
+      echo 'MinIO init complete';
+      "
+
 volumes:
   hirecore-member-server-local-mysql-data:
     name: hirecore-member-server-local-mysql-data

@@ -7,7 +7,7 @@ import io.hirecore.hirecorememberserver.modules.account.application.port.in.Logi
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialUserProfilePort;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.TokenUtilsPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
@@ -34,7 +34,7 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
     private final MemberAccountQueryService memberAccountQueryService;
     private final MemberAccountCommandService memberAccountCommandService;
     private final LoadSocialUserProfilePort loadSocialUserProfilePort;
-    private final TokenUtilsPort tokenUtilsPort;
+    private final IssueTokenPort tokenUtilsPort;
     private final TransactionTemplate transactionTemplate;
     private final SocialUserProfileInfoMapper socialUserProfileInfoMapper;
 

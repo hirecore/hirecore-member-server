@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.common.security.filter;
 
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.TokenResolverPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.TokenVersionValidationPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionPort;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -37,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
     private static final String EXCEPTION_ATTRIBUTE = "exception";
 
-    private final TokenResolverPort tokenResolverPort;
-    private final TokenVersionValidationPort tokenVersionValidationPort;
+    private final ResolveTokenPort tokenResolverPort;
+    private final ValidateTokenVersionPort tokenVersionValidationPort;
 
     /**
      * JWT 토큰 검증 및 인증 처리를 수행합니다.

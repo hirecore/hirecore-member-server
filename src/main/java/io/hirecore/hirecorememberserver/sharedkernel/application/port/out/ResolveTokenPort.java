@@ -1,7 +1,7 @@
-package io.hirecore.hirecorememberserver.sharedkernel.application.port;
+package io.hirecore.hirecorememberserver.sharedkernel.application.port.out;
 
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 
-public interface TokenResolverPort {
+public interface ResolveTokenPort {
     AuthPrincipal resolveToken(String token);
 }

@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.profile.application.usecase;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.GetUserProfileSummaryUseCase;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.out.UserProfileQueryPort;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.LoadUserProfileSummaryPort;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.out.dto.result.UserProfileSummaryResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GetUserProfileSummaryUseCaseImpl implements GetUserProfileSummaryUseCase {
 
-    private final UserProfileQueryPort userProfileQueryPort;
+    private final LoadUserProfileSummaryPort userProfileQueryPort;
 
     @Override
     public UserProfileSummaryResponse execute(Long memberAccountId, String email) {

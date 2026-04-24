@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa;
 
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.repository.ProfileJpaQueryRepository;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.out.ProfileQueryPort;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.CheckProfilePublicCodePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class ProfileJpaQueryAdapter implements ProfileQueryPort {
+public class ProfileJpaQueryAdapter implements CheckProfilePublicCodePort {
 
     private final ProfileJpaQueryRepository profileJpaQueryRepository;
 

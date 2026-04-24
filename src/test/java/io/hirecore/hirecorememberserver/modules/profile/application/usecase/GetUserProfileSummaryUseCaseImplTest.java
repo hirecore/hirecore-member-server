@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.profile.application.usecase;
 
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.out.UserProfileQueryPort;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.LoadUserProfileSummaryPort;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.out.dto.result.UserProfileSummaryResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +39,7 @@ class GetUserProfileSummaryUseCaseImplTest {
     private GetUserProfileSummaryUseCaseImpl useCase;
 
     @Mock
-    private UserProfileQueryPort userProfileQueryPort;
+    private LoadUserProfileSummaryPort userProfileQueryPort;
 
     @Nested
     @DisplayName("프로필이 존재하는 경우")

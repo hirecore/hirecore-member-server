@@ -1,5 +1,5 @@
 package io.hirecore.hirecorememberserver.modules.profile.application.port.out;
 
-public interface ProfileQueryPort {
+public interface CheckProfilePublicCodePort {
     boolean existsByPublicCode(String code);
 }

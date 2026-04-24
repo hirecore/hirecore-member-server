@@ -16,6 +16,20 @@ services:
     volumes:
       - hirecore-member-server-local-mysql-data:/var/lib/mysql
 
+  minio:
+    image: minio/minio:latest
+    container_name: hirecore-member-server-minio-local
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    env_file:
+      - ./.env.local.minio
+    command: server /data --console-address ":9001"
+    volumes:
+      - hirecore-member-server-local-minio-data:/data
+
 volumes:
   hirecore-member-server-local-mysql-data:
     name: hirecore-member-server-local-mysql-data
+  hirecore-member-server-local-minio-data:
+    name: hirecore-member-server-local-minio-data

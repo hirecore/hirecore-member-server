@@ -60,6 +60,7 @@ src/main/generated/
 ## ==========================================
 /docker/local/.env.local.mysql
 /docker/local/.env.local.app
+/docker/local/.env.local.minio
 
 /docker/dev/.env.dev.app
 /docker/dev/.env.dev.deploy

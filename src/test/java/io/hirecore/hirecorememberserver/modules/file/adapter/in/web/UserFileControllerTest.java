@@ -78,12 +78,12 @@ class UserFileControllerTest {
                                 "clientFileId", 1,
                                 "originalFileName", "my-image.webp",
                                 "mimeType", "image/webp",
-                                "fileExtension", "WebP",
+                                "fileExtension", "webp",
                                 "fileSizeBytes", 1048576,
                                 "width", 1920,
                                 "height", 1080,
-                                "domainType", "PORTFOLIO",
-                                "purpose", "CONTENT_IMAGE"
+                                "domainType", "portfolio",
+                                "purpose", "contentImage"
                         )
                 )
         ));
@@ -302,12 +302,12 @@ class UserFileControllerTest {
                                     "clientFileId", 1,
                                     "originalFileName", "my-image.png",
                                     "mimeType", "image/png",
-                                    "fileExtension", "WebP",
+                                    "fileExtension", "webp",
                                     "fileSizeBytes", 1048576,
                                     "width", 1920,
                                     "height", 1080,
-                                    "domainType", "PORTFOLIO",
-                                    "purpose", "CONTENT_IMAGE"
+                                    "domainType", "portfolio",
+                                    "purpose", "contentImage"
                             )
                     )
             ));

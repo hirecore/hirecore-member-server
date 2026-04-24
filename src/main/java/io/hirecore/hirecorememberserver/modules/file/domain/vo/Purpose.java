@@ -6,19 +6,21 @@ import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileM
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 
 public enum Purpose {
-    CONTENT_IMAGE("content-image"),
-    THUMBNAIL_IMAGE("thumbnail-image");
+    CONTENT_IMAGE("contentImage", "content-image"),
+    THUMBNAIL_IMAGE("thumbnailImage", "thumbnail-image");
 
+    private final String value;
     private final String pathSegment;
 
-    Purpose(String pathSegment) {
+    Purpose(String value, String pathSegment) {
+        this.value = value;
         this.pathSegment = pathSegment;
     }
 
     @JsonCreator
     public static Purpose from(String value) {
         for (Purpose purpose : values()) {
-            if (purpose.pathSegment.equalsIgnoreCase(value)) {
+            if (purpose.value.equalsIgnoreCase(value)) {
                 return purpose;
             }
         }
@@ -29,6 +31,10 @@ public enum Purpose {
     }
 
     @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public String getPathSegment() {
         return pathSegment;
     }

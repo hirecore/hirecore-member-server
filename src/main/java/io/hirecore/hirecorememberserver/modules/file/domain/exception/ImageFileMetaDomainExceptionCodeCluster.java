@@ -97,7 +97,13 @@ public class ImageFileMetaDomainExceptionCodeCluster {
         AUDITING_INFO_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "ImageFileMeta 도메인 객체 생성에서 auditingInfo 필드가 누락되었습니다.",
-                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요.");
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        // MIME_TYPE
+        UNSUPPORTED_MIME_TYPE(
+                HttpStatus.BAD_REQUEST,
+                "지원하지 않는 MimeType입니다.",
+                "지원하지 않는 파일 형식입니다.");
 
         private final HttpStatus httpStatus;
         private final String logMessage;

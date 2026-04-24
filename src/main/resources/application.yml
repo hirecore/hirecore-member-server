@@ -24,7 +24,7 @@ hirecore:
   object-storage:
     aws:
       s3:
-        presigned-expiration-minutes: 5
+        presigned-expiration-minutes: 3
 
 logging:
   level:

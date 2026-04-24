@@ -59,6 +59,16 @@ hirecore:
     access-expiration-millis: 10800000
     refresh-expiration-millis: 604800000
 
+  object-storage:
+    aws:
+      region: ap-northeast-2
+      s3:
+        bucket: test-bucket
+        presigned-expiration-minutes: 10
+        path-style-access: true
+      cloudfront:
+        public-base-url: https://test.cloudfront.net
+
   oauth2:
     kakao:
       client-redirect-url: http://localhost:3000/auth/social/callback/kakao

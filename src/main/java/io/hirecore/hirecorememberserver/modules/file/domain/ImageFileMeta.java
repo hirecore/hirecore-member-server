@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.domain;
 
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.common.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
@@ -107,6 +108,39 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
         this.completedUploadAt = completedUploadAt;
         this.completedDeleteAt = completedDeleteAt;
         this.auditingInfo = auditingInfo;
+    }
+
+    public static ImageFileMeta create(
+            Long memberAccountId,
+            DomainType domainType,
+            Purpose purpose,
+            String storageProvider,
+            String bucketName,
+            String objectKey,
+            String originalFileName,
+            MimeType mimeType,
+            FileExtension fileExtension,
+            Long fileSizeBytes,
+            Integer width,
+            Integer height
+    ) {
+        return ImageFileMeta.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .memberAccountId(memberAccountId)
+                .domainType(domainType)
+                .purpose(purpose)
+                .storageProvider(storageProvider)
+                .bucketName(bucketName)
+                .objectKey(objectKey)
+                .originalFileName(originalFileName)
+                .mimeType(mimeType)
+                .fileExtension(fileExtension)
+                .fileSizeBytes(fileSizeBytes)
+                .width(width)
+                .height(height)
+                .uploadStatus(UploadStatus.PENDING)
+                .auditingInfo(AuditingInfo.create())
+                .build();
     }
 
     private static void ensureInvariants(

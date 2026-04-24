@@ -12,5 +12,9 @@ public class SwaggerDocs {
         public static class Profile {
             public static final String USER_PROFILE = "사용자 프로필";
         }
+
+        public static class File {
+            public static final String USER_FILE = "사용자 파일";
+        }
     }
 }

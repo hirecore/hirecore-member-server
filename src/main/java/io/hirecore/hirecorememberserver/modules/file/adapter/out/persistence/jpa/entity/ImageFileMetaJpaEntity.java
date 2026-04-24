@@ -38,7 +38,7 @@ public class ImageFileMetaJpaEntity extends AbstractPersistableAggregateRoot<Lon
     private String storageProvider;
 
     @Comment("버킷명")
-    @Column(name = "bucket_name", nullable = false, columnDefinition = "VARCHAR(30)")
+    @Column(name = "bucket_name", nullable = false, columnDefinition = "VARCHAR(250)")
     private String bucketName;
 
     @Comment("오브젝트 키")

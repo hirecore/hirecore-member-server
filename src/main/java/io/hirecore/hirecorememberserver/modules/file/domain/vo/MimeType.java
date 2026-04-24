@@ -18,7 +18,7 @@ public enum MimeType {
     @JsonCreator
     public static MimeType from(String value) {
         for (MimeType mimeType : values()) {
-            if (mimeType.value.equals(value)) {
+            if (mimeType.value.equalsIgnoreCase(value)) {
                 return mimeType;
             }
         }

@@ -1,14 +1,35 @@
 package io.hirecore.hirecorememberserver.modules.file.domain.vo;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
+import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 
-@Getter
-@RequiredArgsConstructor
 public enum DomainType {
     PORTFOLIO("portfolio"),
-    RESUME("resume"),
-    COVER_LETTER("cover-letter");
+    RESUME("resume");
 
     private final String pathSegment;
+
+    DomainType(String pathSegment) {
+        this.pathSegment = pathSegment;
+    }
+
+    @JsonCreator
+    public static DomainType from(String value) {
+        for (DomainType domainType : values()) {
+            if (domainType.pathSegment.equalsIgnoreCase(value)) {
+                return domainType;
+            }
+        }
+
+        throw new ImageFileMetaDomainException(
+                ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.UNSUPPORTED_DOMAIN_TYPE
+        );
+    }
+
+    @JsonValue
+    public String getPathSegment() {
+        return pathSegment;
+    }
 }

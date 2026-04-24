@@ -103,7 +103,25 @@ public class ImageFileMetaDomainExceptionCodeCluster {
         UNSUPPORTED_MIME_TYPE(
                 HttpStatus.BAD_REQUEST,
                 "지원하지 않는 MimeType입니다.",
-                "지원하지 않는 파일 형식입니다.");
+                "지원하지 않는 파일 형식입니다."),
+
+        // FILE_EXTENSION
+        UNSUPPORTED_FILE_EXTENSION(
+                HttpStatus.BAD_REQUEST,
+                "지원하지 않는 FileExtension입니다.",
+                "지원하지 않는 파일 확장자입니다."),
+
+        // DOMAIN_TYPE
+        UNSUPPORTED_DOMAIN_TYPE(
+                HttpStatus.BAD_REQUEST,
+                "지원하지 않는 DomainType입니다.",
+                "지원하지 않는 도메인 타입입니다."),
+
+        // PURPOSE
+        UNSUPPORTED_PURPOSE(
+                HttpStatus.BAD_REQUEST,
+                "지원하지 않는 Purpose입니다.",
+                "지원하지 않는 파일 업로드 목적입니다.");
 
         private final HttpStatus httpStatus;
         private final String logMessage;

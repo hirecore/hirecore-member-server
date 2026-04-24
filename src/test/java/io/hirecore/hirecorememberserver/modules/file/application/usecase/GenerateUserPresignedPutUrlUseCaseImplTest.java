@@ -57,7 +57,7 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
                 1L,
                 "test-image.webp",
                 MimeType.IMAGE_WEBP,
-                FileExtension.WebP,
+                FileExtension.WEBP,
                 fileSizeBytes,
                 1920,
                 1080,
@@ -81,7 +81,7 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "test-bucket", "users/1/portfolio/content-image/uuid.webp",
-                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WebP,
+                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WEBP,
                     1048576L, 1920, 1080
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);
@@ -116,7 +116,7 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "test-bucket", "users/1/portfolio/content-image/uuid.webp",
-                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WebP,
+                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WEBP,
                     2097152L, 1920, 1080
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);
@@ -139,7 +139,7 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
             assertThat(captured.getBucketName()).isEqualTo("test-bucket");
             assertThat(captured.getStorageProvider()).isEqualTo("AWS_S3");
             assertThat(captured.getMimeType()).isEqualTo(MimeType.IMAGE_WEBP);
-            assertThat(captured.getFileExtension()).isEqualTo(FileExtension.WebP);
+            assertThat(captured.getFileExtension()).isEqualTo(FileExtension.WEBP);
             assertThat(captured.getFileSizeBytes()).isEqualTo(2097152L);
             assertThat(captured.getWidth()).isEqualTo(1920);
             assertThat(captured.getHeight()).isEqualTo(1080);
@@ -158,7 +158,7 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "test-bucket", "users/1/portfolio/content-image/uuid.webp",
-                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WebP,
+                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WEBP,
                     1048576L, 1920, 1080
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);
@@ -186,7 +186,7 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "test-bucket", "users/1/portfolio/content-image/uuid.webp",
-                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WebP,
+                    "test-image.webp", MimeType.IMAGE_WEBP, FileExtension.WEBP,
                     1048576L, 1920, 1080
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);

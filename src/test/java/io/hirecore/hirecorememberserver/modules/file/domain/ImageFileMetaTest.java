@@ -23,7 +23,7 @@ class ImageFileMetaTest {
                 "users/1/portfolio/content-image/uuid.webp",
                 "my-image.webp",
                 MimeType.IMAGE_WEBP,
-                FileExtension.WebP,
+                FileExtension.WEBP,
                 1048576L,
                 1920,
                 1080
@@ -51,7 +51,7 @@ class ImageFileMetaTest {
                 assertThat(m.getObjectKey()).isEqualTo("users/1/portfolio/content-image/uuid.webp");
                 assertThat(m.getOriginalFileName()).isEqualTo("my-image.webp");
                 assertThat(m.getMimeType()).isEqualTo(MimeType.IMAGE_WEBP);
-                assertThat(m.getFileExtension()).isEqualTo(FileExtension.WebP);
+                assertThat(m.getFileExtension()).isEqualTo(FileExtension.WEBP);
                 assertThat(m.getFileSizeBytes()).isEqualTo(1048576L);
                 assertThat(m.getWidth()).isEqualTo(1920);
                 assertThat(m.getHeight()).isEqualTo(1080);
@@ -83,7 +83,7 @@ class ImageFileMetaTest {
             assertThatThrownBy(() -> ImageFileMeta.create(
                     null, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "bucket", "key", "file.webp",
-                    MimeType.IMAGE_WEBP, FileExtension.WebP, 1024L, 100, 100
+                    MimeType.IMAGE_WEBP, FileExtension.WEBP, 1024L, 100, 100
             ))
                     .isInstanceOf(ImageFileMetaDomainException.class)
                     .extracting("errorCode")
@@ -96,7 +96,7 @@ class ImageFileMetaTest {
             assertThatThrownBy(() -> ImageFileMeta.create(
                     1L, null, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "bucket", "key", "file.webp",
-                    MimeType.IMAGE_WEBP, FileExtension.WebP, 1024L, 100, 100
+                    MimeType.IMAGE_WEBP, FileExtension.WEBP, 1024L, 100, 100
             ))
                     .isInstanceOf(ImageFileMetaDomainException.class)
                     .extracting("errorCode")
@@ -109,7 +109,7 @@ class ImageFileMetaTest {
             assertThatThrownBy(() -> ImageFileMeta.create(
                     1L, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "bucket", null, "file.webp",
-                    MimeType.IMAGE_WEBP, FileExtension.WebP, 1024L, 100, 100
+                    MimeType.IMAGE_WEBP, FileExtension.WEBP, 1024L, 100, 100
             ))
                     .isInstanceOf(ImageFileMetaDomainException.class)
                     .extracting("errorCode")
@@ -122,7 +122,7 @@ class ImageFileMetaTest {
             assertThatThrownBy(() -> ImageFileMeta.create(
                     1L, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "bucket", "key", "file.webp",
-                    MimeType.IMAGE_WEBP, FileExtension.WebP, null, 100, 100
+                    MimeType.IMAGE_WEBP, FileExtension.WEBP, null, 100, 100
             ))
                     .isInstanceOf(ImageFileMetaDomainException.class)
                     .extracting("errorCode")
@@ -135,7 +135,7 @@ class ImageFileMetaTest {
             assertThatThrownBy(() -> ImageFileMeta.create(
                     1L, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
                     "AWS_S3", "bucket", "key", "file.webp",
-                    MimeType.IMAGE_WEBP, FileExtension.WebP, 1024L, null, 100
+                    MimeType.IMAGE_WEBP, FileExtension.WEBP, 1024L, null, 100
             ))
                     .isInstanceOf(ImageFileMetaDomainException.class)
                     .extracting("errorCode")

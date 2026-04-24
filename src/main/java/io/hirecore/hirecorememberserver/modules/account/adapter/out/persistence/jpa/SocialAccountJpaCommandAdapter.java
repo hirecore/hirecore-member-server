@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.mapper.SocialAccountJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.SocialAccountJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.SocialAccountCommandPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveSocialAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
-public class SocialAccountJpaCommandAdapter implements SocialAccountCommandPort {
+public class SocialAccountJpaCommandAdapter implements SaveSocialAccountPort {
 
     private final SocialAccountJpaEntityMapper socialAccountJpaEntityMapper;
     private final SocialAccountJpaCommandRepository socialAccountJpaCommandRepository;

@@ -2,7 +2,9 @@ package io.hirecore.hirecorememberserver.modules.account.application.port.out;
 
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 
-public interface MemberAccountCommandPort {
-    MemberAccount save(MemberAccount memberAccount);
-    void incrementTokenVersion(Long memberId);
+import java.util.Optional;
+
+public interface LoadMemberAccountPort {
+    MemberAccount findById(Long id);
+    Optional<MemberAccount> findByEmail(String email);
 }

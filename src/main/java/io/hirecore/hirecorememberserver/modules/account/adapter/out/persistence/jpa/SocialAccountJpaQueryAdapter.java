@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.SocialAccountJpaQueryRepository;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
 import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.SocialAccountQueryPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SocialAccountJpaQueryAdapter implements SocialAccountQueryPort {
+public class SocialAccountJpaQueryAdapter implements LoadSocialAccountPort {
 
     private final SocialAccountJpaQueryRepository socialAccountJpaQueryRepository;
     private final SocialAccountJpaEntityMapper socialAccountJpaEntityMapper;

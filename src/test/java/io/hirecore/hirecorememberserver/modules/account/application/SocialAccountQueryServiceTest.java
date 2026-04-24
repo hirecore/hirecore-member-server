@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.application;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.SocialAccountQueryPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialAccountPort;
 import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
 import io.hirecore.hirecorememberserver.support.FixtureMonkeyFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +27,7 @@ class SocialAccountQueryServiceTest {
     private SocialAccountQueryService service;
 
     @Mock
-    private SocialAccountQueryPort socialAccountQueryPort;
+    private LoadSocialAccountPort socialAccountQueryPort;
 
     @Test
     @DisplayName("유효한 provider와 providerId로 기존 소셜 계정을 조회한다")

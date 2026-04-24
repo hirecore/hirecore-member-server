@@ -4,7 +4,8 @@ import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.mapper.MemberAccountJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.MemberAccountJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.MemberAccountCommandPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveMemberAccountPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.IncrementTokenVersionPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,14 +13,14 @@ import java.util.Collection;
 
 
 /**
- * {@link MemberAccountCommandPort}의 JPA 구현체.
+ * {@link SaveMemberAccountPort}, {@link IncrementTokenVersionPort}의 JPA 구현체.
  *
  * <p>도메인 POJO를 JPA 엔티티로 변환하여 저장하며,
  * POJO에 누적된 도메인 이벤트를 JPA 엔티티로 이전(Event Bridge)하는 책임을 담당합니다.</p>
  */
 @Component
 @RequiredArgsConstructor
-public class MemberAccountJpaCommandAdapter implements MemberAccountCommandPort {
+public class MemberAccountJpaCommandAdapter implements SaveMemberAccountPort, IncrementTokenVersionPort {
 
     private final MemberAccountJpaEntityMapper memberAccountJpaEntityMapper;
     private final MemberAccountJpaCommandRepository memberAccountJpaCommandRepository;

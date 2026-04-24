@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.application;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.SocialAccountCommandPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveSocialAccountPort;
 import io.hirecore.hirecorememberserver.support.FixtureMonkeyFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,7 +27,7 @@ class SocialAccountCommandServiceTest {
     private SocialAccountCommandService service;
 
     @Mock
-    private SocialAccountCommandPort socialAccountCommandPort;
+    private SaveSocialAccountPort socialAccountCommandPort;
 
     @Nested
     @DisplayName("소셜 계정 저장")

@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.application;
 
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.SocialAccountCommandPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveSocialAccountPort;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SocialAccountCommandService {
 
-    private final SocialAccountCommandPort socialAccountCommandPort;
+    private final SaveSocialAccountPort socialAccountCommandPort;
 
     @Transactional
     public SocialAccount saveSocialAccount(SocialAccount socialAccount) {

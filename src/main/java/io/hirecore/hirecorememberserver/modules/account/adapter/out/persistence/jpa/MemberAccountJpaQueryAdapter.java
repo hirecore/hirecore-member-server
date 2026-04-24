@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.mapper.MemberAccountJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.repository.MemberAccountJpaQueryRepository;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.MemberAccountQueryPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadMemberAccountPort;
 import io.hirecore.hirecorememberserver.common.adapter.out.persistence.exception.DataConsistencyException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberAccountJpaQueryAdapter implements MemberAccountQueryPort {
+public class MemberAccountJpaQueryAdapter implements LoadMemberAccountPort {
 
     private final MemberAccountJpaQueryRepository memberAccountJpaQueryRepository;
     private final MemberAccountJpaEntityMapper memberAccountJpaEntityMapper;

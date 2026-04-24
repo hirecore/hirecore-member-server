@@ -5,6 +5,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.vo.OAuth2Provider;
 
 import java.util.Optional;
 
-public interface SocialAccountQueryPort {
+public interface LoadSocialAccountPort {
     Optional<SocialAccount> findByProviderAndProviderId(OAuth2Provider provider, String providerId);
 }

@@ -114,7 +114,7 @@ class UserFileControllerTest {
                     .willReturn(List.of(useCaseResponse));
 
             // when & then
-            mockMvc.perform(post("/api/users/files/images/presigned-url")
+            mockMvc.perform(post("/api/users/files/images/presigned-put-url")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody))
                     .andDo(print())
@@ -225,7 +225,7 @@ class UserFileControllerTest {
                     ));
 
             // when & then
-            mockMvc.perform(post("/api/users/files/images/presigned-url")
+            mockMvc.perform(post("/api/users/files/images/presigned-put-url")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody))
                     .andDo(print())
@@ -284,7 +284,7 @@ class UserFileControllerTest {
             ));
 
             // when & then
-            mockMvc.perform(post("/api/users/files/images/presigned-url")
+            mockMvc.perform(post("/api/users/files/images/presigned-put-url")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody))
                     .andDo(print())
@@ -313,7 +313,7 @@ class UserFileControllerTest {
             ));
 
             // when & then
-            mockMvc.perform(post("/api/users/files/images/presigned-url")
+            mockMvc.perform(post("/api/users/files/images/presigned-put-url")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody))
                     .andDo(print())

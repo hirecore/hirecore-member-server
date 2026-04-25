@@ -27,8 +27,8 @@ public class UserFileController {
     private final ImagePresignedPutUrlMapper imagePresignedPutUrlMapper;
     private final GenerateUserPresignedPutUrlUseCase generateUserPresignedPutUrlUseCase;
 
-    @PostMapping("/images/presigned-url")
-    public ResponseEntity<ImagesPresignedPutUrlApiResponse> postImagesPresignedUrl(
+    @PostMapping("/images/presigned-put-url")
+    public ResponseEntity<ImagesPresignedPutUrlApiResponse> postImagesPresignedPutUrl(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @Valid @RequestBody ImagesPresignedPutUrlApiRequest request
     ) {

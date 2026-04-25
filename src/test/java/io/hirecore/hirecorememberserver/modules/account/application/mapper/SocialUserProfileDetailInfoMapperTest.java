@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.application.mapper;
 
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.response.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.SocialUserProfileInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;

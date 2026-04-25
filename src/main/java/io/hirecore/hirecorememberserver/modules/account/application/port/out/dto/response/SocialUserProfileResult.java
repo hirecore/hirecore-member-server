@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result;
+package io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.response;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;

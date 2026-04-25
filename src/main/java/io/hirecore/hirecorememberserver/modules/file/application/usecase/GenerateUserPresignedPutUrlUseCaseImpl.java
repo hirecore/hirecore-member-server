@@ -79,6 +79,10 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
         );
     }
 
+    /*
+     * [object key 경로 생성 응답]
+     *      - users/{memberAccountId}/{domainType}/{purpose}/{UUID}.{fileExtension}
+     * */
     private static String buildObjectKey(Long memberAccountId, ImagePresignedPutUrlCommand command) {
         return String.join("/",
                 "users",
@@ -89,6 +93,15 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
         );
     }
 
+    /*
+    *   [검증 항목]
+    *       1. 요청 파일 크기 합계가 스토리지 잔여 용량을 초과하는지 확인
+    *       2. 이미 사용된 스토리지 용량과 합산하여 스토리지 잔여 용량을 초과하는지 확인
+    *
+    *   [특이사항]
+    *       1. MIME 타입 검증: MIME 타입에 검증의 경우 요청된 JSON이 역직렬화 될 때 검증진행
+    *           - application layer에서도 MIME 타입 검증을 진행해야 하지 않는가에 대한 고민이 필요.
+    * */
     private static void verifyUploadEligibility(
             List<ImagePresignedPutUrlCommand> commandList,
             Long storageSnapshotBytes,

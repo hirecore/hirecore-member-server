@@ -17,12 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("SaveImageFileMetaJpaAdapter 단위 테스트")
+@DisplayName("ImageFileMetaJpaCommandAdapter 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class SaveImageFileMetaJpaAdapterTest {
+class ImageFileMetaJpaCommandAdapterTest {
 
     @InjectMocks
-    private SaveImageFileMetaJpaAdapter sut;
+    private ImageFileMetaJpaCommandAdapter sut;
 
     @Mock
     private ImageFileMetaJpaEntityMapper imageFileMetaJpaEntityMapper;

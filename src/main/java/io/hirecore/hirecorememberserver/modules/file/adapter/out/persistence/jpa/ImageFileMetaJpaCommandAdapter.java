@@ -12,7 +12,7 @@ import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
-public class SaveImageFileMetaJpaAdapter implements SaveImageFileMetaPort {
+public class ImageFileMetaJpaCommandAdapter implements SaveImageFileMetaPort {
 
     private final ImageFileMetaJpaEntityMapper imageFileMetaJpaEntityMapper;
     private final ImageFileMetaJpaCommandRepository imageFileMetaJpaCommandRepository;

@@ -2,7 +2,6 @@ package io.hirecore.hirecorememberserver.modules.file.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;

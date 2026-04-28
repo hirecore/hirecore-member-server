@@ -1,7 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.category.domain;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.category.domain.exception.JobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.category.domain.exception.JobCategoryDomainExceptionCodeCluster;

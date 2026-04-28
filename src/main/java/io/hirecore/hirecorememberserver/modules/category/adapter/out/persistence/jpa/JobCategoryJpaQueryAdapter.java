@@ -1,0 +1,26 @@
+package io.hirecore.hirecorememberserver.modules.category.adapter.out.persistence.jpa;
+
+import io.hirecore.hirecorememberserver.modules.category.adapter.out.persistence.jpa.mapper.JobCategoryJpaEntityMapper;
+import io.hirecore.hirecorememberserver.modules.category.adapter.out.persistence.jpa.repository.JobCategoryJpaQueryRepository;
+import io.hirecore.hirecorememberserver.modules.category.application.port.out.LoadJobCategoryPort;
+import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class JobCategoryJpaQueryAdapter implements LoadJobCategoryPort {
+
+    private final JobCategoryJpaQueryRepository jobCategoryJpaQueryRepository;
+    private final JobCategoryJpaEntityMapper jobCategoryJpaEntityMapper;
+
+
+    @Override
+    public List<JobCategory> loadByDynamicDepth(Integer depth) {
+        return jobCategoryJpaQueryRepository.loadByDynamicDepth(depth).stream()
+                .map(jobCategoryJpaEntityMapper::toDomain)
+                .toList();
+    }
+}

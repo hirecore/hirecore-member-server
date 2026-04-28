@@ -16,5 +16,9 @@ public class SwaggerDocs {
         public static class File {
             public static final String USER_FILE = "사용자 파일";
         }
+
+        public static class Category {
+            public static final String JOB_CATEGORY = "직무 카테고리";
+        }
     }
 }

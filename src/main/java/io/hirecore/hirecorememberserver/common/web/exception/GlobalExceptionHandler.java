@@ -19,8 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.ArrayList;
@@ -107,6 +109,41 @@ public class GlobalExceptionHandler {
         Map<String, Object> serverMetadata = Map.of("rawMessage", e.getMessage());
 
         return buildErrorResponse(errorCode.getCode(), errorCode.getMessage(), errorCode.getHttpStatus().value(), fieldErrors, null, serverMetadata, request, e);
+    }
+
+    // 4-1. Missing Required Request Parameter (@RequestParam required)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException e, HttpServletRequest request
+    ) {
+        GlobalExceptionCodeCluster.Interface errorCode = GlobalExceptionCodeCluster.Interface.REQUEST_VALUE_INVALID;
+
+        List<ErrorResponse.FieldErrorDetail> fieldErrors = List.of(
+                ErrorResponse.FieldErrorDetail.builder()
+                        .field(e.getParameterName())
+                        .reason("필수 요청 파라미터가 누락되었습니다.")
+                        .build()
+        );
+
+        return buildErrorResponse(errorCode.getCode(), errorCode.getMessage(), errorCode.getHttpStatus().value(), fieldErrors, null, null, request, e);
+    }
+
+    // 4-2. Type Mismatch on Request Parameter or Path Variable
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e, HttpServletRequest request
+    ) {
+        GlobalExceptionCodeCluster.Interface errorCode = GlobalExceptionCodeCluster.Interface.REQUEST_VALUE_INVALID;
+
+        String requiredType = e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "unknown";
+        List<ErrorResponse.FieldErrorDetail> fieldErrors = List.of(
+                ErrorResponse.FieldErrorDetail.builder()
+                        .field(e.getName())
+                        .reason(String.format("'%s' 타입이어야 합니다.", requiredType))
+                        .build()
+        );
+
+        return buildErrorResponse(errorCode.getCode(), errorCode.getMessage(), errorCode.getHttpStatus().value(), fieldErrors, null, null, request, e);
     }
 
     // 5. JSON Parsing Exception

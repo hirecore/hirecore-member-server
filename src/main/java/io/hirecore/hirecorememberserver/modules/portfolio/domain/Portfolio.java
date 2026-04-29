@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
@@ -36,6 +37,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     /** (선택) 포트폴리오 태그 목록, null가능 */
     private final List<PortfolioTag> portfolioTags;
     private final PortfolioStatus status;
+    private final PortfolioType portfolioType;
     private final Boolean visibility;
     private final AuditingInfo auditingInfo;
 
@@ -59,12 +61,13 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String secretNote,
             List<PortfolioTag> portfolioTags,
             PortfolioStatus status,
+            PortfolioType portfolioType,
             Boolean visibility,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
                 id, memberAccountId, portfolioJobCategory, title,
-                previewSummary, portfolioContent, status, visibility, auditingInfo
+                previewSummary, portfolioContent, status, portfolioType, visibility, auditingInfo
         );
 
         this.id = id;
@@ -80,6 +83,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.secretNote = secretNote;
         this.portfolioTags = portfolioTags;
         this.status = status;
+        this.portfolioType = portfolioType;
         this.visibility = visibility;
         this.auditingInfo = auditingInfo;
     }
@@ -92,6 +96,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String previewSummary,
             PortfolioContent portfolioContent,
             PortfolioStatus status,
+            PortfolioType portfolioType,
             Boolean visibility,
             AuditingInfo auditingInfo
     ) {
@@ -128,6 +133,11 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         AssertionUtils.notNull(
                 status,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.STATUS_MISSING,
+                PortfolioDomainException::new
+        );
+        AssertionUtils.notNull(
+                portfolioType,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_TYPE_MISSING,
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(

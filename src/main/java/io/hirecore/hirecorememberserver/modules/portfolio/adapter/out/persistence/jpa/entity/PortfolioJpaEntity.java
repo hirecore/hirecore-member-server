@@ -2,9 +2,9 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persisten
 
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import jakarta.persistence.*;
 import lombok.*;

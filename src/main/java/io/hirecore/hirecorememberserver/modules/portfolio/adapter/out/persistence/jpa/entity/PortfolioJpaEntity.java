@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persisten
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import jakarta.persistence.*;
@@ -65,10 +65,10 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(30)")
     private PortfolioStatus status;
 
-    @Comment("포트폴리오 유형")
+    @Comment("협업 유형")
     @Enumerated(EnumType.STRING)
-    @Column(name = "portfolio_type", nullable = false, columnDefinition = "VARCHAR(30)")
-    private PortfolioType portfolioType;
+    @Column(name = "collaboration_type", nullable = false, columnDefinition = "VARCHAR(30)")
+    private CollaborationType collaborationType;
 
     @Comment("사용자 입력 외부 링크")
     @JdbcTypeCode(SqlTypes.JSON)

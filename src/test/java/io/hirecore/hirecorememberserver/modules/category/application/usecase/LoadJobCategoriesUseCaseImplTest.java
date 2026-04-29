@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.category.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.category.application.JobCategoryQueryService;
 import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryNodeMapper;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryNodeResponse;
+import io.hirecore.hirecorememberserver.modules.category.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +23,7 @@ import static org.mockito.BDDMockito.then;
 /**
  * {@link LoadJobCategoriesUseCaseImpl} 단위 테스트.
  *
- * <p>Query Service 로부터 받은 도메인 리스트를 매퍼로 변환해 응답 DTO 리스트로
+ * <p>Load Port 로부터 받은 도메인 리스트를 매퍼로 변환해 응답 DTO 리스트로
  * 정확히 반환하는지 검증합니다. 정렬·필터링 로직은 어댑터 책임이므로 여기서는 다루지 않습니다.</p>
  */
 @DisplayName("LoadJobCategoriesUseCaseImpl 단위 테스트")
@@ -34,7 +34,7 @@ class LoadJobCategoriesUseCaseImplTest {
     private LoadJobCategoriesUseCaseImpl useCase;
 
     @Mock
-    private JobCategoryQueryService jobCategoryQueryService;
+    private LoadJobCategoryPort loadJobCategoryPort;
 
     @Mock
     private JobCategoryNodeMapper jobCategoryNodeMapper;
@@ -64,7 +64,7 @@ class LoadJobCategoriesUseCaseImplTest {
     class HappyPathTest {
 
         @Test
-        @DisplayName("Query Service 결과의 각 도메인을 응답 DTO 로 매핑하여 동일한 순서로 반환한다")
+        @DisplayName("Load Port 결과의 각 도메인을 응답 DTO 로 매핑하여 동일한 순서로 반환한다")
         void should_map_each_domain_into_response_preserving_order() {
             // given
             JobCategory root = category(1L, null, 1, 1);
@@ -72,7 +72,7 @@ class LoadJobCategoriesUseCaseImplTest {
             JobCategoryNodeResponse rootResponse = response(1L, null, 1, 1);
             JobCategoryNodeResponse childResponse = response(11L, 1L, 2, 1);
 
-            given(jobCategoryQueryService.loadAllWithinDepth(2))
+            given(loadJobCategoryPort.loadAllWithinDepth(2))
                     .willReturn(List.of(root, child));
             given(jobCategoryNodeMapper.toResponse(root)).willReturn(rootResponse);
             given(jobCategoryNodeMapper.toResponse(child)).willReturn(childResponse);
@@ -82,16 +82,16 @@ class LoadJobCategoriesUseCaseImplTest {
 
             // then
             assertThat(result).containsExactly(rootResponse, childResponse);
-            then(jobCategoryQueryService).should().loadAllWithinDepth(2);
+            then(loadJobCategoryPort).should().loadAllWithinDepth(2);
             then(jobCategoryNodeMapper).should().toResponse(root);
             then(jobCategoryNodeMapper).should().toResponse(child);
         }
 
         @Test
-        @DisplayName("Query Service 가 빈 리스트를 반환하면 매핑 호출 없이 빈 리스트를 반환한다")
+        @DisplayName("Load Port 가 빈 리스트를 반환하면 매핑 호출 없이 빈 리스트를 반환한다")
         void should_return_empty_list_when_query_service_returns_empty() {
             // given
-            given(jobCategoryQueryService.loadAllWithinDepth(1)).willReturn(List.of());
+            given(loadJobCategoryPort.loadAllWithinDepth(1)).willReturn(List.of());
 
             // when
             List<JobCategoryNodeResponse> result = useCase.execute(1);

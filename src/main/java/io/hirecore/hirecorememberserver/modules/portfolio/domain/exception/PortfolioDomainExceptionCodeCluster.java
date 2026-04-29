@@ -57,17 +57,11 @@ public class PortfolioDomainExceptionCodeCluster {
                 "Portfolio 도메인 객체 생성에서 visibility 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // PORTFOLIO_TYPE
-        PORTFOLIO_TYPE_MISSING(
+        // COLLABORATION_TYPE
+        COLLABORATION_TYPE_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Portfolio 도메인 객체 생성에서 portfolioType 필드가 누락되었습니다.",
+                "Portfolio 도메인 객체 생성에서 collaborationType 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
-
-        // UNSUPPORTED_PORTFOLIO_TYPE
-        UNSUPPORTED_PORTFOLIO_TYPE(
-                HttpStatus.BAD_REQUEST,
-                "지원하지 않는 PortfolioType입니다.",
-                "지원하지 않는 포트폴리오 유형입니다."),
 
         // EXTERNAL_LABEL
         EXTERNAL_LABEL_MISSING(

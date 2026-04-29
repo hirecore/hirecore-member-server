@@ -1,12 +1,12 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
@@ -38,7 +38,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     /** (선택) 포트폴리오 태그 목록, null가능 */
     private final List<PortfolioTag> portfolioTags;
     private final PortfolioStatus status;
-    private final PortfolioType portfolioType;
+    private final CollaborationType collaborationType;
     private final Visibility visibility;
     private final AuditingInfo auditingInfo;
 
@@ -62,13 +62,13 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String privateMemo,
             List<PortfolioTag> portfolioTags,
             PortfolioStatus status,
-            PortfolioType portfolioType,
+            CollaborationType collaborationType,
             Visibility visibility,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
                 id, memberAccountId, portfolioJobCategory, title,
-                previewSummary, portfolioContent, status, portfolioType, visibility, auditingInfo
+                previewSummary, portfolioContent, status, collaborationType, visibility, auditingInfo
         );
 
         this.id = id;
@@ -84,7 +84,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.privateMemo = privateMemo;
         this.portfolioTags = portfolioTags;
         this.status = status;
-        this.portfolioType = portfolioType;
+        this.collaborationType = collaborationType;
         this.visibility = visibility;
         this.auditingInfo = auditingInfo;
     }
@@ -97,7 +97,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String previewSummary,
             PortfolioContent portfolioContent,
             PortfolioStatus status,
-            PortfolioType portfolioType,
+            CollaborationType collaborationType,
             Visibility visibility,
             AuditingInfo auditingInfo
     ) {
@@ -137,8 +137,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(
-                portfolioType,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_TYPE_MISSING,
+                collaborationType,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.COLLABORATION_TYPE_MISSING,
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(

@@ -5,29 +5,29 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 
-public enum PortfolioType {
-    TEAM("team"), PERSONAL("personal");
+public enum Visibility {
+    PUBLIC("public"), PRIVATE("private");
 
-    private final String type;
+    private final String value;
 
-    PortfolioType(String type) {
-        this.type = type;
+    Visibility(String value) {
+        this.value = value;
     }
 
     @JsonCreator
-    public static PortfolioType from(String type) {
-        for (PortfolioType portfolioType : values()) {
-            if (portfolioType.type.equalsIgnoreCase(type)) {
-                return portfolioType;
+    public static Visibility from(String value) {
+        for (Visibility visibility : values()) {
+            if (visibility.value.equalsIgnoreCase(value)) {
+                return visibility;
             }
         }
         throw new PortfolioDomainException(
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.UNSUPPORTED_PORTFOLIO_TYPE
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.UNSUPPORTED_VISIBILITY
         );
     }
 
     @JsonValue
-    public String getType() {
-        return type;
+    public String getValue() {
+        return value;
     }
 }

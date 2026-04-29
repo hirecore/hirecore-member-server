@@ -8,6 +8,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.Portf
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.Visibility;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -33,12 +34,12 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private final PortfolioContent portfolioContent;
     private final List<ExternalLink> externalLinks;
     /** (선택) 나만보기 메모, null가능 */
-    private final String secretNote;
+    private final String privateMemo;
     /** (선택) 포트폴리오 태그 목록, null가능 */
     private final List<PortfolioTag> portfolioTags;
     private final PortfolioStatus status;
     private final PortfolioType portfolioType;
-    private final Boolean visibility;
+    private final Visibility visibility;
     private final AuditingInfo auditingInfo;
 
     /**
@@ -58,11 +59,11 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String previewSummary,
             PortfolioContent portfolioContent,
             List<ExternalLink> externalLinks,
-            String secretNote,
+            String privateMemo,
             List<PortfolioTag> portfolioTags,
             PortfolioStatus status,
             PortfolioType portfolioType,
-            Boolean visibility,
+            Visibility visibility,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
@@ -80,7 +81,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.previewSummary = previewSummary;
         this.portfolioContent = portfolioContent;
         this.externalLinks = externalLinks;
-        this.secretNote = secretNote;
+        this.privateMemo = privateMemo;
         this.portfolioTags = portfolioTags;
         this.status = status;
         this.portfolioType = portfolioType;
@@ -97,7 +98,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             PortfolioContent portfolioContent,
             PortfolioStatus status,
             PortfolioType portfolioType,
-            Boolean visibility,
+            Visibility visibility,
             AuditingInfo auditingInfo
     ) {
         AssertionUtils.notNull(

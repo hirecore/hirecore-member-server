@@ -5,6 +5,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioType;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.Visibility;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
@@ -75,12 +76,13 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     private List<ExternalLink> externalLinks = new ArrayList<>();
 
     @Comment("나만보기 메모")
-    @Column(name = "secret_note", columnDefinition = "TEXT")
-    private String secretNote;
+    @Column(name = "private_memo", columnDefinition = "TEXT")
+    private String privateMemo;
 
-    @Comment("공개 여부")
-    @Column(name = "visibility", nullable = false)
-    private Boolean visibility;
+    @Comment("공개 범위")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility", nullable = false, columnDefinition = "VARCHAR(30)")
+    private Visibility visibility;
 
     @Embedded
     private AuditingJpaInfo auditingInfo;

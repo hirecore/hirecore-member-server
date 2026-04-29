@@ -74,8 +74,8 @@ class JobCategoryJpaQueryAdapterTest {
     }
 
     @Nested
-    @DisplayName("loadByDynamicDepth")
-    class LoadByDynamicDepthTest {
+    @DisplayName("loadAllWithinDepth")
+    class LoadAllWithinDepthTest {
 
         @Test
         @DisplayName("max-depth=2 이면 depth 1, 2 노드만 반환하고 depth 3 노드는 제외한다")
@@ -87,7 +87,7 @@ class JobCategoryJpaQueryAdapterTest {
             flushAndClear();
 
             // when
-            List<JobCategory> result = adapter.loadByDynamicDepth(2);
+            List<JobCategory> result = adapter.loadAllWithinDepth(2);
 
             // then
             assertThat(result).extracting(JobCategory::getId)
@@ -103,7 +103,7 @@ class JobCategoryJpaQueryAdapterTest {
             flushAndClear();
 
             // when
-            List<JobCategory> result = adapter.loadByDynamicDepth(3);
+            List<JobCategory> result = adapter.loadAllWithinDepth(3);
 
             // then
             assertThat(result).extracting(JobCategory::getId)
@@ -123,7 +123,7 @@ class JobCategoryJpaQueryAdapterTest {
             flushAndClear();
 
             // when
-            List<JobCategory> result = adapter.loadByDynamicDepth(3);
+            List<JobCategory> result = adapter.loadAllWithinDepth(3);
 
             // then: depth1 (sortOrder asc) → depth2 (parentId asc, 그 안에서 sortOrder asc)
             assertThat(result).extracting(JobCategory::getId)
@@ -141,7 +141,7 @@ class JobCategoryJpaQueryAdapterTest {
         @DisplayName("저장된 카테고리가 없으면 빈 리스트를 반환한다")
         void should_return_empty_list_when_no_categories() {
             // when
-            List<JobCategory> result = adapter.loadByDynamicDepth(3);
+            List<JobCategory> result = adapter.loadAllWithinDepth(3);
 
             // then
             assertThat(result).isEmpty();

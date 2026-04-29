@@ -21,7 +21,7 @@ public class LoadJobCategoriesUseCaseImpl implements LoadJobCategoriesUseCase {
     @Override
     @Transactional(readOnly = true)
     public List<JobCategoryNodeResponse> execute(Integer maxDepth) {
-        return jobCategoryQueryService.loadByDynamicDepth(maxDepth).stream()
+        return jobCategoryQueryService.loadAllWithinDepth(maxDepth).stream()
                 .map(jobCategoryNodeMapper::toResponse)
                 .toList();
     }

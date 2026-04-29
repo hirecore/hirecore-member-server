@@ -18,8 +18,8 @@ public class JobCategoryJpaQueryAdapter implements LoadJobCategoryPort {
 
 
     @Override
-    public List<JobCategory> loadByDynamicDepth(Integer depth) {
-        return jobCategoryJpaQueryRepository.loadByDynamicDepth(depth).stream()
+    public List<JobCategory> loadAllWithinDepth(Integer depth) {
+        return jobCategoryJpaQueryRepository.loadAllWithinDepth(depth).stream()
                 .map(jobCategoryJpaEntityMapper::toDomain)
                 .toList();
     }

@@ -72,7 +72,7 @@ class LoadJobCategoriesUseCaseImplTest {
             JobCategoryNodeResponse rootResponse = response(1L, null, 1, 1);
             JobCategoryNodeResponse childResponse = response(11L, 1L, 2, 1);
 
-            given(jobCategoryQueryService.loadByDynamicDepth(2))
+            given(jobCategoryQueryService.loadAllWithinDepth(2))
                     .willReturn(List.of(root, child));
             given(jobCategoryNodeMapper.toResponse(root)).willReturn(rootResponse);
             given(jobCategoryNodeMapper.toResponse(child)).willReturn(childResponse);
@@ -82,7 +82,7 @@ class LoadJobCategoriesUseCaseImplTest {
 
             // then
             assertThat(result).containsExactly(rootResponse, childResponse);
-            then(jobCategoryQueryService).should().loadByDynamicDepth(2);
+            then(jobCategoryQueryService).should().loadAllWithinDepth(2);
             then(jobCategoryNodeMapper).should().toResponse(root);
             then(jobCategoryNodeMapper).should().toResponse(child);
         }
@@ -91,7 +91,7 @@ class LoadJobCategoriesUseCaseImplTest {
         @DisplayName("Query Service 가 빈 리스트를 반환하면 매핑 호출 없이 빈 리스트를 반환한다")
         void should_return_empty_list_when_query_service_returns_empty() {
             // given
-            given(jobCategoryQueryService.loadByDynamicDepth(1)).willReturn(List.of());
+            given(jobCategoryQueryService.loadAllWithinDepth(1)).willReturn(List.of());
 
             // when
             List<JobCategoryNodeResponse> result = useCase.execute(1);

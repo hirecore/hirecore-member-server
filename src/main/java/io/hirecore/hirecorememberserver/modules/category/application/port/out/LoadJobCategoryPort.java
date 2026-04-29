@@ -5,5 +5,5 @@ import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import java.util.List;
 
 public interface LoadJobCategoryPort {
-    List<JobCategory> loadByDynamicDepth(Integer depth);
+    List<JobCategory> loadAllWithinDepth(Integer depth);
 }

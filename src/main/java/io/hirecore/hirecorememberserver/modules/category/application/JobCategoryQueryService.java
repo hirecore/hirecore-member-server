@@ -13,7 +13,7 @@ public class JobCategoryQueryService {
 
     private final LoadJobCategoryPort loadJobCategoryPort;
 
-    public List<JobCategory> loadByDynamicDepth(Integer depth) {
-        return loadJobCategoryPort.loadByDynamicDepth(depth);
+    public List<JobCategory> loadAllWithinDepth(Integer depth) {
+        return loadJobCategoryPort.loadAllWithinDepth(depth);
     }
 }

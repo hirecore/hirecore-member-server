@@ -53,6 +53,12 @@ public class SharedKernelExceptionCodeCluster {
                 "Visibility 변환 실패: 지원하지 않는 visibility 값입니다.",
                 "지원하지 않는 공개 범위입니다."),
 
+        // COLLABORATION_TYPE
+        COLLABORATION_TYPE_INVALID(
+                HttpStatus.BAD_REQUEST,
+                "CollaborationType 변환 실패: 지원하지 않는 collaborationType 값입니다.",
+                "지원하지 않는 협업 유형입니다."),
+
         // EXTERNAL_LINK
         EXTERNAL_LINK_PAIR_INCOMPLETE(
                 HttpStatus.BAD_REQUEST,

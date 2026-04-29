@@ -69,12 +69,6 @@ public class PortfolioDomainExceptionCodeCluster {
                 "지원하지 않는 PortfolioType입니다.",
                 "지원하지 않는 포트폴리오 유형입니다."),
 
-        // UNSUPPORTED_VISIBILITY
-        UNSUPPORTED_VISIBILITY(
-                HttpStatus.BAD_REQUEST,
-                "지원하지 않는 Visibility입니다.",
-                "지원하지 않는 공개 범위입니다."),
-
         // ------ ExternalLink ---------
         // EXTERNAL_LINK_PAIR_INCOMPLETE
         EXTERNAL_LINK_PAIR_INCOMPLETE(

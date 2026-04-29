@@ -1,9 +1,9 @@
-package io.hirecore.hirecorememberserver.modules.portfolio.domain.vo;
+package io.hirecore.hirecorememberserver.sharedkernel.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster.HiddenDetailResponse;
 
 public enum Visibility {
     PUBLIC("public"), PRIVATE("private");
@@ -21,9 +21,7 @@ public enum Visibility {
                 return visibility;
             }
         }
-        throw new PortfolioDomainException(
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.UNSUPPORTED_VISIBILITY
-        );
+        throw new SharedKernelException(HiddenDetailResponse.VISIBILITY_INVALID);
     }
 
     @JsonValue

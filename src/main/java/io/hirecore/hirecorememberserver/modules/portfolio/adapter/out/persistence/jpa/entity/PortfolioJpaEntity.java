@@ -5,7 +5,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioType;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.Visibility;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;

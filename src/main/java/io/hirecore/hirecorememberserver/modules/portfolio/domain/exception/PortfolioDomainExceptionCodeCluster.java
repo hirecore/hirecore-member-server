@@ -69,19 +69,6 @@ public class PortfolioDomainExceptionCodeCluster {
                 "지원하지 않는 PortfolioType입니다.",
                 "지원하지 않는 포트폴리오 유형입니다."),
 
-        // ------ ExternalLink ---------
-        // EXTERNAL_LINK_PAIR_INCOMPLETE
-        EXTERNAL_LINK_PAIR_INCOMPLETE(
-                HttpStatus.BAD_REQUEST,
-                "ExternalLink vo 객체 생성에서 label과 url이 쌍으로 제공되지 않았습니다.",
-                "외부 링크의 이름과 URL을 모두 입력해주세요."),
-
-        // EXTERNAL_URL_INVALID
-        EXTERNAL_URL_INVALID(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "External vo 객체 생성에서 externalUrl 필드가 유효하지 않습니다.",
-                "유효하지 않은 외부 링크 URL입니다. 올바른 형식으로 입력해주세요."),
-
         // EXTERNAL_LABEL
         EXTERNAL_LABEL_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,

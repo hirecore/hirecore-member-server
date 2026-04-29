@@ -8,6 +8,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.Portf
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.Visibility;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -38,7 +39,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private final List<PortfolioTag> portfolioTags;
     private final PortfolioStatus status;
     private final PortfolioType portfolioType;
-    private final Boolean visibility;
+    private final Visibility visibility;
     private final AuditingInfo auditingInfo;
 
     /**
@@ -62,7 +63,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             List<PortfolioTag> portfolioTags,
             PortfolioStatus status,
             PortfolioType portfolioType,
-            Boolean visibility,
+            Visibility visibility,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
@@ -97,7 +98,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             PortfolioContent portfolioContent,
             PortfolioStatus status,
             PortfolioType portfolioType,
-            Boolean visibility,
+            Visibility visibility,
             AuditingInfo auditingInfo
     ) {
         AssertionUtils.notNull(

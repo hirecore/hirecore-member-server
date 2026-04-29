@@ -1,9 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.category.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.category.application.JobCategoryQueryService;
 import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryNodeMapper;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoriesUseCase;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryNodeResponse;
+import io.hirecore.hirecorememberserver.modules.category.application.port.out.LoadJobCategoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +15,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoadJobCategoriesUseCaseImpl implements LoadJobCategoriesUseCase {
 
-    private final JobCategoryQueryService jobCategoryQueryService;
+    private final LoadJobCategoryPort loadJobCategoryPort;
     private final JobCategoryNodeMapper jobCategoryNodeMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<JobCategoryNodeResponse> execute(Integer maxDepth) {
-        return jobCategoryQueryService.loadAllWithinDepth(maxDepth).stream()
+        return loadJobCategoryPort.loadAllWithinDepth(maxDepth).stream()
                 .map(jobCategoryNodeMapper::toResponse)
                 .toList();
     }

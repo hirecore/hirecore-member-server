@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class LoadUserMembershipEntitlementJpaAdapter implements LoadUserMembershipEntitlementPort {
+public class UserMembershipEntitlementJpaQueryAdapter implements LoadUserMembershipEntitlementPort {
 
     private final UserMembershipEntitlementJpaQueryRepository userMembershipEntitlementJpaQueryRepository;
 

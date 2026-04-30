@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserStorageUsageAdapter implements LoadUserStorageUsagePort {
+public class UserStorageUsageQueryAdapter implements LoadUserStorageUsagePort {
 
     private final LoadUserStorageUsageUseCase userStorageUsageUseCase;
 

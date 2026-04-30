@@ -12,7 +12,7 @@ public class UserStorageUsageJpaQueryAdapter implements LoadUserUsedQuotaPort {
     private final UserStorageUsageJpaQueryRepository userStorageUsageJpaQueryRepository;
 
     @Override
-    public Long getBytes(Long memberAccountId) {
+    public Long getUsedQuotaBytes(Long memberAccountId) {
         return userStorageUsageJpaQueryRepository.findUsedQuotaBytesByMemberAccountId(memberAccountId)
                 .orElse(0L);
     }

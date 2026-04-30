@@ -12,7 +12,7 @@ public class UserMembershipEntitlementQueryAdapter implements LoadUserStorageLim
     private final LoadEntitlementStorageQuotaUseCase loadEntitlementStorageQuotaUseCase;
 
     @Override
-    public Long getBytes(Long memberAccountId) {
+    public Long getStorageLimitBytes(Long memberAccountId) {
         return loadEntitlementStorageQuotaUseCase.execute(memberAccountId);
     }
 }

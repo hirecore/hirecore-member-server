@@ -30,7 +30,7 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
             Long memberAccountId,
             List<ImagePresignedPutUrlCommand> commandList
     ) {
-        Long storageSnapshotBytes = loadUserStorageLimitPort.getBytes(memberAccountId);
+        Long storageSnapshotBytes = loadUserStorageLimitPort.getStorageLimitBytes(memberAccountId);
         Long usedStorageBytes = loadUserStorageUsagePort.getUsedQuotaBytes(memberAccountId);
 
         verifyUploadEligibility(commandList, storageSnapshotBytes, usedStorageBytes);

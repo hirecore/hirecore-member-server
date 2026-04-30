@@ -33,11 +33,3 @@ jobs:
 
       - name: Build and test
         run: ./gradlew clean test bootJar
-
-      - name: Upload bootJar artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dev-bootjar
-          path: build/libs/*.jar
-          if-no-files-found: error

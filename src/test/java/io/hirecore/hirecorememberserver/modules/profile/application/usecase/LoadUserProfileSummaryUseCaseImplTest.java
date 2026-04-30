@@ -20,14 +20,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 /**
- * {@link GetUserProfileSummaryUseCaseImpl} 단위 테스트.
+ * {@link LoadUserProfileSummaryUseCaseImpl} 단위 테스트.
  *
  * <p>JWT에서 추출한 회원 정보와 프로필 테이블 조회 결과를 조합하여
  * {@link UserProfileSummaryResponse}를 정확히 반환하는지 검증합니다.</p>
  */
-@DisplayName("GetUserProfileSummaryUseCaseImpl 단위 테스트")
+@DisplayName("LoadUserProfileSummaryUseCaseImpl 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class GetUserProfileSummaryUseCaseImplTest {
+class LoadUserProfileSummaryUseCaseImplTest {
 
     private static final Long MEMBER_ID = 12345L;
     private static final String EMAIL = "user@hirecore.io";
@@ -36,7 +36,7 @@ class GetUserProfileSummaryUseCaseImplTest {
     private static final String PROFILE_IMAGE_PATH = "/images/profile/abc123.png";
 
     @InjectMocks
-    private GetUserProfileSummaryUseCaseImpl useCase;
+    private LoadUserProfileSummaryUseCaseImpl useCase;
 
     @Mock
     private LoadUserProfileSummaryPort userProfileQueryPort;

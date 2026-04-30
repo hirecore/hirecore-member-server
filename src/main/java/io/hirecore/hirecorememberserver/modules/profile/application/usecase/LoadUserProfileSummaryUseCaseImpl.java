@@ -1,12 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.profile.application.usecase;
 
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception.DataConsistencyException;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.in.GetUserProfileSummaryUseCase;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.in.LoadUserProfileSummaryUseCase;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.out.LoadUserProfileSummaryPort;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.out.dto.result.UserProfileSummaryResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 현재 인증된 사용자 프로필 요약 조회 유스케이스 구현체.
@@ -21,11 +22,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class GetUserProfileSummaryUseCaseImpl implements GetUserProfileSummaryUseCase {
+public class LoadUserProfileSummaryUseCaseImpl implements LoadUserProfileSummaryUseCase {
 
     private final LoadUserProfileSummaryPort userProfileQueryPort;
 
     @Override
+    @Transactional(readOnly = true)
     public UserProfileSummaryResponse execute(Long memberAccountId, String email) {
         UserProfileSummaryResult profile = userProfileQueryPort.findUserProfileSummary(memberAccountId)
                 .orElseThrow(() -> new DataConsistencyException(

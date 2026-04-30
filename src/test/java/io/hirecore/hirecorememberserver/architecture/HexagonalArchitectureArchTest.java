@@ -5,6 +5,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 @AnalyzeClasses(
@@ -39,4 +40,22 @@ class HexagonalArchitectureArchTest {
                     .whereLayer("Adapter").mayNotBeAccessedByAnyLayer()
 
                     .because("헥사고날 아키텍처의 의존성 역전 원칙(DIP)에 따라 내부 계층은 외부 계층을 알 수 없어야 합니다.");
+
+    /**
+     * 의도: In Adapter(driving)와 Out Adapter(driven) 간의 횡결합을 차단합니다.
+     *
+     * <p>두 어댑터는 같은 Adapter 레이어 안에 있지만, 헥사고날 패턴에서는
+     * 반드시 Application 레이어의 Port(UseCase 인터페이스 또는 out port 인터페이스)를
+     * 통해서만 협력해야 합니다. In Adapter가 Out Adapter를 직접 의존하면
+     * 트랜잭션 경계·비즈니스 불변식 검증·오케스트레이션을 모두 우회하게 됩니다.</p>
+     */
+    @ArchTest
+    static final ArchRule inAdapterShouldNotDirectlyDependOnOutAdapter =
+            noClasses()
+                    .that().resideInAPackage("io.hirecore.hirecorememberserver.modules.*.adapter.in..")
+                    .should().dependOnClassesThat().resideInAPackage("io.hirecore.hirecorememberserver.modules.*.adapter.out..")
+                    .allowEmptyShould(false)
+                    .because(
+                            "In Adapter는 Out Adapter를 직접 참조해선 안 되며, Application 레이어의 Port(UseCase 인터페이스 또는 out port 인터페이스)를 통해 협력해야 합니다."
+                    );
 }

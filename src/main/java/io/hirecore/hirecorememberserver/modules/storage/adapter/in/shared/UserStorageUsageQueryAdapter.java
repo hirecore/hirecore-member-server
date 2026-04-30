@@ -12,7 +12,7 @@ public class UserStorageUsageQueryAdapter implements LoadUserStorageUsagePort {
     private final LoadUserStorageUsageUseCase userStorageUsageUseCase;
 
     @Override
-    public Long getBytes(Long memberAccountId) {
+    public Long getUsedQuotaBytes(Long memberAccountId) {
         return userStorageUsageUseCase.execute(memberAccountId);
     }
 }

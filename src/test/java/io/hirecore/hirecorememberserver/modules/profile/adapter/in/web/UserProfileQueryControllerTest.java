@@ -8,7 +8,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPr
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.response.UserProfileSummaryApiResponse;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileQueryWebMapper;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.in.GetUserProfileSummaryUseCase;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.in.LoadUserProfileSummaryUseCase;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -62,7 +62,7 @@ class UserProfileQueryControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private GetUserProfileSummaryUseCase getUserProfileSummaryUseCase;
+    private LoadUserProfileSummaryUseCase loadUserProfileSummaryUseCase;
 
     @MockitoBean
     private UserProfileQueryWebMapper userProfileQueryWebMapper;
@@ -88,7 +88,7 @@ class UserProfileQueryControllerTest {
             UserProfileSummaryApiResponse apiResponse = new UserProfileSummaryApiResponse(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, PROFILE_IMAGE_URL
             );
-            given(getUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL)).willReturn(response);
+            given(loadUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL)).willReturn(response);
             given(userProfileQueryWebMapper.toApiResponse(response)).willReturn(apiResponse);
 
             // when & then
@@ -158,7 +158,7 @@ class UserProfileQueryControllerTest {
             UserProfileSummaryApiResponse apiResponse = new UserProfileSummaryApiResponse(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, null
             );
-            given(getUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL)).willReturn(response);
+            given(loadUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL)).willReturn(response);
             given(userProfileQueryWebMapper.toApiResponse(response)).willReturn(apiResponse);
 
             // when & then
@@ -192,7 +192,7 @@ class UserProfileQueryControllerTest {
         @DisplayName("[500 Internal Server Error] 프로필이 존재하지 않으면 데이터 정합성 에러를 반환한다")
         void should_return_500_when_profile_not_found() throws Exception {
             // given
-            given(getUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL))
+            given(loadUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL))
                     .willThrow(new DataConsistencyException(
                             "데이터 정합성 오류: MemberAccount(ID: 12345)에 대한 프로필이 존재하지 않습니다."
                     ));

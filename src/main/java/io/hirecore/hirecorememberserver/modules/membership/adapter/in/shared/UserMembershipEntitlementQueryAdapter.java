@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserMembershipEntitlementAdapter implements LoadUserStorageLimitPort {
+public class UserMembershipEntitlementQueryAdapter implements LoadUserStorageLimitPort {
 
     private final LoadEntitlementStorageQuotaUseCase loadEntitlementStorageQuotaUseCase;
 

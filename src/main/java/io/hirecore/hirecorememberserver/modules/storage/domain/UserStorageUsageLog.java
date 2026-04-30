@@ -6,6 +6,8 @@ import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserSto
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageLogDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.storage.domain.vo.UsageChangeReason;
 import io.hirecore.hirecorememberserver.modules.storage.domain.vo.ResourceKind;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,7 +28,7 @@ import lombok.Getter;
  * </ul>
  */
 @Getter
-public class UserStorageUsageLog {
+public class UserStorageUsageLog extends AbstractDomainEventPublisher implements DomainAggregateRoot {
 
     /** 사용량 변경 이력 식별자입니다. */
     private final Long id;

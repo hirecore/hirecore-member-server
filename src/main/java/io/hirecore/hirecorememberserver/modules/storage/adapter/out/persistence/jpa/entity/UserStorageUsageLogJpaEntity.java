@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.storage.adapter.out.persistence.jpa.entity;
 
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableEntity;
+import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.storage.domain.vo.ResourceKind;
 import io.hirecore.hirecorememberserver.modules.storage.domain.vo.UsageChangeReason;
@@ -17,7 +17,7 @@ import org.hibernate.annotations.Comment;
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Builder
 @Getter
-public class UserStorageUsageLogJpaEntity extends AbstractPersistableEntity<Long> {
+public class UserStorageUsageLogJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Id
     private Long id;
 

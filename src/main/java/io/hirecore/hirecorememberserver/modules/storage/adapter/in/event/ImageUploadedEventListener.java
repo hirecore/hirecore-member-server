@@ -13,10 +13,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class ImageUploadedEventListener {
 
     /**
-     * 1차 구현은 PORTFOLIO_EDITOR_IMAGE 단일 매핑으로 처리합니다.
+     * 1차 구현은 PORTFOLIO_CONTENT 단일 매핑으로 처리합니다.
      * 추후 ImageUploadedEvent에 domainType이 추가되면 도메인 타입 기반 분기로 확장합니다.
      */
-    private static final ResourceKind RESOURCE_KIND = ResourceKind.PORTFOLIO_EDITOR_IMAGE;
+    private static final ResourceKind RESOURCE_KIND = ResourceKind.PORTFOLIO_CONTENT;
 
     private final RecordImageStorageUsageUseCase recordImageStorageUsageUseCase;
 

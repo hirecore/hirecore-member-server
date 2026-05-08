@@ -40,4 +40,8 @@ public class PortfolioJobCategoryJpaEntity extends AbstractPersistableEntity<Lon
     @Comment("연결 시각")
     @Column(name = "connected_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant connectedAt;
+
+    public void attachPortfolio(PortfolioJpaEntity portfolio) {
+        this.portfolio = portfolio;
+    }
 }

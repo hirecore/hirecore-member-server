@@ -1,13 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
+import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioContentDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioContentDomainExceptionCodeCluster;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-
-
 
 @Getter
 public class PortfolioContent {
@@ -17,6 +17,7 @@ public class PortfolioContent {
     private final Long portfolioId;
     private final String contentJson;
     private final String contentHtml;
+    private final AuditingInfo auditingInfo;
 
     /**
      * [복원용 빌더]
@@ -27,13 +28,15 @@ public class PortfolioContent {
     private PortfolioContent(
             Long portfolioId,
             String contentJson,
-            String contentHtml
+            String contentHtml,
+            AuditingInfo auditingInfo
     ) {
-        ensureInvariants(portfolioId, contentJson, contentHtml);
+        ensureInvariants(portfolioId, contentJson, contentHtml, auditingInfo);
 
         this.portfolioId = portfolioId;
         this.contentJson = contentJson;
         this.contentHtml = contentHtml;
+        this.auditingInfo = auditingInfo;
     }
 
     public static PortfolioContent create(Long portfolioId, String contentJson, String contentHtml) {
@@ -41,13 +44,15 @@ public class PortfolioContent {
                 .portfolioId(portfolioId)
                 .contentJson(contentJson)
                 .contentHtml(contentHtml)
+                .auditingInfo(AuditingInfo.create())
                 .build();
     }
 
     private static void ensureInvariants(
             Long portfolioId,
             String contentJson,
-            String contentHtml
+            String contentHtml,
+            AuditingInfo auditingInfo
     ) {
         AssertionUtils.notNull(
                 portfolioId,
@@ -62,6 +67,11 @@ public class PortfolioContent {
         AssertionUtils.notBlank(
                 contentHtml,
                 PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.CONTENT_HTML_MISSING,
+                PortfolioContentDomainException::new
+        );
+        AssertionUtils.notNull(
+                auditingInfo,
+                SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 PortfolioContentDomainException::new
         );
     }

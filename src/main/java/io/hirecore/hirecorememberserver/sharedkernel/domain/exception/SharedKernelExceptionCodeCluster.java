@@ -74,6 +74,27 @@ public class SharedKernelExceptionCodeCluster {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "도메인 객체 생성 시 audtingInfo 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        // IMAGE_UPLOADED_EVENT
+        IMAGE_UPLOADED_EVENT_IMAGE_FILE_META_ID_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageUploadedEvent 생성에서 imageFileMetaId가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_UPLOADED_EVENT_MEMBER_ACCOUNT_ID_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageUploadedEvent 생성에서 memberAccountId가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_UPLOADED_EVENT_FILE_SIZE_BYTES_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageUploadedEvent 생성에서 fileSizeBytes가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_UPLOADED_EVENT_COMPLETED_UPLOAD_AT_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageUploadedEvent 생성에서 completedUploadAt이 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
         ;
 
         private final HttpStatus httpStatus;

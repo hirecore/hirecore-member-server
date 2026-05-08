@@ -3,9 +3,12 @@ package io.hirecore.hirecorememberserver.modules.file.domain;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageUploadedEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -70,6 +73,50 @@ class ImageFileMetaTest {
 
             // then
             assertThat(meta.getUploadStatus()).isEqualTo(UploadStatus.PENDING);
+        }
+    }
+
+    @Nested
+    @DisplayName("updateUploadStatus 상태 전이")
+    class UpdateUploadStatusTest {
+
+        @Test
+        @DisplayName("PENDING에서 UPLOADED로 전이하면 ImageUploadedEvent가 emit된다")
+        void should_emit_image_uploaded_event_when_transition_pending_to_uploaded() {
+            ImageFileMeta meta = createValid();
+
+            meta.updateUploadStatus(UploadStatus.UPLOADED);
+
+            Collection<Object> events = meta.pollAllEvents();
+            assertThat(events).hasSize(1);
+            assertThat(events.iterator().next()).isInstanceOfSatisfying(ImageUploadedEvent.class, e -> {
+                assertThat(e.imageFileMetaId()).isEqualTo(meta.getId());
+                assertThat(e.memberAccountId()).isEqualTo(meta.getMemberAccountId());
+                assertThat(e.fileSizeBytes()).isEqualTo(meta.getFileSizeBytes());
+                assertThat(e.completedUploadAt()).isEqualTo(meta.getCompletedUploadAt());
+            });
+        }
+
+        @Test
+        @DisplayName("이미 UPLOADED인 상태에서 UPLOADED로 재전이하면 INVALID_UPLOAD_STATUS_TRANSITION 예외가 발생한다")
+        void should_throw_when_already_uploaded() {
+            ImageFileMeta meta = createValid();
+            meta.updateUploadStatus(UploadStatus.UPLOADED);
+
+            assertThatThrownBy(() -> meta.updateUploadStatus(UploadStatus.UPLOADED))
+                    .isInstanceOf(ImageFileMetaDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION.getErrorCode());
+        }
+
+        @Test
+        @DisplayName("UPLOADED 외 다른 상태로의 전이는 이벤트를 emit하지 않는다")
+        void should_not_emit_event_for_non_uploaded_transition() {
+            ImageFileMeta meta = createValid();
+
+            meta.updateUploadStatus(UploadStatus.ORPHANED);
+
+            assertThat(meta.pollAllEvents()).isEmpty();
         }
     }
 

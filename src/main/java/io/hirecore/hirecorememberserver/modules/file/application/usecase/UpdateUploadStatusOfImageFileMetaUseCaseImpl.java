@@ -34,9 +34,12 @@ public class UpdateUploadStatusOfImageFileMetaUseCaseImpl implements UpdateUploa
 
         verifyAllExist(distinctImageIds, imageFileMetas);
         verifyAllOwnedBy(memberAccountId, imageFileMetas);
-        verifyAllTransitionableToUploaded(imageFileMetas);
 
-        updateImageFileMetaPort.markAllAsUploaded(distinctImageIds);
+        // 도메인 메서드 호출로 전이 규칙 검증과 ImageUploadedEvent emit이 함께 일어납니다.
+        // 누적된 이벤트는 어댑터가 영속 엔티티로 전이한 뒤 Spring Data save()를 통해 발행합니다.
+        imageFileMetas.forEach(meta -> meta.updateUploadStatus(UploadStatus.UPLOADED));
+
+        updateImageFileMetaPort.markAllAsUploaded(imageFileMetas);
     }
 
     private static void verifyAllExist(List<Long> requestedIds, List<ImageFileMeta> loadedMetas) {
@@ -54,17 +57,6 @@ public class UpdateUploadStatusOfImageFileMetaUseCaseImpl implements UpdateUploa
                         FileApplicationExceptionCodeCluster.DetailResponse.IMAGE_OWNERSHIP_VIOLATION
                 );
             }
-        }
-    }
-
-    /**
-     * 도메인 메서드를 detached 인스턴스에 호출해 전이 규칙(PENDING → UPLOADED)을 검증합니다.
-     * 호출 결과의 mutation은 영속화되지 않으며, 도메인 invariants를 만족하는지 확인하는 용도로만 사용됩니다.
-     * 실제 영속 엔티티의 상태 전이는 어댑터에서 별도로 적용됩니다.
-     */
-    private static void verifyAllTransitionableToUploaded(List<ImageFileMeta> imageFileMetas) {
-        for (ImageFileMeta imageFileMeta : imageFileMetas) {
-            imageFileMeta.updateUploadStatus(UploadStatus.UPLOADED);
         }
     }
 }

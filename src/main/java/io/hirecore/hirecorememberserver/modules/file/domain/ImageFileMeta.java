@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.file.domain;
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageUploadedEvent;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
@@ -159,6 +160,15 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
 
         this.uploadStatus = uploadStatus;
         this.completedUploadAt = Instant.now();
+
+        if (uploadStatus == UploadStatus.UPLOADED) {
+            registerEvent(new ImageUploadedEvent(
+                    this.id,
+                    this.memberAccountId,
+                    this.fileSizeBytes,
+                    this.completedUploadAt
+            ));
+        }
     }
 
     private static void ensureInvariants(

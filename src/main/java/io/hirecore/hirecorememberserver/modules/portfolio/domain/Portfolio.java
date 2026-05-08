@@ -2,7 +2,6 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
@@ -21,6 +20,9 @@ import java.util.List;
 
 @Getter
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
+
+    public static final int PREVIEW_SUMMARY_MAX_LENGTH = 500;
+
     private final Long id;
     private final Long memberAccountId;
     private final PortfolioJobCategory portfolioJobCategory;
@@ -98,11 +100,12 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             Long coverLetterId,
             Long resumeId,
             String title,
+            String previewSummary,
             String contentJson,
             String contentHtml,
             List<ExternalLink> externalLinks,
             String privateMemo,
-            List<String> userInputTags,
+            List<PortfolioTag> portfolioTags,
             CollaborationType collaborationType,
             Visibility visibility
     ) {
@@ -116,40 +119,16 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 .coverLetterId(coverLetterId)
                 .resumeId(resumeId)
                 .title(title)
-                .previewSummary(derivePreviewSummary(contentHtml))
+                .previewSummary(previewSummary)
                 .portfolioContent(PortfolioContent.create(portfolioId, contentJson, contentHtml))
-                .externalLinks(externalLinks != null ? externalLinks : List.of())
+                .externalLinks(externalLinks)
                 .privateMemo(privateMemo)
-                .portfolioTags(toPortfolioTags(userInputTags))
+                .portfolioTags(portfolioTags)
                 .status(PortfolioStatus.PUBLISHED)
                 .collaborationType(collaborationType)
                 .visibility(visibility)
                 .auditingInfo(AuditingInfo.create())
                 .build();
-    }
-
-    private static final int PREVIEW_SUMMARY_MAX_LENGTH = 500;
-
-    private static String derivePreviewSummary(String contentHtml) {
-        if (contentHtml == null || contentHtml.isBlank()) {
-            return "";
-        }
-        String stripped = contentHtml
-                .replaceAll("<[^>]*>", "")
-                .replaceAll("\\s+", " ")
-                .trim();
-        return stripped.length() > PREVIEW_SUMMARY_MAX_LENGTH
-                ? stripped.substring(0, PREVIEW_SUMMARY_MAX_LENGTH)
-                : stripped;
-    }
-
-    private static List<PortfolioTag> toPortfolioTags(List<String> userInputTags) {
-        if (userInputTags == null || userInputTags.isEmpty()) {
-            return List.of();
-        }
-        return userInputTags.stream()
-                .map(PortfolioTag::create)
-                .toList();
     }
 
     private static void ensureInvariants(
@@ -187,6 +166,11 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         AssertionUtils.notBlank(
                 previewSummary,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PREVIEW_SUMMARY_MISSING,
+                PortfolioDomainException::new
+        );
+        AssertionUtils.isTrue(
+                previewSummary.length() <= PREVIEW_SUMMARY_MAX_LENGTH,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PREVIEW_SUMMARY_TOO_LONG,
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(

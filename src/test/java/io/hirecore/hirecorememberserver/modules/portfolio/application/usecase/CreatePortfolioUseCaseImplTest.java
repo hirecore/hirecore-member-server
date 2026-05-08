@@ -8,6 +8,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryIdByCodePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -199,6 +200,148 @@ class CreatePortfolioUseCaseImplTest {
             assertThat(captured.getCollaborationType()).isEqualTo(CollaborationType.TEAM);
             assertThat(captured.getVisibility()).isEqualTo(Visibility.PUBLIC);
             assertThat(captured.getThumbnailImageId()).isEqualTo(THUMBNAIL_IMAGE_ID);
+        }
+    }
+
+    @Nested
+    @DisplayName("가공 책임 (도메인이 아닌 use case 측에서 수행)")
+    class TransformationTest {
+
+        @Test
+        @DisplayName("HTML 본문에서 태그를 제거한 previewSummary가 도메인에 전달된다")
+        void should_derive_preview_summary_from_html() {
+            // given
+            CreatePortfolioCommand command = new CreatePortfolioCommand(
+                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
+                    "title", null, null, null, null, null,
+                    new PortfolioContentCommand(Map.of("type", "doc"), "<h2>제목</h2><p>본문</p>"),
+                    null, null
+            );
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getPreviewSummary()).isEqualTo("제목본문");
+        }
+
+        @Test
+        @DisplayName("PREVIEW_SUMMARY_MAX_LENGTH 를 초과하면 잘라낸 previewSummary가 도메인에 전달된다")
+        void should_truncate_preview_summary() {
+            // given
+            String longHtml = "<p>" + "가".repeat(Portfolio.PREVIEW_SUMMARY_MAX_LENGTH + 100) + "</p>";
+            CreatePortfolioCommand command = new CreatePortfolioCommand(
+                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
+                    "title", null, null, null, null, null,
+                    new PortfolioContentCommand(Map.of("type", "doc"), longHtml),
+                    null, null
+            );
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getPreviewSummary()).hasSize(Portfolio.PREVIEW_SUMMARY_MAX_LENGTH);
+        }
+
+        @Test
+        @DisplayName("userInputTags 문자열 리스트가 PortfolioTag 리스트로 매핑되어 도메인에 전달된다")
+        void should_map_user_input_tags_to_portfolio_tags() {
+            // given
+            CreatePortfolioCommand command = createCommand();
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getPortfolioTags())
+                    .extracting("userInputTag")
+                    .containsExactly("Spring", "DDD");
+        }
+
+        @Test
+        @DisplayName("tags가 null이면 도메인에는 빈 PortfolioTag 리스트가 전달된다")
+        void should_pass_empty_tags_when_input_is_null() {
+            // given
+            CreatePortfolioCommand command = new CreatePortfolioCommand(
+                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, null, null, null, null,
+                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    null, null
+            );
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getPortfolioTags()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("externalLinks가 null이면 도메인에는 빈 ExternalLink 리스트가 전달된다")
+        void should_coerce_null_external_links_to_empty() {
+            // given — externalLinks=null
+            CreatePortfolioCommand command = new CreatePortfolioCommand(
+                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, null, null, null, null,
+                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    null, null
+            );
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getExternalLinks()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("externalLinks가 채워져 있으면 도메인에 그대로 전달된다")
+        void should_pass_external_links_as_is() {
+            // given
+            ExternalLink link = new ExternalLink("Repo", "https://github.com/example");
+            CreatePortfolioCommand command = new CreatePortfolioCommand(
+                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, null, null, null, List.of(link),
+                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    null, null
+            );
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getExternalLinks()).containsExactly(link);
         }
     }
 

@@ -10,6 +10,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioTagJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
@@ -52,8 +53,9 @@ class PortfolioJpaCommandAdapterTest {
     private static Portfolio buildPortfolio() {
         return Portfolio.create(
                 1L, 9L, null, 100L, 8001L, 7001L,
-                "title", "{}", "<p>본문</p>", List.of(), null,
-                List.of("Spring", "DDD"), CollaborationType.TEAM, Visibility.PUBLIC
+                "title", "본문", "{}", "<p>본문</p>", List.of(), null,
+                List.of(PortfolioTag.create("Spring"), PortfolioTag.create("DDD")),
+                CollaborationType.TEAM, Visibility.PUBLIC
         );
     }
 
@@ -96,7 +98,7 @@ class PortfolioJpaCommandAdapterTest {
         // given — 태그 비어있는 포트폴리오
         Portfolio domain = Portfolio.create(
                 1L, 9L, null, null, null, null,
-                "title", "{}", "<p>본문</p>", List.of(), null,
+                "title", "본문", "{}", "<p>본문</p>", List.of(), null,
                 List.of(), CollaborationType.PERSONAL, Visibility.PRIVATE
         );
 

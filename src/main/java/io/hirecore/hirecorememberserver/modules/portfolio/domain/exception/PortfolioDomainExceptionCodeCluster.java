@@ -39,6 +39,11 @@ public class PortfolioDomainExceptionCodeCluster {
                 "Portfolio 도메인 객체 생성에서 previewSummary 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
+        PREVIEW_SUMMARY_TOO_LONG(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Portfolio 도메인 객체 생성에서 previewSummary 길이가 허용 한도를 초과했습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
         // PORTFOLIO_CONTENT
         PORTFOLIO_CONTENT_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,

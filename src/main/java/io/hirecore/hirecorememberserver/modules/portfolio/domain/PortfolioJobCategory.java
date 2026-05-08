@@ -13,7 +13,7 @@ public class PortfolioJobCategory  {
     private final Long id;
     private final Long jobCategoryId;
     private final String customJobCategoryName;
-    private final Instant isDeleted;
+    private final Boolean isDeleted;
     private final Instant deletedAt;
     private final Instant connectedAt;
 
@@ -22,7 +22,7 @@ public class PortfolioJobCategory  {
             Long id,
             Long jobCategoryId,
             String customJobCategoryName,
-            Instant isDeleted,
+            Boolean isDeleted,
             Instant deletedAt,
             Instant connectedAt
     ) {
@@ -39,7 +39,7 @@ public class PortfolioJobCategory  {
     private static void ensureInvariants(
             Long id,
             Long jobCategoryId,
-            Instant isDeleted,
+            Boolean isDeleted,
             Instant connectedAt
     ) {
         AssertionUtils.notNull(

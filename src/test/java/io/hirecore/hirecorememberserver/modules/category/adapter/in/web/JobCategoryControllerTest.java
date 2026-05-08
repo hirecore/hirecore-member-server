@@ -87,13 +87,13 @@ class JobCategoryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.categories").isArray())
                     .andExpect(jsonPath("$.categories.length()").value(4))
-                    .andExpect(jsonPath("$.categories[0].id").value(1))
+                    .andExpect(jsonPath("$.categories[0].id").value("1"))
                     .andExpect(jsonPath("$.categories[0].depth").value(1))
                     .andExpect(jsonPath("$.categories[0].sortOrder").value(1))
                     .andExpect(jsonPath("$.categories[0].parentId").doesNotExist())
                     .andExpect(jsonPath("$.categories[0].categoryName").value("개발"))
                     .andExpect(jsonPath("$.categories[0].categoryCode").value("DEV"))
-                    .andExpect(jsonPath("$.categories[2].parentId").value(1))
+                    .andExpect(jsonPath("$.categories[2].parentId").value("1"))
                     .andExpect(jsonPath("$.categories[2].allowsCustomInput").value(true))
 
                     // 문서화
@@ -136,8 +136,8 @@ class JobCategoryControllerTest {
                                                             .type(JsonFieldType.ARRAY)
                                                             .description("조건을 만족하는 카테고리 노드 목록 (정렬됨)"),
                                                     fieldWithPath("categories[].id")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("카테고리 고유 ID"),
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 고유 ID (TSID 정밀도 보존을 위해 문자열로 직렬화)"),
                                                     fieldWithPath("categories[].depth")
                                                             .type(JsonFieldType.NUMBER)
                                                             .description("카테고리 깊이 (1=루트)"),
@@ -145,8 +145,8 @@ class JobCategoryControllerTest {
                                                             .type(JsonFieldType.NUMBER)
                                                             .description("동일 부모 내 표시 순서"),
                                                     fieldWithPath("categories[].parentId")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("상위 카테고리 ID (루트 카테고리는 응답에서 생략됨)")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("상위 카테고리 ID (루트 카테고리는 응답에서 생략됨, TSID 정밀도 보존을 위해 문자열로 직렬화)")
                                                             .optional(),
                                                     fieldWithPath("categories[].categoryName")
                                                             .type(JsonFieldType.STRING)

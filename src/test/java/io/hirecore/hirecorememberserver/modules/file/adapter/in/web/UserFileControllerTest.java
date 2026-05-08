@@ -121,7 +121,7 @@ class UserFileControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.files").isArray())
                     .andExpect(jsonPath("$.files[0].clientFileId").value("1"))
-                    .andExpect(jsonPath("$.files[0].imageFileMetaId").value(100))
+                    .andExpect(jsonPath("$.files[0].imageFileMetaId").value("100"))
                     .andExpect(jsonPath("$.files[0].presignedUrl").isString())
                     .andExpect(jsonPath("$.files[0].publicUrl").isString())
 
@@ -194,8 +194,8 @@ class UserFileControllerTest {
                                                             .type(JsonFieldType.STRING)
                                                             .description("요청 시 전달한 클라이언트 파일 식별자"),
                                                     fieldWithPath("files[].imageFileMetaId")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("서버에서 생성된 이미지 파일 메타 ID"),
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("서버에서 생성된 이미지 파일 메타 ID (TSID 정밀도 보존을 위해 문자열로 직렬화)"),
                                                     fieldWithPath("files[].presignedUrl")
                                                             .type(JsonFieldType.STRING)
                                                             .description("S3 Presigned PUT URL (이 URL로 파일을 업로드)"),

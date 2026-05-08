@@ -1,5 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request;
 
+import io.hirecore.hirecorememberserver.common.web.json.TsidId;
+import io.hirecore.hirecorememberserver.common.web.json.TsidIds;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -26,8 +28,10 @@ public record CreatePortfolioApiRequest(
 
         String privateMemo,
 
+        @TsidId
         Long thumbnailImageId,
 
+        @TsidIds
         List<Long> contentImageIds,
 
         List<String> tags,
@@ -38,8 +42,10 @@ public record CreatePortfolioApiRequest(
         @NotNull(message = "포트폴리오 본문은 필수입니다.")
         PortfolioContentApiRequest content,
 
+        @TsidId
         Long linkedResumeId,
 
+        @TsidId
         Long linkedCoverLetterId
 ) {
 }

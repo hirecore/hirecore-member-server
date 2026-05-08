@@ -43,7 +43,13 @@ public class PortfolioApplicationExceptionCodeCluster {
         CONTENT_HTML_MISSING(
                 HttpStatus.BAD_REQUEST,
                 "PortfolioContentCommand 생성 실패: html 값이 공백이거나 누락되었습니다.",
-                "포트폴리오 본문 HTML이 공백이거나 누락되었습니다.");
+                "포트폴리오 본문 HTML이 공백이거나 누락되었습니다."),
+
+        // 5XX
+        CONTENT_JSON_SERIALIZATION_FAILED(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "포트폴리오 본문 JSON을 직렬화하는 데 실패했습니다.",
+                "포트폴리오 등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
 
         private final HttpStatus httpStatus;
         private final String logMessage;

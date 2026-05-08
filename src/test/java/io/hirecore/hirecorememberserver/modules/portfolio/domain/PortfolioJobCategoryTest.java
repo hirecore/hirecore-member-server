@@ -15,6 +15,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PortfolioJobCategoryTest {
 
     @Nested
+    @DisplayName("create() 팩토리 메서드")
+    class CreateTest {
+
+        @Test
+        @DisplayName("isDeleted=false, deletedAt=null인 미삭제 상태로 생성된다")
+        void should_create_with_not_deleted_state() {
+            PortfolioJobCategory category = PortfolioJobCategory.create(10L, null);
+
+            assertThat(category.getId()).isNotNull();
+            assertThat(category.getJobCategoryId()).isEqualTo(10L);
+            assertThat(category.getIsDeleted()).isFalse();
+            assertThat(category.getDeletedAt()).isNull();
+            assertThat(category.getConnectedAt()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("customJobCategoryName을 보존한다")
+        void should_preserve_custom_job_category_name() {
+            PortfolioJobCategory category = PortfolioJobCategory.create(10L, "사용자 정의 직무");
+
+            assertThat(category.getCustomJobCategoryName()).isEqualTo("사용자 정의 직무");
+        }
+    }
+
+    @Nested
     @DisplayName("불변식 (Invariants) 검증")
     class InvariantsTest {
 

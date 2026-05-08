@@ -1,6 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.CreatePortfolioApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,13 +27,18 @@ public class PortfolioController {
     private final PortfolioWebMapper portfolioWebMapper;
 
     @PostMapping
-    public ResponseEntity<Void> createPortfolio(
+    public ResponseEntity<CreatePortfolioApiResponse> createPortfolio(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @Valid @RequestBody CreatePortfolioApiRequest request
     ){
         CreatePortfolioCommand command = portfolioWebMapper.toCommand(request);
-        createPortfolioUseCase.execute(authPrincipal.id(), command);
+        Long portfolioId = createPortfolioUseCase.execute(authPrincipal.id(), command);
 
-        return ResponseEntity.ok().build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(portfolioId)
+                .toUri();
+
+        return ResponseEntity.created(location).body(new CreatePortfolioApiResponse(portfolioId));
     }
 }

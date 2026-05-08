@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioJobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioJobCategoryDomainExceptionCodeCluster;
@@ -34,6 +35,17 @@ public class PortfolioJobCategory  {
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
         this.connectedAt = connectedAt;
+    }
+
+    public static PortfolioJobCategory create(Long jobCategoryId, String customJobCategoryName) {
+        return PortfolioJobCategory.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .jobCategoryId(jobCategoryId)
+                .customJobCategoryName(customJobCategoryName)
+                .isDeleted(false)
+                .deletedAt(null)
+                .connectedAt(Instant.now())
+                .build();
     }
 
     private static void ensureInvariants(

@@ -40,4 +40,8 @@ public class PortfolioTagJpaEntity extends AbstractPersistableEntity<Long> {
 
     @Embedded
     private AuditingJpaInfo auditingInfo;
+
+    public void attachPortfolio(PortfolioJpaEntity portfolio) {
+        this.portfolio = portfolio;
+    }
 }

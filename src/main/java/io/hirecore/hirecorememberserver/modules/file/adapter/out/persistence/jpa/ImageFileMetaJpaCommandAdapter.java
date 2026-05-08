@@ -7,13 +7,13 @@ import io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jpa
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.UpdateImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
+import io.hirecore.hirecorememberserver.modules.file.domain.vo.UploadStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -39,20 +39,15 @@ public class ImageFileMetaJpaCommandAdapter
     }
 
     @Override
-    public List<ImageFileMeta> updateAllUploadStatus(List<ImageFileMeta> imageFileMetas) {
-        if (imageFileMetas == null || imageFileMetas.isEmpty()) return List.of();
-
-        List<ImageFileMetaJpaEntity> updatedImageFileMetaEntities = new ArrayList<>();
-        for (ImageFileMeta domain : imageFileMetas) {
-            imageFileMetaJpaQueryRepository.findById(domain.getId())
-                    .ifPresent(matchedEntity -> {
-                        matchedEntity.updateUploadStatus(domain.getUploadStatus(), domain.getCompletedUploadAt());
-                        updatedImageFileMetaEntities.add(matchedEntity);
-                    });
+    public void markAllAsUploaded(Collection<Long> imageIds) {
+        if (imageIds == null || imageIds.isEmpty()) {
+            return;
         }
 
-        return updatedImageFileMetaEntities.stream()
-                .map(imageFileMetaJpaEntityMapper::toDomain)
-                .collect(Collectors.toList());
+        List<ImageFileMetaJpaEntity> entities = imageFileMetaJpaQueryRepository.findAllByIdIn(imageIds);
+        Instant now = Instant.now();
+        for (ImageFileMetaJpaEntity entity : entities) {
+            entity.updateUploadStatus(UploadStatus.UPLOADED, now);
+        }
     }
 }

@@ -58,7 +58,7 @@ class RecordImageStorageUsageUseCaseImplTest {
                     .given(saveUserStorageUsagePort).save(any(UserStorageUsage.class));
 
             // when
-            sut.execute(MEMBER_ACCOUNT_ID, IMAGE_FILE_META_ID, ResourceKind.PORTFOLIO_EDITOR_IMAGE, FILE_SIZE_BYTES);
+            sut.execute(MEMBER_ACCOUNT_ID, IMAGE_FILE_META_ID, ResourceKind.PORTFOLIO_CONTENT, FILE_SIZE_BYTES);
 
             // then
             ArgumentCaptor<UserStorageUsage> usageCaptor = ArgumentCaptor.forClass(UserStorageUsage.class);
@@ -78,7 +78,7 @@ class RecordImageStorageUsageUseCaseImplTest {
                     .given(saveUserStorageUsagePort).save(any(UserStorageUsage.class));
 
             // when
-            sut.execute(MEMBER_ACCOUNT_ID, IMAGE_FILE_META_ID, ResourceKind.PORTFOLIO_EDITOR_IMAGE, FILE_SIZE_BYTES);
+            sut.execute(MEMBER_ACCOUNT_ID, IMAGE_FILE_META_ID, ResourceKind.PORTFOLIO_CONTENT, FILE_SIZE_BYTES);
 
             // then
             ArgumentCaptor<UserStorageUsage> captor = ArgumentCaptor.forClass(UserStorageUsage.class);
@@ -97,7 +97,7 @@ class RecordImageStorageUsageUseCaseImplTest {
                     .given(saveUserStorageUsagePort).save(any(UserStorageUsage.class));
 
             // when
-            sut.execute(MEMBER_ACCOUNT_ID, IMAGE_FILE_META_ID, ResourceKind.PORTFOLIO_EDITOR_IMAGE, FILE_SIZE_BYTES);
+            sut.execute(MEMBER_ACCOUNT_ID, IMAGE_FILE_META_ID, ResourceKind.PORTFOLIO_CONTENT, FILE_SIZE_BYTES);
 
             // then
             ArgumentCaptor<UserStorageUsageLog> logCaptor = ArgumentCaptor.forClass(UserStorageUsageLog.class);
@@ -105,7 +105,7 @@ class RecordImageStorageUsageUseCaseImplTest {
 
             UserStorageUsageLog log = logCaptor.getValue();
             assertThat(log.getMemberAccountId()).isEqualTo(MEMBER_ACCOUNT_ID);
-            assertThat(log.getResourceKind()).isEqualTo(ResourceKind.PORTFOLIO_EDITOR_IMAGE);
+            assertThat(log.getResourceKind()).isEqualTo(ResourceKind.PORTFOLIO_CONTENT);
             assertThat(log.getResourceKindId()).isEqualTo(IMAGE_FILE_META_ID);
             assertThat(log.getChangeBytes()).isEqualTo(FILE_SIZE_BYTES);
             assertThat(log.getBeforeUsedQuotaBytes()).isEqualTo(500L);

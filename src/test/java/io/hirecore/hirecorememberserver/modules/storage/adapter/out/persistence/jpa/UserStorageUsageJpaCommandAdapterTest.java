@@ -110,7 +110,7 @@ class UserStorageUsageJpaCommandAdapterTest {
         void should_save_log_via_mapper_roundtrip() {
             // given
             UserStorageUsageLog log = UserStorageUsageLog.createForResourceCreation(
-                    1L, ResourceKind.PORTFOLIO_EDITOR_IMAGE, 100L, 1024L, 0L, 1024L, "image-uploaded:100"
+                    1L, ResourceKind.PORTFOLIO_CONTENT, 100L, 1024L, 0L, 1024L, "image-uploaded:100"
             );
             UserStorageUsageLogJpaEntity entity = mock(UserStorageUsageLogJpaEntity.class);
             UserStorageUsageLogJpaEntity savedEntity = mock(UserStorageUsageLogJpaEntity.class);

@@ -25,8 +25,8 @@ class ImageUploadedEventListenerTest {
     private RecordImageStorageUsageUseCase recordImageStorageUsageUseCase;
 
     @Test
-    @DisplayName("ImageUploadedEvent를 수신하면 PORTFOLIO_EDITOR_IMAGE 리소스 종류로 사용량 기록 use case를 호출한다")
-    void should_invoke_record_use_case_with_portfolio_editor_image_kind() {
+    @DisplayName("ImageUploadedEvent를 수신하면 PORTFOLIO_CONTENT 리소스 종류로 사용량 기록 use case를 호출한다")
+    void should_invoke_record_use_case_with_portfolio_content_kind() {
         // given
         ImageUploadedEvent event = new ImageUploadedEvent(100L, 1L, 1_048_576L, Instant.now());
 
@@ -35,6 +35,6 @@ class ImageUploadedEventListenerTest {
 
         // then
         then(recordImageStorageUsageUseCase).should()
-                .execute(1L, 100L, ResourceKind.PORTFOLIO_EDITOR_IMAGE, 1_048_576L);
+                .execute(1L, 100L, ResourceKind.PORTFOLIO_CONTENT, 1_048_576L);
     }
 }

@@ -86,8 +86,8 @@ class PortfolioControllerTest {
                 Map.entry("visibility", "public"),
                 Map.entry("title", "회원 서비스 도메인 모델링 회고"),
                 Map.entry("privateMemo", "회고 작성 시 참고용 메모입니다."),
-                Map.entry("thumbnailImageId", 100L),
-                Map.entry("contentImageIds", List.of(101L, 102L)),
+                Map.entry("thumbnailImageId", "100"),
+                Map.entry("contentImageIds", List.of("101", "102")),
                 Map.entry("tags", List.of("Spring", "DDD", "Hexagonal")),
                 Map.entry("externalLinks", List.of(
                         Map.of("label", "GitHub Repo", "url", "https://github.com/example/repo"),
@@ -97,8 +97,8 @@ class PortfolioControllerTest {
                         "json", Map.of("type", "doc", "content", List.of()),
                         "html", "<p>포트폴리오 본문 HTML 입니다.</p>"
                 )),
-                Map.entry("linkedResumeId", 7001L),
-                Map.entry("linkedCoverLetterId", 8001L)
+                Map.entry("linkedResumeId", "7001"),
+                Map.entry("linkedCoverLetterId", "8001")
         ));
     }
 
@@ -125,7 +125,7 @@ class PortfolioControllerTest {
                     .andDo(print())
                     .andExpect(status().isCreated())
                     .andExpect(header().string("Location", org.hamcrest.Matchers.endsWith("/api/portfolios/" + CREATED_PORTFOLIO_ID)))
-                    .andExpect(jsonPath("$.portfolioId").value(CREATED_PORTFOLIO_ID))
+                    .andExpect(jsonPath("$.portfolioId").value(String.valueOf(CREATED_PORTFOLIO_ID)))
 
                     // 문서화
                     .andDo(document("201-portfolio-create-success",
@@ -176,12 +176,12 @@ class PortfolioControllerTest {
                                                             .description("나만보기 메모 (작성자에게만 노출)")
                                                             .optional(),
                                                     fieldWithPath("thumbnailImageId")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("썸네일 imageFileMetaId (UPLOADED 전이 대상)")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 imageFileMetaId (TSID 정밀도 보존을 위해 문자열로 송신, UPLOADED 전이 대상)")
                                                             .optional(),
                                                     fieldWithPath("contentImageIds")
                                                             .type(JsonFieldType.ARRAY)
-                                                            .description("본문에서 참조하는 이미지 imageFileMetaId 목록 (UPLOADED 전이 대상)")
+                                                            .description("본문에서 참조하는 이미지 imageFileMetaId 목록 (각 원소는 TSID 정밀도 보존을 위해 문자열, UPLOADED 전이 대상)")
                                                             .optional(),
                                                     fieldWithPath("tags")
                                                             .type(JsonFieldType.ARRAY)
@@ -217,18 +217,18 @@ class PortfolioControllerTest {
                                                             .type(JsonFieldType.STRING)
                                                             .description("렌더링된 HTML 본문 (미리보기/검색 대상)"),
                                                     fieldWithPath("linkedResumeId")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("연결된 이력서 ID")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 이력서 ID (TSID 정밀도 보존을 위해 문자열로 송신)")
                                                             .optional(),
                                                     fieldWithPath("linkedCoverLetterId")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("연결된 자기소개서 ID")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 자기소개서 ID (TSID 정밀도 보존을 위해 문자열로 송신)")
                                                             .optional()
                                             )
                                             .responseFields(
                                                     fieldWithPath("portfolioId")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("생성된 포트폴리오 ID")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("생성된 포트폴리오 ID (TSID 정밀도 보존을 위해 문자열로 직렬화)")
                                             )
                                             .build()
                             )

@@ -9,6 +9,7 @@ import io.hirecore.hirecorememberserver.modules.storage.domain.UserStorageUsageL
 import io.hirecore.hirecorememberserver.modules.storage.domain.vo.ResourceKind;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -22,7 +23,7 @@ public class RecordImageStorageUsageUseCaseImpl implements RecordImageStorageUsa
     private final SaveUserStorageUsageLogPort saveUserStorageUsageLogPort;
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void execute(Long memberAccountId, Long imageFileMetaId, ResourceKind resourceKind, Long fileSizeBytes) {
         UserStorageUsage current = loadUserStorageUsagePort.findByMemberAccountId(memberAccountId)
                 .orElseGet(() -> UserStorageUsage.createForMember(memberAccountId));

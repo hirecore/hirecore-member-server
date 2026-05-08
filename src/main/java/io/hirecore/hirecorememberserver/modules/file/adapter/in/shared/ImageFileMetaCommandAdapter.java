@@ -1,0 +1,20 @@
+package io.hirecore.hirecorememberserver.modules.file.adapter.in.shared;
+
+import io.hirecore.hirecorememberserver.modules.file.application.port.in.UpdateUploadStatusOfImageFileMetaUseCase;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+
+@Component
+@RequiredArgsConstructor
+public class ImageFileMetaCommandAdapter implements UpdateUploadStatusOfImageFileMetaPort {
+
+    private final UpdateUploadStatusOfImageFileMetaUseCase updateUploadStatusOfImageFileMetaUseCase;
+
+    @Override
+    public void markUploaded(Long memberAccountId, Collection<Long> imageIds) {
+        updateUploadStatusOfImageFileMetaUseCase.execute(memberAccountId, imageIds);
+    }
+}

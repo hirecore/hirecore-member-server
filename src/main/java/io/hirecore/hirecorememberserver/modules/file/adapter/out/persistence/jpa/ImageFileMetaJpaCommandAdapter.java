@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -39,15 +42,32 @@ public class ImageFileMetaJpaCommandAdapter
     }
 
     @Override
-    public void markAllAsUploaded(Collection<Long> imageIds) {
-        if (imageIds == null || imageIds.isEmpty()) {
+    public void markAllAsUploaded(List<ImageFileMeta> imageFileMetas) {
+        if (imageFileMetas == null || imageFileMetas.isEmpty()) {
             return;
         }
 
-        List<ImageFileMetaJpaEntity> entities = imageFileMetaJpaQueryRepository.findAllByIdIn(imageIds);
+        List<Long> ids = imageFileMetas.stream().map(ImageFileMeta::getId).toList();
+        Map<Long, ImageFileMetaJpaEntity> entityById = imageFileMetaJpaQueryRepository
+                .findAllByIdIn(ids)
+                .stream()
+                .collect(Collectors.toMap(ImageFileMetaJpaEntity::getId, Function.identity()));
+
         Instant now = Instant.now();
-        for (ImageFileMetaJpaEntity entity : entities) {
+        for (ImageFileMeta domain : imageFileMetas) {
+            ImageFileMetaJpaEntity entity = entityById.get(domain.getId());
+            if (entity == null) {
+                continue;
+            }
+
             entity.updateUploadStatus(UploadStatus.UPLOADED, now);
+
+            Collection<Object> domainEvents = domain.pollAllEvents();
+            if (domainEvents != null && !domainEvents.isEmpty()) {
+                domainEvents.forEach(entity::recordPersistenceEvent);
+            }
+
+            imageFileMetaJpaCommandRepository.save(entity);
         }
     }
 }

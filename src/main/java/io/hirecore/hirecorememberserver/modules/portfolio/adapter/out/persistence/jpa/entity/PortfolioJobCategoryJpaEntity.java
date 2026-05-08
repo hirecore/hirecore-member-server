@@ -30,8 +30,8 @@ public class PortfolioJobCategoryJpaEntity extends AbstractPersistableEntity<Lon
     private String customJobCategoryName;
 
     @Comment("삭제 여부")
-    @Column(name = "is_deleted", nullable = false, columnDefinition = "DATETIME(6)")
-    private Instant isDeleted;
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
 
     @Comment("삭제 시각")
     @Column(name = "deleted_at", columnDefinition = "DATETIME(6)")

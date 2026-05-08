@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -22,5 +23,11 @@ public class JobCategoryJpaQueryAdapter implements LoadJobCategoryPort {
         return jobCategoryJpaQueryRepository.loadAllWithinDepth(depth).stream()
                 .map(jobCategoryJpaEntityMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<JobCategory> loadByCategoryCode(String categoryCode) {
+        return jobCategoryJpaQueryRepository.findActiveByCategoryCode(categoryCode)
+                .map(jobCategoryJpaEntityMapper::toDomain);
     }
 }

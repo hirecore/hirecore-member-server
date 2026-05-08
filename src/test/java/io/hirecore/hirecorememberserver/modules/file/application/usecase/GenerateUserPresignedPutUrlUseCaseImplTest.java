@@ -8,6 +8,8 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveIm
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageUsagePort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

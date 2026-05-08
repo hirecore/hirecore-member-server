@@ -1,9 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.request;
 
-import io.hirecore.hirecorememberserver.modules.file.domain.vo.DomainType;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.FileExtension;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.MimeType;
-import io.hirecore.hirecorememberserver.modules.file.domain.vo.Purpose;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

@@ -7,6 +7,7 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.req
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.GeneratePresignedPutUrlPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveImageFileMetaPort;
+import io.hirecore.hirecorememberserver.modules.file.application.util.ImageObjectKeyResolver;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageUsagePort;
@@ -87,8 +88,8 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
         return String.join("/",
                 "users",
                 String.valueOf(memberAccountId),
-                command.domainType().getPathSegment(),
-                command.purpose().getPathSegment(),
+                ImageObjectKeyResolver.pathSegmentOf(command.domainType()),
+                ImageObjectKeyResolver.pathSegmentOf(command.purpose()),
                 UUID.randomUUID() + "." + command.fileExtension().name().toLowerCase()
         );
     }

@@ -61,8 +61,8 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
     private final Long fileSizeBytes;
     private final Integer width;
     private final Integer height;
-    private final UploadStatus uploadStatus;
-    private final Instant completedUploadAt;
+    private UploadStatus uploadStatus;
+    private Instant completedUploadAt;
     private final Instant completedDeleteAt;
     private final AuditingInfo auditingInfo;
 
@@ -142,6 +142,23 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
                 .uploadStatus(UploadStatus.PENDING)
                 .auditingInfo(AuditingInfo.create())
                 .build();
+    }
+
+    public void updateUploadStatus(UploadStatus uploadStatus) {
+        AssertionUtils.notNull(
+                uploadStatus,
+                ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.UPLOAD_STATUS_MISSING,
+                ImageFileMetaDomainException::new
+        );
+
+        if (uploadStatus == UploadStatus.UPLOADED && this.uploadStatus != UploadStatus.PENDING) {
+            throw new ImageFileMetaDomainException(
+                    ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION
+            );
+        }
+
+        this.uploadStatus = uploadStatus;
+        this.completedUploadAt = Instant.now();
     }
 
     private static void ensureInvariants(

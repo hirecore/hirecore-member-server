@@ -115,7 +115,13 @@ public class ImageFileMetaDomainExceptionCodeCluster {
         UNSUPPORTED_PURPOSE(
                 HttpStatus.BAD_REQUEST,
                 "지원하지 않는 Purpose입니다.",
-                "지원하지 않는 파일 업로드 목적입니다.");
+                "지원하지 않는 파일 업로드 목적입니다."),
+
+        // UPLOAD_STATUS_TRANSITION
+        INVALID_UPLOAD_STATUS_TRANSITION(
+                HttpStatus.CONFLICT,
+                "허용되지 않은 UploadStatus 전이가 시도되었습니다.",
+                "이미지의 현재 상태에서는 해당 작업을 수행할 수 없습니다.");
 
         private final HttpStatus httpStatus;
         private final String logMessage;

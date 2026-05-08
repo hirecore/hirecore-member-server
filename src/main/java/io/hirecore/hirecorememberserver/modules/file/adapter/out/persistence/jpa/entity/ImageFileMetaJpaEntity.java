@@ -86,4 +86,9 @@ public class ImageFileMetaJpaEntity extends AbstractPersistableAggregateRoot<Lon
 
     @Embedded
     private AuditingJpaInfo auditingInfo;
+
+    public void updateUploadStatus(UploadStatus uploadStatus, Instant completedUploadAt) {
+        this.uploadStatus = uploadStatus;
+        this.completedUploadAt = completedUploadAt;
+    }
 }

@@ -8,15 +8,11 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJobCategoryJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioTagJpaEntityMapper;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJobCategoryJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaCommandRepository;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioTagJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -27,29 +23,22 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort {
     private final PortfolioJobCategoryJpaEntityMapper portfolioJobCategoryMapper;
     private final PortfolioTagJpaEntityMapper portfolioTagMapper;
     private final PortfolioJpaCommandRepository portfolioRepository;
-    private final PortfolioJobCategoryJpaCommandRepository portfolioJobCategoryRepository;
-    private final PortfolioTagJpaCommandRepository portfolioTagRepository;
 
     @Override
     public Portfolio save(Portfolio portfolio) {
         PortfolioJpaEntity portfolioEntity = portfolioMapper.toJpaEntity(portfolio);
+
         PortfolioContentJpaEntity contentEntity = portfolioContentMapper.toJpaEntity(portfolio.getPortfolioContent());
         portfolioEntity.syncPortfolioContent(contentEntity);
 
-        PortfolioJpaEntity savedPortfolio = portfolioRepository.save(portfolioEntity);
-
         PortfolioJobCategoryJpaEntity jobCategoryEntity = portfolioJobCategoryMapper.toJpaEntity(portfolio.getPortfolioJobCategory());
-        jobCategoryEntity.attachPortfolio(savedPortfolio);
-        portfolioJobCategoryRepository.save(jobCategoryEntity);
+        portfolioEntity.addPortfolioJobCategory(jobCategoryEntity);
 
-        List<PortfolioTagJpaEntity> tagEntities = portfolio.getPortfolioTags().stream()
-                .map(portfolioTagMapper::toJpaEntity)
-                .toList();
-        for (PortfolioTagJpaEntity tagEntity : tagEntities) {
-            tagEntity.attachPortfolio(savedPortfolio);
-            portfolioTagRepository.save(tagEntity);
+        for (PortfolioTagJpaEntity tagEntity : portfolio.getPortfolioTags().stream().map(portfolioTagMapper::toJpaEntity).toList()) {
+            portfolioEntity.addPortfolioTag(tagEntity);
         }
 
+        portfolioRepository.save(portfolioEntity);
         return portfolio;
     }
 }

@@ -8,16 +8,13 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJobCategoryJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioTagJpaEntityMapper;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJobCategoryJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaCommandRepository;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioTagJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,10 +22,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 @DisplayName("PortfolioJpaCommandAdapter 단위 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -52,12 +49,6 @@ class PortfolioJpaCommandAdapterTest {
     @Mock
     private PortfolioJpaCommandRepository portfolioRepository;
 
-    @Mock
-    private PortfolioJobCategoryJpaCommandRepository portfolioJobCategoryRepository;
-
-    @Mock
-    private PortfolioTagJpaCommandRepository portfolioTagRepository;
-
     private static Portfolio buildPortfolio() {
         return Portfolio.create(
                 1L, 9L, null, 100L, 8001L, 7001L,
@@ -67,12 +58,11 @@ class PortfolioJpaCommandAdapterTest {
     }
 
     @Test
-    @DisplayName("portfolio → content → jobCategory → tags 순으로 저장하고 입력 도메인 그대로 반환한다")
-    void should_save_aggregate_in_correct_order_and_return_input() {
+    @DisplayName("Aggregate Root에 자식 엔티티들을 부착한 뒤 단일 save 호출로 cascade 영속화한다")
+    void should_attach_children_and_save_aggregate_in_single_call() {
         // given
         Portfolio domain = buildPortfolio();
         PortfolioJpaEntity portfolioEntity = mock(PortfolioJpaEntity.class);
-        PortfolioJpaEntity savedPortfolioEntity = mock(PortfolioJpaEntity.class);
         PortfolioContentJpaEntity contentEntity = mock(PortfolioContentJpaEntity.class);
         PortfolioJobCategoryJpaEntity jobCategoryEntity = mock(PortfolioJobCategoryJpaEntity.class);
         PortfolioTagJpaEntity tagEntity1 = mock(PortfolioTagJpaEntity.class);
@@ -80,7 +70,6 @@ class PortfolioJpaCommandAdapterTest {
 
         given(portfolioMapper.toJpaEntity(domain)).willReturn(portfolioEntity);
         given(portfolioContentMapper.toJpaEntity(domain.getPortfolioContent())).willReturn(contentEntity);
-        given(portfolioRepository.save(portfolioEntity)).willReturn(savedPortfolioEntity);
         given(portfolioJobCategoryMapper.toJpaEntity(domain.getPortfolioJobCategory())).willReturn(jobCategoryEntity);
         given(portfolioTagMapper.toJpaEntity(domain.getPortfolioTags().get(0))).willReturn(tagEntity1);
         given(portfolioTagMapper.toJpaEntity(domain.getPortfolioTags().get(1))).willReturn(tagEntity2);
@@ -91,27 +80,19 @@ class PortfolioJpaCommandAdapterTest {
         // then
         assertThat(result).isSameAs(domain);
 
-        // 1. content 가 portfolioEntity에 동기화됨
+        // 자식들이 Aggregate Root 헬퍼를 통해 부착됨
         then(portfolioEntity).should().syncPortfolioContent(contentEntity);
+        then(portfolioEntity).should().addPortfolioJobCategory(jobCategoryEntity);
+        then(portfolioEntity).should().addPortfolioTag(tagEntity1);
+        then(portfolioEntity).should().addPortfolioTag(tagEntity2);
 
-        // 2. portfolio 저장
+        // 단일 save 호출 — cascade로 자식 영속화 위임
         then(portfolioRepository).should().save(portfolioEntity);
-
-        // 3. 저장된 portfolio가 jobCategory, tags에 부착되고 각각 저장됨
-        then(jobCategoryEntity).should().attachPortfolio(savedPortfolioEntity);
-        then(portfolioJobCategoryRepository).should().save(jobCategoryEntity);
-
-        then(tagEntity1).should().attachPortfolio(savedPortfolioEntity);
-        then(tagEntity2).should().attachPortfolio(savedPortfolioEntity);
-
-        ArgumentCaptor<PortfolioTagJpaEntity> tagCaptor = ArgumentCaptor.forClass(PortfolioTagJpaEntity.class);
-        then(portfolioTagRepository).should(org.mockito.Mockito.times(2)).save(tagCaptor.capture());
-        assertThat(tagCaptor.getAllValues()).containsExactly(tagEntity1, tagEntity2);
     }
 
     @Test
-    @DisplayName("태그가 없으면 portfolioTagRepository는 호출되지 않는다")
-    void should_skip_tag_save_when_no_tags() {
+    @DisplayName("태그가 없으면 addPortfolioTag는 호출되지 않는다")
+    void should_not_invoke_add_tag_when_no_tags() {
         // given — 태그 비어있는 포트폴리오
         Portfolio domain = Portfolio.create(
                 1L, 9L, null, null, null, null,
@@ -120,20 +101,19 @@ class PortfolioJpaCommandAdapterTest {
         );
 
         PortfolioJpaEntity portfolioEntity = mock(PortfolioJpaEntity.class);
-        PortfolioJpaEntity savedPortfolioEntity = mock(PortfolioJpaEntity.class);
         PortfolioContentJpaEntity contentEntity = mock(PortfolioContentJpaEntity.class);
         PortfolioJobCategoryJpaEntity jobCategoryEntity = mock(PortfolioJobCategoryJpaEntity.class);
 
         given(portfolioMapper.toJpaEntity(domain)).willReturn(portfolioEntity);
         given(portfolioContentMapper.toJpaEntity(domain.getPortfolioContent())).willReturn(contentEntity);
-        given(portfolioRepository.save(portfolioEntity)).willReturn(savedPortfolioEntity);
         given(portfolioJobCategoryMapper.toJpaEntity(domain.getPortfolioJobCategory())).willReturn(jobCategoryEntity);
 
         // when
         sut.save(domain);
 
         // then
-        then(portfolioTagRepository).shouldHaveNoInteractions();
-        then(portfolioJobCategoryRepository).should().save(any());
+        then(portfolioEntity).should(never()).addPortfolioTag(org.mockito.ArgumentMatchers.any());
+        then(portfolioEntity).should().addPortfolioJobCategory(jobCategoryEntity);
+        then(portfolioRepository).should().save(portfolioEntity);
     }
 }

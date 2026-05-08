@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.storage.domain;
 
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageLogDomainException;
@@ -111,6 +112,29 @@ public class UserStorageUsageLog extends AbstractDomainEventPublisher implements
         this.afterUsedQuotaBytes = afterUsedQuotaBytes;
         this.idempotencyKey = idempotencyKey;
         this.auditingInfo = auditingInfo;
+    }
+
+    public static UserStorageUsageLog createForResourceCreation(
+            Long memberAccountId,
+            ResourceKind resourceKind,
+            Long resourceKindId,
+            Long changeBytes,
+            Long beforeUsedQuotaBytes,
+            Long afterUsedQuotaBytes,
+            String idempotencyKey
+    ) {
+        return UserStorageUsageLog.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .memberAccountId(memberAccountId)
+                .usageChangeReason(UsageChangeReason.RESOURCE_CREATION)
+                .resourceKind(resourceKind)
+                .resourceKindId(resourceKindId)
+                .changeBytes(changeBytes)
+                .beforeUsedQuotaBytes(beforeUsedQuotaBytes)
+                .afterUsedQuotaBytes(afterUsedQuotaBytes)
+                .idempotencyKey(idempotencyKey)
+                .auditingInfo(AuditingInfo.create())
+                .build();
     }
 
     private static void ensureInvariants(

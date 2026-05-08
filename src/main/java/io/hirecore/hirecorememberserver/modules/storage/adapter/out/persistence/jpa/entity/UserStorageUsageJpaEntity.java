@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "user_storage_usages")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -32,4 +34,9 @@ public class UserStorageUsageJpaEntity extends AbstractPersistableAggregateRoot<
 
     @Embedded
     private AuditingJpaInfo auditingInfo;
+
+    public void applyUsedQuotaBytes(Long usedQuotaBytes, Instant updatedAt) {
+        this.usedQuotaBytes = usedQuotaBytes;
+        this.auditingInfo = new AuditingJpaInfo(this.auditingInfo.createdAt(), updatedAt);
+    }
 }

@@ -10,8 +10,6 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryIdByCodePort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.SaveUserStorageUsageLogPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.SaveUserStorageUsagePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,26 +23,23 @@ import java.util.List;
 public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
     private final UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
-    private final SaveUserStorageUsagePort saveUserStorageUsagePort;
-    private final SaveUserStorageUsageLogPort saveUserStorageUsageLogPort;
     private final LoadJobCategoryIdByCodePort loadJobCategoryIdByCodePort;
     private final SavePortfolioPort savePortfolioPort;
     private final ObjectMapper objectMapper;
 
     /**
      *  [기능 개발 항목]
-     *    1. ImageFileMeta의 상태 변경
-     *    2. UserStorageUsage의 데이터 삽입 (Lazy data insert)
-     *        - 데이터가 존재하지 않을 수 있음을 고려
-     *        - 데이터가 존재한다면 갱신한다.
-     *    3. UserStorageUsageLog의 데이터 삽입
-     *    4. Portfolio 데이터 삽입 (sub aggregate: PortfolioContent, PortfolioJobCategory, PortfolioTag)
+     *    1. ImageFileMeta의 상태 변경 (소유권 검증 + UPLOADED 전이 + ImageUploadedEvent 발행)
+     *    2. Portfolio aggregate 데이터 삽입
      *
      *  [로직 플로우]
-     *    1. 이미지 파일 메타 상태값의 변경 (소유권 검증 포함)
-     *    2. 사용자 스토리지 사용량 저장
-     *    3. 카테고리 코드 해석
-     *    4. 포트폴리오 데이터의 삽입
+     *    1. 이미지 파일 메타 상태값의 변경
+     *    2. 카테고리 코드 해석
+     *    3. 포트폴리오 데이터 삽입
+     *
+     *  [부수효과]
+     *    UserStorageUsage 갱신은 ImageUploadedEvent 핸들러(storage BC)가 트랜잭션 커밋 이후
+     *    비동기로 처리합니다. 본 UseCase는 동기적으로 직접 호출하지 않습니다 (ADR #172 Phase 3).
      * */
     @Override
     @Transactional
@@ -52,7 +47,6 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
         List<Long> imageIds = aggregateImageIds(command.thumbnailImageId(), command.contentImageIds());
 
         updateUploadStatusOfImageFileMetaPort.markUploaded(memberId, imageIds);
-        saveUserStorageUsagePort.save(memberId, imageIds);
 
         Long jobCategoryId = loadJobCategoryIdByCodePort.findIdByCode(command.categoryCode());
         Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryId);

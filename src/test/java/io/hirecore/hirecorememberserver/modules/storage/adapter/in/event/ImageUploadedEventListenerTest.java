@@ -3,6 +3,8 @@ package io.hirecore.hirecorememberserver.modules.storage.adapter.in.event;
 import io.hirecore.hirecorememberserver.modules.storage.application.port.in.RecordImageStorageUsageUseCase;
 import io.hirecore.hirecorememberserver.modules.storage.domain.vo.ResourceKind;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageUploadedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +30,7 @@ class ImageUploadedEventListenerTest {
     @DisplayName("ImageUploadedEvent를 수신하면 PORTFOLIO_CONTENT 리소스 종류로 사용량 기록 use case를 호출한다")
     void should_invoke_record_use_case_with_portfolio_content_kind() {
         // given
-        ImageUploadedEvent event = new ImageUploadedEvent(100L, 1L, 1_048_576L, Instant.now());
+        ImageUploadedEvent event = new ImageUploadedEvent(100L, 1L, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE, 1_048_576L, Instant.now());
 
         // when
         listener.on(event);

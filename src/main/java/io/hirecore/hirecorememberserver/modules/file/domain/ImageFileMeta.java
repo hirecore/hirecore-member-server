@@ -167,6 +167,8 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
             registerEvent(new ImageUploadedEvent(
                     this.id,
                     this.memberAccountId,
+                    this.domainType,
+                    this.purpose,
                     this.fileSizeBytes,
                     this.completedUploadAt
             ));

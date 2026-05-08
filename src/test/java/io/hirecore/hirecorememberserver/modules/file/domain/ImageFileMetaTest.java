@@ -94,6 +94,8 @@ class ImageFileMetaTest {
             assertThat(events.iterator().next()).isInstanceOfSatisfying(ImageUploadedEvent.class, e -> {
                 assertThat(e.imageFileMetaId()).isEqualTo(meta.getId());
                 assertThat(e.memberAccountId()).isEqualTo(meta.getMemberAccountId());
+                assertThat(e.domainType()).isEqualTo(meta.getDomainType());
+                assertThat(e.purpose()).isEqualTo(meta.getPurpose());
                 assertThat(e.fileSizeBytes()).isEqualTo(meta.getFileSizeBytes());
                 assertThat(e.completedUploadAt()).isEqualTo(meta.getCompletedUploadAt());
             });

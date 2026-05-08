@@ -1,12 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.hirecore.hirecorememberserver.common.web.json.TsidId;
 
 public record JobCategoryNodeApiResponse(
-        Long id,
+        @TsidId Long id,
         Integer depth,
         Integer sortOrder,
-        Long parentId,
+        @TsidId Long parentId,
         String categoryName,
         String categoryCode,
 

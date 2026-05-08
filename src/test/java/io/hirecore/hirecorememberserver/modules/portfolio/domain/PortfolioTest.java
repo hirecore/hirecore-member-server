@@ -1,5 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
@@ -11,11 +13,12 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Portfolio 도메인 단위 테스트")
 class PortfolioTest {
 
-    private static Portfolio createValid(String contentHtml, List<String> tags) {
+    private static Portfolio createValid(String previewSummary, List<PortfolioTag> tags, List<ExternalLink> externalLinks) {
         return Portfolio.create(
                 1L,
                 10L,
@@ -24,9 +27,10 @@ class PortfolioTest {
                 null,
                 null,
                 "차세대 취업 사이트 개발 프로젝트",
+                previewSummary,
                 "{\"type\":\"doc\"}",
-                contentHtml,
-                List.of(),
+                "<p>본문</p>",
+                externalLinks,
                 null,
                 tags,
                 CollaborationType.TEAM,
@@ -41,7 +45,11 @@ class PortfolioTest {
         @Test
         @DisplayName("유효한 입력으로 PUBLISHED 상태의 Portfolio를 생성한다")
         void should_create_portfolio_with_published_status() {
-            Portfolio portfolio = createValid("<p>본문 미리보기</p>", List.of("풀스택", "팀"));
+            Portfolio portfolio = createValid(
+                    "본문 미리보기",
+                    List.of(PortfolioTag.create("풀스택"), PortfolioTag.create("팀")),
+                    List.of()
+            );
 
             assertThat(portfolio.getId()).isNotNull();
             assertThat(portfolio.getStatus()).isEqualTo(PortfolioStatus.PUBLISHED);
@@ -49,46 +57,52 @@ class PortfolioTest {
             assertThat(portfolio.getPortfolioContent().getPortfolioId()).isEqualTo(portfolio.getId());
             assertThat(portfolio.getPortfolioTags()).hasSize(2);
             assertThat(portfolio.getAuditingInfo()).isNotNull();
+            assertThat(portfolio.getPreviewSummary()).isEqualTo("본문 미리보기");
         }
 
         @Test
-        @DisplayName("HTML 본문에서 태그를 제거하고 첫 500자를 previewSummary로 도출한다")
-        void should_derive_preview_summary_from_html() {
-            Portfolio portfolio = createValid("<h2>제목</h2><p>본문 내용입니다.</p>", List.of("태그"));
+        @DisplayName("외부에서 주입한 portfolioTags를 그대로 보유한다")
+        void should_hold_provided_tags() {
+            List<PortfolioTag> tags = List.of(PortfolioTag.create("백엔드"));
 
-            assertThat(portfolio.getPreviewSummary()).isEqualTo("제목본문 내용입니다.");
+            Portfolio portfolio = createValid("본문", tags, List.of());
+
+            assertThat(portfolio.getPortfolioTags()).isSameAs(tags);
         }
 
         @Test
-        @DisplayName("HTML 본문이 500자를 초과하면 500자로 잘라낸다")
-        void should_truncate_preview_summary_to_500_chars() {
-            String longHtml = "<p>" + "가".repeat(600) + "</p>";
+        @DisplayName("외부에서 주입한 externalLinks를 그대로 보유한다")
+        void should_hold_provided_external_links() {
+            List<ExternalLink> links = List.of(new ExternalLink("Repo", "https://github.com/example"));
 
-            Portfolio portfolio = createValid(longHtml, List.of());
+            Portfolio portfolio = createValid("본문", List.of(), links);
 
-            assertThat(portfolio.getPreviewSummary()).hasSize(500);
+            assertThat(portfolio.getExternalLinks()).isSameAs(links);
+        }
+    }
+
+    @Nested
+    @DisplayName("invariant 검증")
+    class InvariantTest {
+
+        @Test
+        @DisplayName("previewSummary가 PREVIEW_SUMMARY_MAX_LENGTH를 초과하면 PREVIEW_SUMMARY_TOO_LONG 예외가 발생한다")
+        void should_throw_when_preview_summary_exceeds_max_length() {
+            String overflow = "가".repeat(Portfolio.PREVIEW_SUMMARY_MAX_LENGTH + 1);
+
+            assertThatThrownBy(() -> createValid(overflow, List.of(), List.of()))
+                    .isInstanceOf(PortfolioDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PREVIEW_SUMMARY_TOO_LONG.getErrorCode());
         }
 
         @Test
-        @DisplayName("태그가 null이면 빈 리스트를 보유한다")
-        void should_have_empty_tags_when_input_is_null() {
-            Portfolio portfolio = createValid("<p>본문</p>", null);
-
-            assertThat(portfolio.getPortfolioTags()).isEmpty();
-        }
-
-        @Test
-        @DisplayName("externalLinks가 null이면 빈 리스트로 초기화된다")
-        void should_have_empty_external_links_when_input_is_null() {
-            Portfolio portfolio = Portfolio.create(
-                    1L, 10L, null, null, null, null,
-                    "title", "{}", "<p>본문</p>",
-                    null,
-                    null, null,
-                    CollaborationType.PERSONAL, Visibility.PRIVATE
-            );
-
-            assertThat(portfolio.getExternalLinks()).isEmpty();
+        @DisplayName("previewSummary가 비어있으면 PREVIEW_SUMMARY_MISSING 예외가 발생한다")
+        void should_throw_when_preview_summary_is_blank() {
+            assertThatThrownBy(() -> createValid("   ", List.of(), List.of()))
+                    .isInstanceOf(PortfolioDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PREVIEW_SUMMARY_MISSING.getErrorCode());
         }
     }
 }

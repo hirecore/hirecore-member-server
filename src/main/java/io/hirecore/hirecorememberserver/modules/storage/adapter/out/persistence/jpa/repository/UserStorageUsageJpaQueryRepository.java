@@ -14,4 +14,6 @@ public interface UserStorageUsageJpaQueryRepository extends Repository<UserStora
         WHERE usu.memberAccountId =:memberAccountId
     """)
     Optional<Long> findUsedQuotaBytesByMemberAccountId(@Param("memberAccountId") Long memberAccountId);
+
+    Optional<UserStorageUsageJpaEntity> findByMemberAccountId(Long memberAccountId);
 }

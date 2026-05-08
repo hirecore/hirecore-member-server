@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.storage.domain;
 
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.storage.domain.exception.UserStorageUsageDomainException;
@@ -34,6 +35,36 @@ public class UserStorageUsage extends AbstractDomainEventPublisher implements Do
         this.memberAccountId = memberAccountId;
         this.usedQuotaBytes = usedQuotaBytes;
         this.auditingInfo = auditingInfo;
+    }
+
+    public static UserStorageUsage createForMember(Long memberAccountId) {
+        return UserStorageUsage.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .memberAccountId(memberAccountId)
+                .usedQuotaBytes(0L)
+                .auditingInfo(AuditingInfo.create())
+                .build();
+    }
+
+    public UserStorageUsage increase(Long bytes) {
+        AssertionUtils.notNull(
+                bytes,
+                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTES_MISSING,
+                UserStorageUsageDomainException::new
+        );
+        AssertionUtils.isTrue(
+                bytes >= 0,
+                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTES_NEGATIVE,
+                UserStorageUsageDomainException::new
+        );
+
+        return UserStorageUsage.builder()
+                .id(this.id)
+                .version(this.version)
+                .memberAccountId(this.memberAccountId)
+                .usedQuotaBytes(this.usedQuotaBytes + bytes)
+                .auditingInfo(this.auditingInfo.update())
+                .build();
     }
 
     private static void ensureInvariants(

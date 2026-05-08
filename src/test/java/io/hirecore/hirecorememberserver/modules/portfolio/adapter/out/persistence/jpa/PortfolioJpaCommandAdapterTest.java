@@ -4,7 +4,10 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioJobCategoryJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioTagJpaEntity;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioContentJpaEntityMapper;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJobCategoryJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJpaEntityMapper;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioTagJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJobCategoryJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioTagJpaCommandRepository;
@@ -35,7 +38,16 @@ class PortfolioJpaCommandAdapterTest {
     private PortfolioJpaCommandAdapter sut;
 
     @Mock
-    private PortfolioJpaEntityMapper mapper;
+    private PortfolioJpaEntityMapper portfolioMapper;
+
+    @Mock
+    private PortfolioContentJpaEntityMapper portfolioContentMapper;
+
+    @Mock
+    private PortfolioJobCategoryJpaEntityMapper portfolioJobCategoryMapper;
+
+    @Mock
+    private PortfolioTagJpaEntityMapper portfolioTagMapper;
 
     @Mock
     private PortfolioJpaCommandRepository portfolioRepository;
@@ -66,12 +78,12 @@ class PortfolioJpaCommandAdapterTest {
         PortfolioTagJpaEntity tagEntity1 = mock(PortfolioTagJpaEntity.class);
         PortfolioTagJpaEntity tagEntity2 = mock(PortfolioTagJpaEntity.class);
 
-        given(mapper.toJpaEntity(domain)).willReturn(portfolioEntity);
-        given(mapper.toContentJpaEntity(domain.getPortfolioContent())).willReturn(contentEntity);
+        given(portfolioMapper.toJpaEntity(domain)).willReturn(portfolioEntity);
+        given(portfolioContentMapper.toJpaEntity(domain.getPortfolioContent())).willReturn(contentEntity);
         given(portfolioRepository.save(portfolioEntity)).willReturn(savedPortfolioEntity);
-        given(mapper.toJobCategoryJpaEntity(domain.getPortfolioJobCategory())).willReturn(jobCategoryEntity);
-        given(mapper.toTagJpaEntity(domain.getPortfolioTags().get(0))).willReturn(tagEntity1);
-        given(mapper.toTagJpaEntity(domain.getPortfolioTags().get(1))).willReturn(tagEntity2);
+        given(portfolioJobCategoryMapper.toJpaEntity(domain.getPortfolioJobCategory())).willReturn(jobCategoryEntity);
+        given(portfolioTagMapper.toJpaEntity(domain.getPortfolioTags().get(0))).willReturn(tagEntity1);
+        given(portfolioTagMapper.toJpaEntity(domain.getPortfolioTags().get(1))).willReturn(tagEntity2);
 
         // when
         Portfolio result = sut.save(domain);
@@ -112,10 +124,10 @@ class PortfolioJpaCommandAdapterTest {
         PortfolioContentJpaEntity contentEntity = mock(PortfolioContentJpaEntity.class);
         PortfolioJobCategoryJpaEntity jobCategoryEntity = mock(PortfolioJobCategoryJpaEntity.class);
 
-        given(mapper.toJpaEntity(domain)).willReturn(portfolioEntity);
-        given(mapper.toContentJpaEntity(domain.getPortfolioContent())).willReturn(contentEntity);
+        given(portfolioMapper.toJpaEntity(domain)).willReturn(portfolioEntity);
+        given(portfolioContentMapper.toJpaEntity(domain.getPortfolioContent())).willReturn(contentEntity);
         given(portfolioRepository.save(portfolioEntity)).willReturn(savedPortfolioEntity);
-        given(mapper.toJobCategoryJpaEntity(domain.getPortfolioJobCategory())).willReturn(jobCategoryEntity);
+        given(portfolioJobCategoryMapper.toJpaEntity(domain.getPortfolioJobCategory())).willReturn(jobCategoryEntity);
 
         // when
         sut.save(domain);

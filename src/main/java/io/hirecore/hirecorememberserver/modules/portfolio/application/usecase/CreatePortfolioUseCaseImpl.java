@@ -60,7 +60,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
     private Portfolio buildPortfolio(Long memberId, CreatePortfolioCommand command, Long jobCategoryId) {
         PortfolioContentCommand content = command.content();
-        String previewSummary = HtmlPreviewSummarizer.summarize(content.html(), Portfolio.PREVIEW_SUMMARY_MAX_LENGTH);
+        String previewSummary = resolvePreviewSummary(content.html(), command.title());
         List<PortfolioTag> portfolioTags = toPortfolioTags(command.tags());
         List<ExternalLink> externalLinks = command.externalLinks() != null ? command.externalLinks() : List.of();
 
@@ -81,6 +81,15 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
                 command.collaborationType(),
                 command.visibility()
         );
+    }
+
+    /**
+     * 본문 HTML 로부터 미리보기 요약을 산출합니다.
+     * 본문에 텍스트가 없어 빈 문자열이 산출되면(이미지 위주 포트폴리오 등) 제목으로 fallback 합니다.
+     */
+    private static String resolvePreviewSummary(String contentHtml, String title) {
+        String summary = HtmlPreviewSummarizer.summarize(contentHtml, Portfolio.PREVIEW_SUMMARY_MAX_LENGTH);
+        return summary.isBlank() ? title : summary;
     }
 
     private static List<PortfolioTag> toPortfolioTags(List<String> userInputTags) {

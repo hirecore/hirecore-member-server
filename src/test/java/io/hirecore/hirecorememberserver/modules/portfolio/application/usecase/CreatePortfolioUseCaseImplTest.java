@@ -231,6 +231,52 @@ class CreatePortfolioUseCaseImplTest {
         }
 
         @Test
+        @DisplayName("HTML 본문에 텍스트가 없으면(이미지 위주) title 로 previewSummary 가 fallback 된다")
+        void should_fallback_to_title_when_html_has_no_text() {
+            // given — content.html 이 이미지 태그만 포함하여 stripping 결과가 빈 문자열인 케이스
+            CreatePortfolioCommand command = new CreatePortfolioCommand(
+                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
+                    "이미지 위주 포트폴리오 제목", null, null, null, null, null,
+                    new PortfolioContentCommand(Map.of("type", "doc"), "<p><img src=\"https://example.com/image.png\"/></p>"),
+                    null, null
+            );
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getPreviewSummary()).isEqualTo("이미지 위주 포트폴리오 제목");
+        }
+
+        @Test
+        @DisplayName("HTML 본문이 빈 태그만 포함하여 텍스트가 없을 때도 title 로 fallback 된다")
+        void should_fallback_to_title_when_html_has_only_empty_tags() {
+            // given
+            CreatePortfolioCommand command = new CreatePortfolioCommand(
+                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
+                    "fallback 제목", null, null, null, null, null,
+                    new PortfolioContentCommand(Map.of("type", "doc"), "<p></p><br/>"),
+                    null, null
+            );
+            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
+                    .given(savePortfolioPort).save(any(Portfolio.class));
+
+            // when
+            sut.execute(MEMBER_ACCOUNT_ID, command);
+
+            // then
+            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
+            then(savePortfolioPort).should().save(captor.capture());
+            assertThat(captor.getValue().getPreviewSummary()).isEqualTo("fallback 제목");
+        }
+
+        @Test
         @DisplayName("PREVIEW_SUMMARY_MAX_LENGTH 를 초과하면 잘라낸 previewSummary가 도메인에 전달된다")
         void should_truncate_preview_summary() {
             // given

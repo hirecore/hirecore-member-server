@@ -95,6 +95,18 @@ public class SharedKernelExceptionCodeCluster {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "ImageUploadedEvent 생성에서 completedUploadAt이 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        // DOMAIN_TYPE
+        DOMAIN_TYPE_INVALID(
+                HttpStatus.BAD_REQUEST,
+                "DomainType 변환 실패: 지원하지 않는 domainType 값입니다.",
+                "지원하지 않는 도메인 타입입니다."),
+
+        // PURPOSE
+        PURPOSE_INVALID(
+                HttpStatus.BAD_REQUEST,
+                "Purpose 변환 실패: 지원하지 않는 purpose 값입니다.",
+                "지원하지 않는 파일 업로드 목적입니다."),
         ;
 
         private final HttpStatus httpStatus;

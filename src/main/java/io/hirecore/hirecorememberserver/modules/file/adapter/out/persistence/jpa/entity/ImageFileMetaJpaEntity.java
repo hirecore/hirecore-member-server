@@ -3,6 +3,8 @@ package io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jp
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;

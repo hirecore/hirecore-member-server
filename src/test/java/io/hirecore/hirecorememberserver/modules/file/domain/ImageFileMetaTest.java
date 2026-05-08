@@ -4,6 +4,8 @@ import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileM
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageUploadedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

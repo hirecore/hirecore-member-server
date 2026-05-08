@@ -10,6 +10,8 @@ import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.DomainAggregateRoot;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

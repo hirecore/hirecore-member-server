@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+
+
 @Getter
 public class PortfolioContent {
     /**
@@ -32,6 +34,14 @@ public class PortfolioContent {
         this.portfolioId = portfolioId;
         this.contentJson = contentJson;
         this.contentHtml = contentHtml;
+    }
+
+    public static PortfolioContent create(Long portfolioId, String contentJson, String contentHtml) {
+        return PortfolioContent.builder()
+                .portfolioId(portfolioId)
+                .contentJson(contentJson)
+                .contentHtml(contentHtml)
+                .build();
     }
 
     private static void ensureInvariants(

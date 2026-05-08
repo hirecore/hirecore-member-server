@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
@@ -38,6 +39,24 @@ public class PortfolioTag {
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
         this.auditingInfo = auditingInfo;
+    }
+
+    public static PortfolioTag create(String userInputTag) {
+        return PortfolioTag.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .userInputTag(userInputTag)
+                .normalizedTag(normalize(userInputTag))
+                .isDeleted(false)
+                .deletedAt(null)
+                .auditingInfo(AuditingInfo.create())
+                .build();
+    }
+
+    private static String normalize(String userInputTag) {
+        if (userInputTag == null) {
+            return null;
+        }
+        return userInputTag.trim().toLowerCase().replaceAll("\\s+", "_");
     }
 
     private static void ensureInvariants(

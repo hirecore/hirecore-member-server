@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(config = GlobalMapStructConfig.class)
 public abstract class PortfolioJpaEntityMapper {
 
-    @Mapping(target = "portfolioJobCategoryId", source = "portfolioJobCategory.id")
     @Mapping(target = "portfolioContent", ignore = true)
     @Mapping(target = "portfolioJobCategories", ignore = true)
     @Mapping(target = "portfolioTags", ignore = true)

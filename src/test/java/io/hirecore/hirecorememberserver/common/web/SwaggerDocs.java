@@ -20,5 +20,9 @@ public class SwaggerDocs {
         public static class Category {
             public static final String JOB_CATEGORY = "직무 카테고리";
         }
+
+        public static class Portfolio {
+            public static final String PORTFOLIO = "포트폴리오";
+        }
     }
 }

@@ -53,14 +53,13 @@ public class ImageFileMetaJpaCommandAdapter
                 .stream()
                 .collect(Collectors.toMap(ImageFileMetaJpaEntity::getId, Function.identity()));
 
-        Instant now = Instant.now();
         for (ImageFileMeta domain : imageFileMetas) {
             ImageFileMetaJpaEntity entity = entityById.get(domain.getId());
             if (entity == null) {
                 continue;
             }
 
-            entity.updateUploadStatus(UploadStatus.UPLOADED, now);
+            entity.updateUploadStatus(UploadStatus.UPLOADED, domain.getCompletedUploadAt());
 
             Collection<Object> domainEvents = domain.pollAllEvents();
             if (domainEvents != null && !domainEvents.isEmpty()) {

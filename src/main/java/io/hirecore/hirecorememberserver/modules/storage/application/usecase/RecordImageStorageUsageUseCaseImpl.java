@@ -1,6 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.storage.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.storage.application.port.in.RecordImageStorageUsageUseCase;
+import io.hirecore.hirecorememberserver.modules.storage.application.port.out.LoadUserStorageUsageLogPort;
 import io.hirecore.hirecorememberserver.modules.storage.application.port.out.LoadUserStorageUsagePort;
 import io.hirecore.hirecorememberserver.modules.storage.application.port.out.SaveUserStorageUsageLogPort;
 import io.hirecore.hirecorememberserver.modules.storage.application.port.out.SaveUserStorageUsagePort;
@@ -19,12 +20,19 @@ public class RecordImageStorageUsageUseCaseImpl implements RecordImageStorageUsa
     private static final String IDEMPOTENCY_KEY_PREFIX = "image-uploaded:";
 
     private final LoadUserStorageUsagePort loadUserStorageUsagePort;
+    private final LoadUserStorageUsageLogPort loadUserStorageUsageLogPort;
     private final SaveUserStorageUsagePort saveUserStorageUsagePort;
     private final SaveUserStorageUsageLogPort saveUserStorageUsageLogPort;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void execute(Long memberAccountId, Long imageFileMetaId, ResourceKind resourceKind, Long fileSizeBytes) {
+        String idempotencyKey = buildIdempotencyKey(imageFileMetaId);
+
+        if (loadUserStorageUsageLogPort.existsByIdempotencyKey(idempotencyKey)) {
+            return;
+        }
+
         UserStorageUsage current = loadUserStorageUsagePort.findByMemberAccountId(memberAccountId)
                 .orElseGet(() -> UserStorageUsage.createForMember(memberAccountId));
 
@@ -39,7 +47,7 @@ public class RecordImageStorageUsageUseCaseImpl implements RecordImageStorageUsa
                 fileSizeBytes,
                 beforeUsedQuotaBytes,
                 saved.getUsedQuotaBytes(),
-                buildIdempotencyKey(imageFileMetaId)
+                idempotencyKey
         );
         saveUserStorageUsageLogPort.save(log);
     }

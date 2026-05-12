@@ -6,10 +6,13 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageUploadedE
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ImageUploadedEventListener {
@@ -19,12 +22,19 @@ public class ImageUploadedEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void on(ImageUploadedEvent event) {
         ResourceKind resourceKind = resolveResourceKind(event.domainType(), event.purpose());
-        recordImageStorageUsageUseCase.execute(
-                event.memberAccountId(),
-                event.imageFileMetaId(),
-                resourceKind,
-                event.fileSizeBytes()
-        );
+        try {
+            recordImageStorageUsageUseCase.execute(
+                    event.memberAccountId(),
+                    event.imageFileMetaId(),
+                    resourceKind,
+                    event.fileSizeBytes()
+            );
+        } catch (DataIntegrityViolationException e) {
+            log.debug(
+                    "멱등 키 race — 이미 처리됨, 스킵: imageFileMetaId={}",
+                    event.imageFileMetaId()
+            );
+        }
     }
 
     /**

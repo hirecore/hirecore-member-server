@@ -11,10 +11,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.Instant;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 
 @DisplayName("ImageUploadedEventListener 단위 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -72,5 +77,16 @@ class ImageUploadedEventListenerTest {
 
         then(recordImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.RESUME_ATTACHMENT, 1_048_576L);
+    }
+
+    @Test
+    @DisplayName("멱등키 race 로 DataIntegrityViolationException 이 발생해도 위로 전파되지 않고 흡수된다")
+    void should_swallow_data_integrity_violation_from_race() {
+        ImageUploadedEvent event = eventFor(DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE);
+        willThrow(new DataIntegrityViolationException("duplicate idempotency_key"))
+                .given(recordImageStorageUsageUseCase)
+                .execute(anyLong(), anyLong(), any(ResourceKind.class), anyLong());
+
+        assertThatCode(() -> listener.on(event)).doesNotThrowAnyException();
     }
 }

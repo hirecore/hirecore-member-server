@@ -2,7 +2,9 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper
 
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -44,7 +46,10 @@ class PortfolioWebMapperTest {
                     "메모입니다.",
                     100L,
                     List.of(101L, 102L),
-                    List.of("Spring", "DDD"),
+                    List.of(
+                            new PortfolioTagApiRequest("Spring", 0),
+                            new PortfolioTagApiRequest("DDD", 1)
+                    ),
                     List.of(new ExternalLink("GitHub", "https://github.com/example/repo")),
                     new PortfolioContentApiRequest(
                             Map.of("type", "doc"),
@@ -66,7 +71,12 @@ class PortfolioWebMapperTest {
             assertThat(command.privateMemo()).isEqualTo("메모입니다.");
             assertThat(command.thumbnailImageId()).isEqualTo(100L);
             assertThat(command.contentImageIds()).containsExactly(101L, 102L);
-            assertThat(command.tags()).containsExactly("Spring", "DDD");
+            assertThat(command.tags())
+                    .extracting(PortfolioTagCommand::userInputTag, PortfolioTagCommand::sortOrder)
+                    .containsExactly(
+                            org.assertj.core.groups.Tuple.tuple("Spring", 0),
+                            org.assertj.core.groups.Tuple.tuple("DDD", 1)
+                    );
             assertThat(command.externalLinks())
                     .extracting(ExternalLink::url)
                     .containsExactly("https://github.com/example/repo");

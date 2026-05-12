@@ -47,7 +47,7 @@ class PortfolioTest {
         void should_create_portfolio_with_published_status() {
             Portfolio portfolio = createValid(
                     "본문 미리보기",
-                    List.of(PortfolioTag.create("풀스택"), PortfolioTag.create("팀")),
+                    List.of(PortfolioTag.create("풀스택", 0), PortfolioTag.create("팀", 1)),
                     List.of()
             );
 
@@ -63,7 +63,7 @@ class PortfolioTest {
         @Test
         @DisplayName("외부에서 주입한 portfolioTags를 그대로 보유한다")
         void should_hold_provided_tags() {
-            List<PortfolioTag> tags = List.of(PortfolioTag.create("백엔드"));
+            List<PortfolioTag> tags = List.of(PortfolioTag.create("백엔드", 0));
 
             Portfolio portfolio = createValid("본문", tags, List.of());
 

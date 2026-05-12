@@ -34,7 +34,8 @@ public record CreatePortfolioApiRequest(
         @TsidIds
         List<Long> contentImageIds,
 
-        List<String> tags,
+        @Valid
+        List<PortfolioTagApiRequest> tags,
 
         List<ExternalLink> externalLinks,
 

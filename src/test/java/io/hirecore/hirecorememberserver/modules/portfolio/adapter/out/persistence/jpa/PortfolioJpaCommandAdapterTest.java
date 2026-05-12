@@ -54,7 +54,7 @@ class PortfolioJpaCommandAdapterTest {
         return Portfolio.create(
                 1L, 9L, null, 100L, 8001L, 7001L,
                 "title", "본문", "{}", "<p>본문</p>", List.of(), null,
-                List.of(PortfolioTag.create("Spring"), PortfolioTag.create("DDD")),
+                List.of(PortfolioTag.create("Spring", 0), PortfolioTag.create("DDD", 1)),
                 CollaborationType.TEAM, Visibility.PUBLIC
         );
     }

@@ -2,7 +2,6 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioTagDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioTagDomainExceptionCodeCluster;
@@ -18,6 +17,7 @@ public class PortfolioTag {
     private final Long id;
     private final String userInputTag;
     private final String normalizedTag;
+    private final Integer sortOrder;
     private final Boolean isDeleted;
     private final Instant deletedAt;
     private final AuditingInfo auditingInfo;
@@ -27,25 +27,28 @@ public class PortfolioTag {
             Long id,
             String userInputTag,
             String normalizedTag,
+            Integer sortOrder,
             Boolean isDeleted,
             Instant deletedAt,
             AuditingInfo auditingInfo
     ) {
-        ensureInvariants(id, userInputTag, normalizedTag, auditingInfo);
+        ensureInvariants(id, userInputTag, normalizedTag, sortOrder, auditingInfo);
 
         this.id = id;
         this.userInputTag = userInputTag;
         this.normalizedTag = normalizedTag;
+        this.sortOrder = sortOrder;
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
         this.auditingInfo = auditingInfo;
     }
 
-    public static PortfolioTag create(String userInputTag) {
+    public static PortfolioTag create(String userInputTag, Integer sortOrder) {
         return PortfolioTag.builder()
                 .id(TsidCreator.getTsid().toLong())
                 .userInputTag(userInputTag)
                 .normalizedTag(normalize(userInputTag))
+                .sortOrder(sortOrder)
                 .isDeleted(false)
                 .deletedAt(null)
                 .auditingInfo(AuditingInfo.create())
@@ -63,6 +66,7 @@ public class PortfolioTag {
             Long id,
             String userInputTag,
             String normalizedTag,
+            Integer sortOrder,
             AuditingInfo auditingInfo
     ) {
         AssertionUtils.notNull(
@@ -78,6 +82,16 @@ public class PortfolioTag {
         AssertionUtils.notBlank(
                 normalizedTag,
                 PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.NORMALIZED_TAG_MISSING,
+                PortfolioTagDomainException::new
+        );
+        AssertionUtils.notNull(
+                sortOrder,
+                PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.SORT_ORDER_MISSING,
+                PortfolioTagDomainException::new
+        );
+        AssertionUtils.isTrue(
+                sortOrder >= 0,
+                PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.SORT_ORDER_NEGATIVE,
                 PortfolioTagDomainException::new
         );
         AssertionUtils.notNull(

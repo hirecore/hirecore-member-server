@@ -7,6 +7,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
@@ -92,12 +93,12 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
         return summary.isBlank() ? title : summary;
     }
 
-    private static List<PortfolioTag> toPortfolioTags(List<String> userInputTags) {
-        if (userInputTags == null || userInputTags.isEmpty()) {
+    private static List<PortfolioTag> toPortfolioTags(List<PortfolioTagCommand> tagCommands) {
+        if (tagCommands == null || tagCommands.isEmpty()) {
             return List.of();
         }
-        return userInputTags.stream()
-                .map(PortfolioTag::create)
+        return tagCommands.stream()
+                .map(tag -> PortfolioTag.create(tag.userInputTag(), tag.sortOrder()))
                 .toList();
     }
 

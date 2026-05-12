@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryIdByCodePort;
@@ -69,7 +70,10 @@ class CreatePortfolioUseCaseImplTest {
                 "회고 작성 시 참고용 메모입니다.",
                 THUMBNAIL_IMAGE_ID,
                 CONTENT_IMAGE_IDS,
-                List.of("Spring", "DDD"),
+                List.of(
+                        new PortfolioTagCommand("Spring", 0),
+                        new PortfolioTagCommand("DDD", 1)
+                ),
                 List.of(),
                 new PortfolioContentCommand(
                         Map.of("type", "doc"),
@@ -301,8 +305,8 @@ class CreatePortfolioUseCaseImplTest {
         }
 
         @Test
-        @DisplayName("userInputTags 문자열 리스트가 PortfolioTag 리스트로 매핑되어 도메인에 전달된다")
-        void should_map_user_input_tags_to_portfolio_tags() {
+        @DisplayName("tags Command 리스트가 PortfolioTag 리스트로 매핑되며 클라이언트가 보낸 sortOrder 가 도메인에 그대로 전달된다")
+        void should_map_tag_commands_to_portfolio_tags_with_sort_order() {
             // given
             CreatePortfolioCommand command = createCommand();
             given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -316,8 +320,11 @@ class CreatePortfolioUseCaseImplTest {
             ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
             then(savePortfolioPort).should().save(captor.capture());
             assertThat(captor.getValue().getPortfolioTags())
-                    .extracting("userInputTag")
-                    .containsExactly("Spring", "DDD");
+                    .extracting("userInputTag", "sortOrder")
+                    .containsExactly(
+                            org.assertj.core.groups.Tuple.tuple("Spring", 0),
+                            org.assertj.core.groups.Tuple.tuple("DDD", 1)
+                    );
         }
 
         @Test

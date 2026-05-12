@@ -88,7 +88,11 @@ class PortfolioControllerTest {
                 Map.entry("privateMemo", "회고 작성 시 참고용 메모입니다."),
                 Map.entry("thumbnailImageId", "100"),
                 Map.entry("contentImageIds", List.of("101", "102")),
-                Map.entry("tags", List.of("Spring", "DDD", "Hexagonal")),
+                Map.entry("tags", List.of(
+                        Map.of("userInputTag", "Spring",    "sortOrder", 0),
+                        Map.of("userInputTag", "DDD",       "sortOrder", 1),
+                        Map.of("userInputTag", "Hexagonal", "sortOrder", 2)
+                )),
                 Map.entry("externalLinks", List.of(
                         Map.of("label", "GitHub Repo", "url", "https://github.com/example/repo"),
                         Map.of("label", "데모", "url", "https://demo.example.com")
@@ -186,6 +190,14 @@ class PortfolioControllerTest {
                                                     fieldWithPath("tags")
                                                             .type(JsonFieldType.ARRAY)
                                                             .description("사용자 입력 태그 목록")
+                                                            .optional(),
+                                                    fieldWithPath("tags[].userInputTag")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("사용자 입력 태그 문자열")
+                                                            .optional(),
+                                                    fieldWithPath("tags[].sortOrder")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("사용자가 의도한 표시 순서 (0 이상)")
                                                             .optional(),
                                                     fieldWithPath("externalLinks")
                                                             .type(JsonFieldType.ARRAY)

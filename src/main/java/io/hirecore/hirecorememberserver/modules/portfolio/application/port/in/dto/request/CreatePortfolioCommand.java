@@ -18,7 +18,7 @@ public record CreatePortfolioCommand(
         String privateMemo,
         Long thumbnailImageId,
         List<Long> contentImageIds,
-        List<String> tags,
+        List<PortfolioTagCommand> tags,
         List<ExternalLink> externalLinks,
         PortfolioContentCommand content,
         Long linkedResumeId,

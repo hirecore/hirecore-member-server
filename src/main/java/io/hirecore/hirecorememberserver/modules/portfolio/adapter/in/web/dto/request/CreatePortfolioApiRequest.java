@@ -2,9 +2,9 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.re
 
 import io.hirecore.hirecorememberserver.common.web.json.TsidId;
 import io.hirecore.hirecorememberserver.common.web.json.TsidIds;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.CollaborationTypeApiValue;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.ExternalLinkApiValue;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.VisibilityApiValue;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,10 +18,10 @@ public record CreatePortfolioApiRequest(
         String customCategory,
 
         @NotNull(message = "협업 유형은 필수입니다.")
-        CollaborationType collaborationType,
+        CollaborationTypeApiValue collaborationType,
 
         @NotNull(message = "공개 범위는 필수입니다.")
-        Visibility visibility,
+        VisibilityApiValue visibility,
 
         @NotBlank(message = "제목은 필수입니다.")
         String title,
@@ -37,7 +37,7 @@ public record CreatePortfolioApiRequest(
         @Valid
         List<PortfolioTagApiRequest> tags,
 
-        List<ExternalLink> externalLinks,
+        List<ExternalLinkApiValue> externalLinks,
 
         @Valid
         @NotNull(message = "포트폴리오 본문은 필수입니다.")

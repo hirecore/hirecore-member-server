@@ -3,6 +3,9 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.CollaborationTypeApiValue;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.ExternalLinkApiValue;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.VisibilityApiValue;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
@@ -40,8 +43,8 @@ class PortfolioWebMapperTest {
             CreatePortfolioApiRequest request = new CreatePortfolioApiRequest(
                     "DEV_BACKEND",
                     "Spring Boot 백엔드",
-                    CollaborationType.TEAM,
-                    Visibility.PUBLIC,
+                    CollaborationTypeApiValue.TEAM,
+                    VisibilityApiValue.PUBLIC,
                     "회원 서비스 도메인 모델링 회고",
                     "메모입니다.",
                     100L,
@@ -50,7 +53,7 @@ class PortfolioWebMapperTest {
                             new PortfolioTagApiRequest("Spring", 0),
                             new PortfolioTagApiRequest("DDD", 1)
                     ),
-                    List.of(new ExternalLink("GitHub", "https://github.com/example/repo")),
+                    List.of(new ExternalLinkApiValue("GitHub", "https://github.com/example/repo")),
                     new PortfolioContentApiRequest(
                             Map.of("type", "doc"),
                             "<p>본문</p>"
@@ -93,8 +96,8 @@ class PortfolioWebMapperTest {
             CreatePortfolioApiRequest request = new CreatePortfolioApiRequest(
                     "DEV_BACKEND",
                     null,
-                    CollaborationType.PERSONAL,
-                    Visibility.PRIVATE,
+                    CollaborationTypeApiValue.PERSONAL,
+                    VisibilityApiValue.PRIVATE,
                     "title",
                     null,
                     null,

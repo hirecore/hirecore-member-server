@@ -2,9 +2,9 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.re
 
 import io.hirecore.hirecorememberserver.common.web.json.TsidId;
 import io.hirecore.hirecorememberserver.common.web.json.TsidIds;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.CollaborationTypeApiValue;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.ExternalLinkApiValue;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.VisibilityApiValue;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.CollaborationTypeApiValue;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.ExternalLinkApiValue;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.VisibilityApiValue;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

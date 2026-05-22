@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value;
+package io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

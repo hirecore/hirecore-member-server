@@ -3,11 +3,12 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.CollaborationTypeApiValue;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.ExternalLinkApiValue;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.value.VisibilityApiValue;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.CollaborationTypeApiValue;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.ExternalLinkApiValue;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.VisibilityApiValue;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -26,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("PortfolioWebMapper 단위 테스트")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = PortfolioWebMapperImpl.class)
+@ContextConfiguration(classes = {PortfolioWebMapperImpl.class, SharedDomainVoWebMapperImpl.class})
 class PortfolioWebMapperTest {
 
     @Autowired

@@ -34,7 +34,7 @@ class PortfolioWebMapperTest {
     private PortfolioWebMapper mapper;
 
     @Nested
-    @DisplayName("toCommand() — API 요청을 Command로 변환")
+    @DisplayName("toCreatePortfolioCommand() — API 요청을 Command로 변환")
     class ToCommandTest {
 
         @Test
@@ -64,7 +64,7 @@ class PortfolioWebMapperTest {
             );
 
             // when
-            CreatePortfolioCommand command = mapper.toCommand(request);
+            CreatePortfolioCommand command = mapper.toCreatePortfolioCommand(request);
 
             // then
             assertThat(command.categoryCode()).isEqualTo("DEV_BACKEND");
@@ -111,7 +111,7 @@ class PortfolioWebMapperTest {
             );
 
             // when
-            CreatePortfolioCommand command = mapper.toCommand(request);
+            CreatePortfolioCommand command = mapper.toCreatePortfolioCommand(request);
 
             // then
             assertThat(command.categoryCode()).isEqualTo("DEV_BACKEND");
@@ -128,7 +128,7 @@ class PortfolioWebMapperTest {
         @DisplayName("null 요청을 받으면 null을 반환한다")
         void should_return_null_when_request_is_null() {
             // when & then
-            assertThat(mapper.toCommand(null)).isNull();
+            assertThat(mapper.toCreatePortfolioCommand(null)).isNull();
         }
     }
 }

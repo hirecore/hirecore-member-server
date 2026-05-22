@@ -15,7 +15,7 @@ import org.mapstruct.Mapper;
         uses = {SharedDomainVoWebMapper.class}
 )
 public abstract class PortfolioWebMapper {
-    public abstract CreatePortfolioCommand toCommand(CreatePortfolioApiRequest request);
-    public abstract PortfolioContentCommand toContentCommand(PortfolioContentApiRequest content);
-    public abstract PortfolioTagCommand toTagCommand(PortfolioTagApiRequest tag);
+    public abstract CreatePortfolioCommand toCreatePortfolioCommand(CreatePortfolioApiRequest request);
+    public abstract PortfolioContentCommand toPortfolioContentCommand(PortfolioContentApiRequest content);
+    public abstract PortfolioTagCommand toPortfolioTagCommand(PortfolioTagApiRequest tag);
 }

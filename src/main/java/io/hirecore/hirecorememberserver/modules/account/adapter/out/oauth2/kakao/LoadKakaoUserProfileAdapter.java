@@ -35,7 +35,7 @@ public class LoadKakaoUserProfileAdapter implements LoadSocialUserProfilePort {
     public SocialUserProfileResult load(String authorizationCode) {
         KakaoTokenExternalResult tokenResult = exchangeAuthorizationCodeForToken(authorizationCode);
         KakaoUserProfileExternalResult profileResult = fetchProfileFromKakao(tokenResult.accessToken());
-        return kakaoUserProfileExternalDtoMapper.mapToSocialUserProfileResult(profileResult);
+        return kakaoUserProfileExternalDtoMapper.toSocialUserProfileResult(profileResult);
     }
 
     /**

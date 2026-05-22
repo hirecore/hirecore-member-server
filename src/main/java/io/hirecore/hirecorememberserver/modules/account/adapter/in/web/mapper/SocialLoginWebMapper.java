@@ -12,5 +12,5 @@ public abstract class SocialLoginWebMapper {
             @Mapping(target = "provider", source = "provider"),
             @Mapping(target = "authorizationCode", source = "socialLoginApiRequest.authorizationCode")
     })
-    public abstract SocialLoginCommand mapToSocialLoginCommand(String provider, SocialLoginApiRequest socialLoginApiRequest);
+    public abstract SocialLoginCommand toSocialLoginCommand(String provider, SocialLoginApiRequest socialLoginApiRequest);
 }

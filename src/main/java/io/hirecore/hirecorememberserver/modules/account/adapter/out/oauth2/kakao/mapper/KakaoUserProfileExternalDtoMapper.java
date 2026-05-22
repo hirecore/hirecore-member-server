@@ -22,5 +22,5 @@ public abstract class KakaoUserProfileExternalDtoMapper {
             @Mapping(target = "emailAgreed", expression = "java(!request.kakaoAccount().emailNeedsAgreement())"),
             @Mapping(target = "profileNicknameAgreed", expression = "java(!request.kakaoAccount().profileNicknameNeedsAgreement())"),
     })
-    public abstract SocialUserProfileResult mapToSocialUserProfileResult(KakaoUserProfileExternalResult request);
+    public abstract SocialUserProfileResult toSocialUserProfileResult(KakaoUserProfileExternalResult request);
 }

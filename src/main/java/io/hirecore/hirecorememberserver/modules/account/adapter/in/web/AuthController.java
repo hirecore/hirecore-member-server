@@ -36,7 +36,7 @@ public class AuthController {
             @PathVariable String provider,
             @Valid @RequestBody SocialLoginApiRequest request
     ) {
-        SocialLoginCommand socialLoginCommand = socialLoginWebMapper.mapToSocialLoginCommand(provider, request);
+        SocialLoginCommand socialLoginCommand = socialLoginWebMapper.toSocialLoginCommand(provider, request);
         PairTokenResponse pairTokenResponse = loginSocialUserUseCase.execute(socialLoginCommand);
 
         ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(pairTokenResponse.accessToken());

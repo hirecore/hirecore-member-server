@@ -31,7 +31,7 @@ public class PortfolioController {
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @Valid @RequestBody CreatePortfolioApiRequest request
     ){
-        CreatePortfolioCommand command = portfolioWebMapper.toCommand(request);
+        CreatePortfolioCommand command = portfolioWebMapper.toCreatePortfolioCommand(request);
         Long portfolioId = createPortfolioUseCase.execute(authPrincipal.id(), command);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()

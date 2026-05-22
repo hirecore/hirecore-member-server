@@ -5,10 +5,9 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.exception.Appli
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.BaseApplicationException;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionPort;
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception.DataConsistencyException;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.BaseDomainException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCode;
-import io.hirecore.hirecorememberserver.common.web.exception.GlobalExceptionHandler;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

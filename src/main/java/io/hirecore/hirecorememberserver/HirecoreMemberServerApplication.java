@@ -10,7 +10,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 @ConfigurationPropertiesScan({
 		"io.hirecore.hirecorememberserver.common.security.properties",
-		"io.hirecore.hirecorememberserver.sharedkernel.infrastructure.aws",
+		"io.hirecore.hirecorememberserver.sharedkernel.adapter.out.aws",
 		"io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.properties",
 		"io.hirecore.hirecorememberserver.modules.file.adapter.out.s3.properties",
 		"io.hirecore.hirecorememberserver.modules.file.adapter.out.cloudfront.properties"

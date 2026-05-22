@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.out.s3.config;
 
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.aws.AwsRegionProperties;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.aws.AwsRegionProperties;
 import io.hirecore.hirecorememberserver.modules.file.adapter.out.s3.properties.S3Properties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

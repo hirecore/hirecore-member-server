@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.sharedkernel.infrastructure.aws;
+package io.hirecore.hirecorememberserver.sharedkernel.adapter.out.aws;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

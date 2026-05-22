@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(config = GlobalMapStructConfig.class)
 public abstract class SocialUserProfileInfoMapper {
-    public abstract SocialUserProfileInfo mapToSocialUserProfileInfo(SocialUserProfileResult result);
+    public abstract SocialUserProfileInfo toSocialUserProfileInfo(SocialUserProfileResult result);
 }

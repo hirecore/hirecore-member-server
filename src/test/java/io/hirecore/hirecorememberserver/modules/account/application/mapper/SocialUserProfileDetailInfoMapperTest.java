@@ -38,7 +38,7 @@ class SocialUserProfileDetailInfoMapperTest {
         );
 
         // when
-        SocialUserProfileInfo info = mapper.mapToSocialUserProfileInfo(result);
+        SocialUserProfileInfo info = mapper.toSocialUserProfileInfo(result);
 
         // then
         assertThat(info.provider()).isEqualTo(OAuth2Provider.KAKAO);
@@ -59,7 +59,7 @@ class SocialUserProfileDetailInfoMapperTest {
         );
 
         // when
-        SocialUserProfileInfo info = mapper.mapToSocialUserProfileInfo(result);
+        SocialUserProfileInfo info = mapper.toSocialUserProfileInfo(result);
 
         // then — SocialUserProfileInfo는 nickname 필드 자체가 없으므로 레코드 컴포넌트 6개만 존재
         assertThat(SocialUserProfileInfo.class.getRecordComponents()).hasSize(6);
@@ -76,7 +76,7 @@ class SocialUserProfileDetailInfoMapperTest {
         );
 
         // when
-        SocialUserProfileInfo info = mapper.mapToSocialUserProfileInfo(result);
+        SocialUserProfileInfo info = mapper.toSocialUserProfileInfo(result);
 
         // then
         assertThat(info.emailAgreed()).isFalse();

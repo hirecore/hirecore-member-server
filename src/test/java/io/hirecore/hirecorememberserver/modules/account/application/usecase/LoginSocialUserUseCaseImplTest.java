@@ -116,7 +116,7 @@ class LoginSocialUserUseCaseImplTest {
             given(loadSocialUserProfilePort.load(command.authorizationCode())).willReturn(profile);
             given(socialAccountQueryService.findExistingSocialAccount(profile.provider(), profile.providerId()))
                     .willReturn(Optional.empty());
-            given(socialUserProfileInfoMapper.mapToSocialUserProfileInfo(profile)).willReturn(socialInfo);
+            given(socialUserProfileInfoMapper.toSocialUserProfileInfo(profile)).willReturn(socialInfo);
             given(memberAccountCommandService.saveMemberAccount(any(MemberAccount.class))).willReturn(savedMember);
             given(tokenUtilsPort.issueTokenPair(any())).willReturn(expectedTokens);
 
@@ -209,7 +209,7 @@ class LoginSocialUserUseCaseImplTest {
             given(loadSocialUserProfilePort.load(command.authorizationCode())).willReturn(profile);
             given(socialAccountQueryService.findExistingSocialAccount(profile.provider(), profile.providerId()))
                     .willReturn(Optional.empty());
-            given(socialUserProfileInfoMapper.mapToSocialUserProfileInfo(profile)).willReturn(socialInfo);
+            given(socialUserProfileInfoMapper.toSocialUserProfileInfo(profile)).willReturn(socialInfo);
             given(memberAccountCommandService.saveMemberAccount(any(MemberAccount.class)))
                     .willThrow(new RuntimeException("DB 저장 실패"));
 

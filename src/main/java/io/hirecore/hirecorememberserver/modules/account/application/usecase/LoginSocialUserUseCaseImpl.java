@@ -65,7 +65,7 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
      * 신규 회원을 생성하여 저장합니다. 저장 완료 후 {@link MemberRegisteredEvent}가 발행됩니다.
      */
     private MemberAccount registerNewMember(SocialUserProfileResult profile) {
-        SocialUserProfileInfo socialInfo = socialUserProfileInfoMapper.mapToSocialUserProfileInfo(profile);
+        SocialUserProfileInfo socialInfo = socialUserProfileInfoMapper.toSocialUserProfileInfo(profile);
         MemberAccount member = MemberAccount.createWithSocialLink(socialInfo.email(), MemberRole.USER, socialInfo);
         return memberAccountCommandService.saveMemberAccount(member);
     }

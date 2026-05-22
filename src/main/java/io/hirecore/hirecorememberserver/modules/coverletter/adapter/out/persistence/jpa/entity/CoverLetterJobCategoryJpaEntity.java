@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.coverletter.adapter.out.persistence.jpa.entity;
 
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableEntity;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AbstractPersistableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import io.hirecore.hirecorememberserver.common.web.logging.StructuredErrorLogger;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.BaseApplicationException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.BaseDomainException;
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception.DataConsistencyException;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.exception.DataConsistencyException;
 import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;

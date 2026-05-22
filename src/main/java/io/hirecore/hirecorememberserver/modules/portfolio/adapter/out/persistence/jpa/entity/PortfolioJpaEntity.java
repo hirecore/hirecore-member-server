@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity;
 
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableAggregateRoot;
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AbstractPersistableAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;

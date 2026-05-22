@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.coverletter.adapter.out.persistence.jpa.entity;
 
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AbstractPersistableAggregateRoot;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AbstractPersistableAggregateRoot;
 import jakarta.persistence.*;
 import lombok.*;
 

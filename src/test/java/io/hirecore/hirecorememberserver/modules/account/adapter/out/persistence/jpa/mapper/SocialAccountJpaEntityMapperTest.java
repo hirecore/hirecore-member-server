@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.mapper;
 
-import io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa.AuditingJpaInfo;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.entity.SocialAccountJpaEntity;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;

@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.exception;
+package io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.exception;
 
 public class DataConsistencyException extends RuntimeException {
 

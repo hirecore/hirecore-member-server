@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.sharedkernel.infrastructure.persistence.jpa;
+package io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

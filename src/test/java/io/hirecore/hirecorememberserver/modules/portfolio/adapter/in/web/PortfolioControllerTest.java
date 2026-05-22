@@ -13,6 +13,7 @@ import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileM
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapperImpl;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +54,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({
         WebMvcSecuritySupport.class,
         StrictJsonConfig.class,
-        PortfolioWebMapperImpl.class
+        PortfolioWebMapperImpl.class,
+        SharedDomainVoWebMapperImpl.class
 })
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs

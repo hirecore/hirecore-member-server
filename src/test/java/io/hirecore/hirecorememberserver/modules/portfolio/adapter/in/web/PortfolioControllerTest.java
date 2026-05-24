@@ -1,6 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web;
 
+import com.epages.restdocs.apispec.ResourceDocumentation;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
 import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
@@ -12,10 +14,18 @@ import io.hirecore.hirecorememberserver.modules.file.application.exception.FileA
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapperImpl;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +49,9 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -430,6 +442,253 @@ class PortfolioControllerTest {
                                             .build()
                             )
                     ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 상세 조회: 성공 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 상세 조회: 성공 케이스 (Happy Path)")
+    class LoadPortfolioDetailSuccessTest {
+
+        private static final Long PUBLIC_PORTFOLIO_ID = 7234567890123456789L;
+        private static final Long PRIVATE_PORTFOLIO_ID = 1234567890123456789L;
+        private static final String PUBLISHER_NICKNAME = "hirecore_user";
+
+        private PortfolioDetailResponse buildResponse(boolean isOwner, Visibility visibility) {
+            return PortfolioDetailResponse.builder()
+                    .isOwner(isOwner)
+                    .publisher(PUBLISHER_NICKNAME)
+                    .collaborationType(CollaborationType.TEAM)
+                    .visibility(visibility)
+                    .title("회원 서비스 도메인 모델링 회고")
+                    .content(PortfolioContentResponse.builder()
+                            .json("{\"type\":\"doc\",\"content\":[]}")
+                            .html("<p>본문 HTML 입니다.</p>")
+                            .build())
+                    .tags(List.of(
+                            new PortfolioTagResponse("Spring", 0),
+                            new PortfolioTagResponse("DDD", 1),
+                            new PortfolioTagResponse("Hexagonal", 2)
+                    ))
+                    .externalLinks(List.of(
+                            new ExternalLink("GitHub Repo", "https://github.com/example/repo"),
+                            new ExternalLink("데모", "https://demo.example.com")
+                    ))
+                    .updatedAt(null)
+                    .build();
+        }
+
+        @Test
+        @DisplayName("[200 OK] PUBLIC 포트폴리오는 비로그인 사용자도 조회할 수 있다.")
+        void load_portfolio_detail_public_anonymous() throws Exception {
+            // given - 비로그인 viewer
+            SecurityContextHolder.clearContext();
+            given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), nullable(Long.class)))
+                    .willReturn(buildResponse(false, Visibility.PUBLIC));
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", PUBLIC_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.isOwner").value(false))
+                    .andExpect(jsonPath("$.publisher").value(PUBLISHER_NICKNAME))
+                    .andExpect(jsonPath("$.collaborationType").value("team"))
+                    .andExpect(jsonPath("$.visibility").value("public"))
+                    .andExpect(jsonPath("$.title").value("회원 서비스 도메인 모델링 회고"))
+                    .andExpect(jsonPath("$.content.html").value("<p>본문 HTML 입니다.</p>"))
+                    .andExpect(jsonPath("$.tags[0].userInputTag").value("Spring"))
+                    .andExpect(jsonPath("$.tags[0].sortOrder").value(0))
+                    .andExpect(jsonPath("$.externalLinks[0].label").value("GitHub Repo"))
+                    .andExpect(jsonPath("$.externalLinks[0].url").value("https://github.com/example/repo"))
+
+                    // 문서화
+                    .andDo(document("200-portfolio-load-detail-success",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .summary("\"포트폴리오 상세 조회\": 단일 포트폴리오의 본문/메타데이터를 반환한다.")
+                                            .description("""
+                                                    상세 페이지에서 단일 포트폴리오를 조회합니다.
+
+                                                        [공개 정책]
+                                                         - PUBLIC 포트폴리오: 누구나 조회 가능 (비로그인 포함)
+                                                         - PRIVATE 포트폴리오: 작성자 본인만 조회 가능
+                                                         - 그 외: 403 PORTFOLIO_FORBIDDEN
+
+                                                        [인증 방식]
+                                                         - 선택. Authorization 헤더의 Bearer 토큰이 있으면 소유자 판별에 사용됩니다.
+                                                         - 비로그인 호출 시 viewer ID 가 없으므로 소유자로 인정되지 않으며 isOwner=false 로 반환됩니다.
+
+                                                        [응답 동작]
+                                                         - tags 는 sortOrder 오름차순으로 정렬되어 옵니다 (삭제된 태그 제외).
+                                                         - updatedAt 은 현 단계에서 항상 null 입니다 (후속 작업 예정).
+                                                         - 작성자 식별자(memberAccountId 등) 와 썸네일 URL, previewSummary 는 응답에 포함되지 않습니다.
+
+                                                        [에러 응답]
+                                                         - 403 PORTFOLIO_FORBIDDEN: PRIVATE 포트폴리오 + 비소유자/비로그인
+                                                         - 404 PORTFOLIO_NOT_FOUND: 존재하지 않는 portfolioId
+                                                         - 404 PORTFOLIO_NICKNAME_NOT_FOUND: 작성자 닉네임 조회 실패 (데이터 정합성 이슈)
+                                                    """)
+                                            .pathParameters(
+                                                    ResourceDocumentation.parameterWithName("portfolioId")
+                                                            .type(SimpleType.STRING)
+                                                            .description("조회 대상 포트폴리오 ID (TSID, JSON 문자열). path 에서도 문자열로 그대로 사용")
+                                            )
+                                            .responseFields(
+                                                    fieldWithPath("isOwner")
+                                                            .type(JsonFieldType.BOOLEAN)
+                                                            .description("호출자가 작성자 본인인지 여부. 비로그인 시 항상 false. 수정/삭제 버튼 노출 등 UX 분기에 사용"),
+                                                    fieldWithPath("publisher")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("작성자 닉네임"),
+                                                    fieldWithPath("collaborationType")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("협업 유형 (team, personal)"),
+                                                    fieldWithPath("visibility")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("공개 범위 (public, private)"),
+                                                    fieldWithPath("title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("포트폴리오 제목"),
+                                                    fieldWithPath("content")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("포트폴리오 본문 wrapper"),
+                                                    fieldWithPath("content.json")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("에디터 직렬화 JSON 문자열 (FE 에서 다시 JSON.parse 하여 구조 복원). 등록 시 보낸 구조 그대로"),
+                                                    fieldWithPath("content.html")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("렌더된 HTML 본문 (표시 용도)"),
+                                                    fieldWithPath("tags")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("사용자 입력 태그 목록 (sortOrder ASC, 삭제된 태그 제외)"),
+                                                    fieldWithPath("tags[].userInputTag")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("사용자가 입력한 원본 태그 문자열"),
+                                                    fieldWithPath("tags[].sortOrder")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("사용자가 의도한 표시 순서 (0부터 시작)"),
+                                                    fieldWithPath("externalLinks")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("외부 링크 목록 (없으면 빈 배열)"),
+                                                    fieldWithPath("externalLinks[].label")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 표시 라벨"),
+                                                    fieldWithPath("externalLinks[].url")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 URL (http:// 또는 https://)"),
+                                                    fieldWithPath("updatedAt")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("최종 수정 시각 (ISO-8601). 현 단계에서는 항상 null")
+                                                            .optional()
+                                            )
+                                            .build()
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[200 OK] PRIVATE 포트폴리오를 소유자 본인이 조회하면 isOwner=true 로 반환한다.")
+        void load_portfolio_detail_private_owner() throws Exception {
+            // given - 소유자 본인 (setUpAuthentication 으로 MEMBER_ACCOUNT_ID 인증)
+            given(loadPortfolioDetailUseCase.execute(eq(PRIVATE_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
+                    .willReturn(buildResponse(true, Visibility.PRIVATE));
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", PRIVATE_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.isOwner").value(true))
+                    .andExpect(jsonPath("$.visibility").value("private"));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 상세 조회: 비즈니스 로직 실패 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 상세 조회: 비즈니스 로직 실패 케이스")
+    class LoadPortfolioDetailBusinessFailureTest {
+
+        private static final Long PRIVATE_PORTFOLIO_ID = 1234567890123456789L;
+        private static final Long NONEXISTENT_PORTFOLIO_ID = 9000000000000000000L;
+
+        @Test
+        @DisplayName("[403 Forbidden] PRIVATE 포트폴리오를 비소유자가 조회 시도하면 PORTFOLIO_FORBIDDEN 에러를 반환한다.")
+        void load_portfolio_detail_forbidden() throws Exception {
+            // given
+            given(loadPortfolioDetailUseCase.execute(eq(PRIVATE_PORTFOLIO_ID), nullable(Long.class)))
+                    .willThrow(new PortfolioApplicationException(
+                            PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN
+                    ));
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", PRIVATE_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_FORBIDDEN"))
+
+                    // 문서화
+                    .andDo(document("403-portfolio-load-detail-forbidden",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[404 Not Found] 존재하지 않는 portfolioId 조회 시 PORTFOLIO_NOT_FOUND 에러를 반환한다.")
+        void load_portfolio_detail_not_found() throws Exception {
+            // given
+            given(loadPortfolioDetailUseCase.execute(eq(NONEXISTENT_PORTFOLIO_ID), nullable(Long.class)))
+                    .willThrow(new PortfolioApplicationException(
+                            PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
+                    ));
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", NONEXISTENT_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_NOT_FOUND"))
+
+                    // 문서화
+                    .andDo(document("404-portfolio-load-detail-not-found",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[404 Not Found] 작성자 닉네임 조회 실패 시 PORTFOLIO_NICKNAME_NOT_FOUND 에러를 반환한다.")
+        void load_portfolio_detail_nickname_not_found() throws Exception {
+            // given - 데이터 정합성 이슈로 닉네임이 없는 케이스
+            given(loadPortfolioDetailUseCase.execute(eq(PRIVATE_PORTFOLIO_ID), nullable(Long.class)))
+                    .willThrow(new PortfolioApplicationException(
+                            PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NICKNAME_NOT_FOUND
+                    ));
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", PRIVATE_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_NICKNAME_NOT_FOUND"));
         }
     }
 

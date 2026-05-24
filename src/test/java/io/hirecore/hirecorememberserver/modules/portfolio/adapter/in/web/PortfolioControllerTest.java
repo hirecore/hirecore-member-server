@@ -13,6 +13,7 @@ import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileM
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapperImpl;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +70,9 @@ class PortfolioControllerTest {
 
     @MockitoBean
     private CreatePortfolioUseCase createPortfolioUseCase;
+
+    @MockitoBean
+    private LoadPortfolioDetailUseCase loadPortfolioDetailUseCase;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
     private static final Long CREATED_PORTFOLIO_ID = 9001L;

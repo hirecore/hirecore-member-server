@@ -10,25 +10,17 @@ import java.util.Optional;
 
 public interface ProfileJpaQueryRepository extends Repository<ProfileJpaEntity, Long> {
 
-    /**
-     * 공개 코드의 존재 여부를 확인합니다.
-     *
-     * <p>{@code publicCode}는 {@code profiles} 기본 테이블의 컬럼이므로
-     * JOINED 상속 전략에서 서브타입 JOIN 없이 기본 테이블만 조회됩니다.</p>
-     */
-    @Query(
-        value = """
-        SELECT IF( EXISTS (
-                SELECT 1
-                FROM profiles p
-                WHERE p.public_code = :publicCode
-            ), "true", "false"
-        )
-        """, nativeQuery = true
-    )
-    boolean existsByPublicCode(@Param("publicCode") String publicCode);
+
+    // find
 
     Optional<ProfileJpaEntity> findByMemberAccountId(Long memberAccountId);
+
+    @Query("""
+        SELECT p.nickname
+        FROM ProfileJpaEntity p
+        WHERE p.memberAccountId = :memberAccountId
+    """)
+    Optional<String> findNickname(@Param("memberAccountId") Long memberAccountId);
 
     @Query("""
         SELECT p.publicCodeInfo.publicCode AS publicCode,
@@ -38,4 +30,17 @@ public interface ProfileJpaQueryRepository extends Repository<ProfileJpaEntity, 
         WHERE p.memberAccountId = :memberAccountId
     """)
     Optional<UserProfileSummaryProjection> findUserProfileSummary(@Param("memberAccountId") Long memberAccountId);
+
+    // exists
+    @Query(
+            value = """
+        SELECT IF( EXISTS (
+                SELECT 1
+                FROM profiles p
+                WHERE p.public_code = :publicCode
+            ), "true", "false"
+        )
+        """, nativeQuery = true
+    )
+    boolean existsByPublicCode(@Param("publicCode") String publicCode);
 }

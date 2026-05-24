@@ -4,11 +4,19 @@ import io.hirecore.hirecorememberserver.common.config.GlobalMapStructConfig;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioContentApiResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioDetailApiResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioTagApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapper;
 import org.mapstruct.Mapper;
+
+import java.util.List;
 
 @Mapper(
         config = GlobalMapStructConfig.class,
@@ -18,4 +26,9 @@ public abstract class PortfolioWebMapper {
     public abstract CreatePortfolioCommand toCreatePortfolioCommand(CreatePortfolioApiRequest request);
     public abstract PortfolioContentCommand toPortfolioContentCommand(PortfolioContentApiRequest content);
     public abstract PortfolioTagCommand toPortfolioTagCommand(PortfolioTagApiRequest tag);
+
+    public abstract PortfolioDetailApiResponse toPortfolioDetailApiResponse(PortfolioDetailResponse response);
+    public abstract PortfolioContentApiResponse toPortfolioContentApiResponse(PortfolioContentResponse response);
+    public abstract List<PortfolioTagApiResponse> toPortfolioTagApiResponses(List<PortfolioTagResponse> responses);
+    public abstract PortfolioTagApiResponse toPortfolioTagApiResponse(PortfolioTagResponse response);
 }

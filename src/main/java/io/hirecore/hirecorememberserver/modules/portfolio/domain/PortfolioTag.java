@@ -22,7 +22,12 @@ public class PortfolioTag {
     private final Instant deletedAt;
     private final AuditingInfo auditingInfo;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    /**
+     * [복원용 빌더]
+     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
+     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
+     */
+    @Builder(access = AccessLevel.PUBLIC)
     private PortfolioTag(
             Long id,
             String userInputTag,

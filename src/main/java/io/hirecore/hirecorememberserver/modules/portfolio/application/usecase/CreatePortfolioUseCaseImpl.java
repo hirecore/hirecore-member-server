@@ -13,7 +13,6 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryIdByCodePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.HtmlPreviewSummarizer;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
      *  [로직 플로우]
      *    1. 이미지 파일 메타 상태값의 변경
      *    2. 카테고리 코드 해석
-     *    3. previewSummary / portfolioTags / externalLinks 가공 (도메인은 가공된 값을 그대로 받음)
+     *    3. portfolioTags / externalLinks 가공 (도메인은 가공된 값을 그대로 받음)
      *    4. 포트폴리오 데이터 삽입
      *
      *  [부수효과]
@@ -53,7 +52,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
         updateUploadStatusOfImageFileMetaPort.markUploaded(memberId, imageIds);
 
-        Long jobCategoryId = loadJobCategoryIdByCodePort.findIdByCode(command.categoryCode());
+        Long jobCategoryId = loadJobCategoryIdByCodePort.findIdByCode(command.jobCategory().code());
         Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryId);
 
         return savePortfolioPort.save(portfolio).getId();
@@ -61,19 +60,18 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
     private Portfolio buildPortfolio(Long memberId, CreatePortfolioCommand command, Long jobCategoryId) {
         PortfolioContentCommand content = command.content();
-        String previewSummary = resolvePreviewSummary(content.html(), command.title());
         List<PortfolioTag> portfolioTags = toPortfolioTags(command.tags());
         List<ExternalLink> externalLinks = command.externalLinks() != null ? command.externalLinks() : List.of();
 
         return Portfolio.create(
                 memberId,
                 jobCategoryId,
-                command.customCategory(),
+                command.jobCategory().customJobCategoryName(),
                 command.thumbnailImageId(),
                 command.linkedCoverLetterId(),
                 command.linkedResumeId(),
                 command.title(),
-                previewSummary,
+                command.previewSummary(),
                 serializeContentJson(content),
                 content.html(),
                 externalLinks,
@@ -82,15 +80,6 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
                 command.collaborationType(),
                 command.visibility()
         );
-    }
-
-    /**
-     * 본문 HTML 로부터 미리보기 요약을 산출합니다.
-     * 본문에 텍스트가 없어 빈 문자열이 산출되면(이미지 위주 포트폴리오 등) 제목으로 fallback 합니다.
-     */
-    private static String resolvePreviewSummary(String contentHtml, String title) {
-        String summary = HtmlPreviewSummarizer.summarize(contentHtml, Portfolio.PREVIEW_SUMMARY_MAX_LENGTH);
-        return summary.isBlank() ? title : summary;
     }
 
     private static List<PortfolioTag> toPortfolioTags(List<PortfolioTagCommand> tagCommands) {

@@ -10,12 +10,12 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import java.util.List;
 
 public record CreatePortfolioCommand(
-        String categoryCode,
-        String customCategory,
+        JobCategoryCommand jobCategory,
         CollaborationType collaborationType,
         Visibility visibility,
         String title,
         String privateMemo,
+        String previewSummary,
         Long thumbnailImageId,
         List<Long> contentImageIds,
         List<PortfolioTagCommand> tags,
@@ -25,8 +25,8 @@ public record CreatePortfolioCommand(
         Long linkedCoverLetterId
 ) {
     public CreatePortfolioCommand {
-        AssertionUtils.notBlank(
-                categoryCode,
+        AssertionUtils.notNull(
+                jobCategory,
                 PortfolioApplicationExceptionCodeCluster.DetailResponse.CATEGORY_CODE_MISSING,
                 PortfolioApplicationException::new
         );

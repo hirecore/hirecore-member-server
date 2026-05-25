@@ -8,14 +8,14 @@ import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.Vi
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
 public record CreatePortfolioApiRequest(
-        @NotBlank(message = "직무 카테고리 코드는 필수입니다.")
-        String categoryCode,
-
-        String customCategory,
+        @Valid
+        @NotNull(message = "카테고리는 필수입니다.")
+        JobCategoryApiRequest jobCategory,
 
         @NotNull(message = "협업 유형은 필수입니다.")
         CollaborationTypeApiValue collaborationType,
@@ -27,6 +27,10 @@ public record CreatePortfolioApiRequest(
         String title,
 
         String privateMemo,
+
+        @NotBlank(message = "한 줄 소개는 필수입니다.")
+        @Size(max = 100, message = "한 줄 소개는 100자를 초과할 수 없습니다.")
+        String previewSummary,
 
         @TsidId
         Long thumbnailImageId,

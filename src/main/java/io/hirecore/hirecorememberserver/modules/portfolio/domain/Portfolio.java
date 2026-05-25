@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
 
-    public static final int PREVIEW_SUMMARY_MAX_LENGTH = 500;
+    public static final int PREVIEW_SUMMARY_MAX_LENGTH = 100;
 
     private final Long id;
     private final Long memberAccountId;

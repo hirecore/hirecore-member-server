@@ -203,7 +203,7 @@ class CreatePortfolioUseCaseImplTest {
             Portfolio captured = captor.getValue();
             assertThat(captured.getMemberAccountId()).isEqualTo(MEMBER_ACCOUNT_ID);
             assertThat(captured.getPortfolioJobCategory().getJobCategoryId()).isEqualTo(JOB_CATEGORY_ID);
-            assertThat(captured.getPortfolioJobCategory().getCustomJobCategoryName()).isEqualTo("백엔드 직무");
+            assertThat(captured.getPortfolioJobCategory().getUserInput()).isEqualTo("백엔드 직무");
             assertThat(captured.getTitle()).isEqualTo("회원 서비스 도메인 모델링 회고");
             assertThat(captured.getCollaborationType()).isEqualTo(CollaborationType.TEAM);
             assertThat(captured.getVisibility()).isEqualTo(Visibility.PUBLIC);

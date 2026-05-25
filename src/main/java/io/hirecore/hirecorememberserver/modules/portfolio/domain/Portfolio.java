@@ -95,7 +95,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     public static Portfolio create(
             Long memberAccountId,
             Long jobCategoryId,
-            String customJobCategoryName,
+            String userInput,
             Long thumbnailImageId,
             Long coverLetterId,
             Long resumeId,
@@ -114,7 +114,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         return Portfolio.builder()
                 .id(portfolioId)
                 .memberAccountId(memberAccountId)
-                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, customJobCategoryName))
+                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
                 .thumbnailImageId(thumbnailImageId)
                 .coverLetterId(coverLetterId)
                 .resumeId(resumeId)

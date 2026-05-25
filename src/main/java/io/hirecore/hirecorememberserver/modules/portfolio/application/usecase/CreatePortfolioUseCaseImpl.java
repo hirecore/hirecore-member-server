@@ -66,7 +66,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
         return Portfolio.create(
                 memberId,
                 jobCategoryId,
-                command.jobCategory().customJobCategoryName(),
+                command.jobCategory().userInput(),
                 command.thumbnailImageId(),
                 command.linkedCoverLetterId(),
                 command.linkedResumeId(),

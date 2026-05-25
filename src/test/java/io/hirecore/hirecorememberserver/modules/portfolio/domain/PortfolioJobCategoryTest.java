@@ -31,11 +31,11 @@ class PortfolioJobCategoryTest {
         }
 
         @Test
-        @DisplayName("customJobCategoryName을 보존한다")
-        void should_preserve_custom_job_category_name() {
+        @DisplayName("userInput을 보존한다")
+        void should_preserve_user_input() {
             PortfolioJobCategory category = PortfolioJobCategory.create(10L, "사용자 정의 직무");
 
-            assertThat(category.getCustomJobCategoryName()).isEqualTo("사용자 정의 직무");
+            assertThat(category.getUserInput()).isEqualTo("사용자 정의 직무");
         }
     }
 
@@ -112,6 +112,35 @@ class PortfolioJobCategoryTest {
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)
                     .extracting("errorCode")
                     .isEqualTo(PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.CONNECTED_AT_MISSING.getErrorCode());
+        }
+
+        @Test
+        @DisplayName("userInput 이 null 이어도 정상 생성된다")
+        void should_allow_null_user_input() {
+            PortfolioJobCategory category = PortfolioJobCategory.create(10L, null);
+
+            assertThat(category.getUserInput()).isNull();
+        }
+
+        @Test
+        @DisplayName("userInput 길이가 USER_INPUT_MAX_LENGTH 와 같으면 정상 생성된다")
+        void should_allow_user_input_at_boundary() {
+            String boundary = "가".repeat(PortfolioJobCategory.USER_INPUT_MAX_LENGTH);
+
+            PortfolioJobCategory category = PortfolioJobCategory.create(10L, boundary);
+
+            assertThat(category.getUserInput()).isEqualTo(boundary);
+        }
+
+        @Test
+        @DisplayName("userInput 길이가 USER_INPUT_MAX_LENGTH 를 초과하면 USER_INPUT_TOO_LONG 예외가 발생한다")
+        void should_throw_when_user_input_exceeds_max_length() {
+            String overflow = "가".repeat(PortfolioJobCategory.USER_INPUT_MAX_LENGTH + 1);
+
+            assertThatThrownBy(() -> PortfolioJobCategory.create(10L, overflow))
+                    .isInstanceOf(PortfolioJobCategoryDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.USER_INPUT_TOO_LONG.getErrorCode());
         }
     }
 }

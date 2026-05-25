@@ -100,7 +100,7 @@ class PortfolioControllerTest {
         return objectMapper.writeValueAsString(Map.ofEntries(
                 Map.entry("jobCategory", Map.of(
                         "code", "DEV_BACKEND",
-                        "customJobCategoryName", "백엔드 직무"
+                        "userInput", "백엔드 직무"
                 )),
                 Map.entry("collaborationType", "team"),
                 Map.entry("visibility", "public"),
@@ -186,9 +186,9 @@ class PortfolioControllerTest {
                                                     fieldWithPath("jobCategory.code")
                                                             .type(JsonFieldType.STRING)
                                                             .description("직무 카테고리 코드 (예: DEV_BACKEND)"),
-                                                    fieldWithPath("jobCategory.customJobCategoryName")
+                                                    fieldWithPath("jobCategory.userInput")
                                                             .type(JsonFieldType.STRING)
-                                                            .description("사용자 정의 직무 카테고리명 (allowsCustomInput 카테고리에서만 입력)")
+                                                            .description("사용자가 입력한 포트폴리오 카테고리 라벨 (allowsCustomInput 카테고리에서만 입력)")
                                                             .optional(),
                                                     fieldWithPath("collaborationType")
                                                             .type(JsonFieldType.STRING)
@@ -454,6 +454,34 @@ class PortfolioControllerTest {
                     ));
         }
 
+        @Test
+        @DisplayName("[400 Bad Request] jobCategory.userInput 길이가 10자를 초과하면 REQUEST_VALUE_INVALID 에러를 반환한다.")
+        void create_portfolio_validation_user_input_too_long() throws Exception {
+            // given — userInput 11자
+            String requestBody = objectMapper.writeValueAsString(Map.ofEntries(
+                    Map.entry("jobCategory", Map.of(
+                            "code", "DEV_BACKEND",
+                            "userInput", "가".repeat(11)
+                    )),
+                    Map.entry("collaborationType", "team"),
+                    Map.entry("visibility", "public"),
+                    Map.entry("title", "회원 서비스 회고"),
+                    Map.entry("previewSummary", "한 줄 소개"),
+                    Map.entry("content", Map.of(
+                            "json", Map.of("type", "doc"),
+                            "html", "<p>본문</p>"
+                    ))
+            ));
+
+            // when & then
+            mockMvc.perform(post("/api/portfolios")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errorCode").value("REQUEST_VALUE_INVALID"))
+                    .andExpect(jsonPath("$.fieldErrors").isArray());
+        }
     }
 
     // ──────────────────────────────────────────────

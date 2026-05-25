@@ -6,7 +6,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils
 
 public record JobCategoryCommand(
         String code,
-        String customJobCategoryName
+        String userInput
 ) {
     public JobCategoryCommand {
         AssertionUtils.notBlank(

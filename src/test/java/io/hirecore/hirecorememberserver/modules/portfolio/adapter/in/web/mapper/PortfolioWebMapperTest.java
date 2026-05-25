@@ -70,7 +70,7 @@ class PortfolioWebMapperTest {
             // then
             assertThat(command.jobCategory()).isNotNull();
             assertThat(command.jobCategory().code()).isEqualTo("DEV_BACKEND");
-            assertThat(command.jobCategory().customJobCategoryName()).isEqualTo("백엔드 직무");
+            assertThat(command.jobCategory().userInput()).isEqualTo("백엔드 직무");
             assertThat(command.collaborationType()).isEqualTo(CollaborationType.TEAM);
             assertThat(command.visibility()).isEqualTo(Visibility.PUBLIC);
             assertThat(command.title()).isEqualTo("회원 서비스 도메인 모델링 회고");
@@ -94,7 +94,7 @@ class PortfolioWebMapperTest {
         }
 
         @Test
-        @DisplayName("선택 필드(customJobCategoryName, privateMemo, thumbnailImageId 등)가 null이어도 정상 매핑된다")
+        @DisplayName("선택 필드(userInput, privateMemo, thumbnailImageId 등)가 null이어도 정상 매핑된다")
         void should_map_request_with_nullable_fields_omitted() {
             // given — 필수 필드만 채움
             CreatePortfolioApiRequest request = new CreatePortfolioApiRequest(
@@ -118,7 +118,7 @@ class PortfolioWebMapperTest {
 
             // then
             assertThat(command.jobCategory().code()).isEqualTo("DEV_BACKEND");
-            assertThat(command.jobCategory().customJobCategoryName()).isNull();
+            assertThat(command.jobCategory().userInput()).isNull();
             assertThat(command.previewSummary()).isEqualTo("한 줄 소개");
             assertThat(command.thumbnailImageId()).isNull();
             assertThat(command.contentImageIds()).isNull();

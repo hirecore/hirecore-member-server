@@ -25,9 +25,9 @@ public class ResumeJobCategoryJpaEntity extends AbstractPersistableEntity<Long> 
     @Column(name = "job_category_id", nullable = false)
     private Long jobCategoryId;
 
-    @Comment("사용자 정의 직무 카테고리명")
-    @Column(name = "custom_job_category_name", columnDefinition = "VARCHAR(30)")
-    private String customJobCategoryName;
+    @Comment("사용자가 입력한 이력서 카테고리 라벨")
+    @Column(name = "user_input", columnDefinition = "VARCHAR(10)")
+    private String userInput;
 
     @Comment("삭제 여부")
     @Column(name = "is_deleted", nullable = false, columnDefinition = "DATETIME(6)")

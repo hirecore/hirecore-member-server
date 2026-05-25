@@ -69,7 +69,7 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     private String title;
 
     @Comment("미리보기 요약")
-    @Column(name = "preview_summary", nullable = false, columnDefinition = "VARCHAR(500)")
+    @Column(name = "preview_summary", nullable = false, columnDefinition = "VARCHAR(100)")
     private String previewSummary;
 
     @Comment("포트폴리오 상태")

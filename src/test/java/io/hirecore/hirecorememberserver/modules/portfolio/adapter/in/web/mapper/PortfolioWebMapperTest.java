@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper;
 
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.JobCategoryApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
@@ -42,12 +43,12 @@ class PortfolioWebMapperTest {
         void should_map_all_fields() {
             // given
             CreatePortfolioApiRequest request = new CreatePortfolioApiRequest(
-                    "DEV_BACKEND",
-                    "Spring Boot 백엔드",
+                    new JobCategoryApiRequest("DEV_BACKEND", "백엔드 직무"),
                     CollaborationTypeApiValue.TEAM,
                     VisibilityApiValue.PUBLIC,
                     "회원 서비스 도메인 모델링 회고",
                     "메모입니다.",
+                    "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.",
                     100L,
                     List.of(101L, 102L),
                     List.of(
@@ -67,12 +68,14 @@ class PortfolioWebMapperTest {
             CreatePortfolioCommand command = mapper.toCreatePortfolioCommand(request);
 
             // then
-            assertThat(command.categoryCode()).isEqualTo("DEV_BACKEND");
-            assertThat(command.customCategory()).isEqualTo("Spring Boot 백엔드");
+            assertThat(command.jobCategory()).isNotNull();
+            assertThat(command.jobCategory().code()).isEqualTo("DEV_BACKEND");
+            assertThat(command.jobCategory().userInput()).isEqualTo("백엔드 직무");
             assertThat(command.collaborationType()).isEqualTo(CollaborationType.TEAM);
             assertThat(command.visibility()).isEqualTo(Visibility.PUBLIC);
             assertThat(command.title()).isEqualTo("회원 서비스 도메인 모델링 회고");
             assertThat(command.privateMemo()).isEqualTo("메모입니다.");
+            assertThat(command.previewSummary()).isEqualTo("회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.");
             assertThat(command.thumbnailImageId()).isEqualTo(100L);
             assertThat(command.contentImageIds()).containsExactly(101L, 102L);
             assertThat(command.tags())
@@ -91,16 +94,16 @@ class PortfolioWebMapperTest {
         }
 
         @Test
-        @DisplayName("선택 필드(customCategory, privateMemo, thumbnailImageId 등)가 null이어도 정상 매핑된다")
+        @DisplayName("선택 필드(userInput, privateMemo, thumbnailImageId 등)가 null이어도 정상 매핑된다")
         void should_map_request_with_nullable_fields_omitted() {
             // given — 필수 필드만 채움
             CreatePortfolioApiRequest request = new CreatePortfolioApiRequest(
-                    "DEV_BACKEND",
-                    null,
+                    new JobCategoryApiRequest("DEV_BACKEND", null),
                     CollaborationTypeApiValue.PERSONAL,
                     VisibilityApiValue.PRIVATE,
                     "title",
                     null,
+                    "한 줄 소개",
                     null,
                     null,
                     null,
@@ -114,8 +117,9 @@ class PortfolioWebMapperTest {
             CreatePortfolioCommand command = mapper.toCreatePortfolioCommand(request);
 
             // then
-            assertThat(command.categoryCode()).isEqualTo("DEV_BACKEND");
-            assertThat(command.customCategory()).isNull();
+            assertThat(command.jobCategory().code()).isEqualTo("DEV_BACKEND");
+            assertThat(command.jobCategory().userInput()).isNull();
+            assertThat(command.previewSummary()).isEqualTo("한 줄 소개");
             assertThat(command.thumbnailImageId()).isNull();
             assertThat(command.contentImageIds()).isNull();
             assertThat(command.tags()).isNull();

@@ -1,6 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.JobCategoryCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
@@ -62,12 +63,12 @@ class CreatePortfolioUseCaseImplTest {
 
     private CreatePortfolioCommand createCommand() {
         return new CreatePortfolioCommand(
-                "DEV_BACKEND",
-                "Spring Boot 백엔드",
+                new JobCategoryCommand("DEV_BACKEND", "백엔드 직무"),
                 CollaborationType.TEAM,
                 Visibility.PUBLIC,
                 "회원 서비스 도메인 모델링 회고",
                 "회고 작성 시 참고용 메모입니다.",
+                "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.",
                 THUMBNAIL_IMAGE_ID,
                 CONTENT_IMAGE_IDS,
                 List.of(
@@ -135,8 +136,9 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_only_content_image_ids_when_thumbnail_is_null() {
             // given
             CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
-                    "title", null, null, CONTENT_IMAGE_IDS, null, null,
+                    new JobCategoryCommand("DEV_BACKEND", null),
+                    CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, "한 줄 소개", null, CONTENT_IMAGE_IDS, null, null,
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
@@ -161,8 +163,9 @@ class CreatePortfolioUseCaseImplTest {
         void should_call_mark_uploaded_with_empty_when_no_images() {
             // given
             CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
-                    "title", null, null, null, null, null,
+                    new JobCategoryCommand("DEV_BACKEND", null),
+                    CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, "한 줄 소개", null, null, null, null,
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
@@ -200,6 +203,7 @@ class CreatePortfolioUseCaseImplTest {
             Portfolio captured = captor.getValue();
             assertThat(captured.getMemberAccountId()).isEqualTo(MEMBER_ACCOUNT_ID);
             assertThat(captured.getPortfolioJobCategory().getJobCategoryId()).isEqualTo(JOB_CATEGORY_ID);
+            assertThat(captured.getPortfolioJobCategory().getUserInput()).isEqualTo("백엔드 직무");
             assertThat(captured.getTitle()).isEqualTo("회원 서비스 도메인 모델링 회고");
             assertThat(captured.getCollaborationType()).isEqualTo(CollaborationType.TEAM);
             assertThat(captured.getVisibility()).isEqualTo(Visibility.PUBLIC);
@@ -212,13 +216,15 @@ class CreatePortfolioUseCaseImplTest {
     class TransformationTest {
 
         @Test
-        @DisplayName("HTML 본문에서 태그를 제거한 previewSummary가 도메인에 전달된다")
-        void should_derive_preview_summary_from_html() {
+        @DisplayName("클라이언트가 보낸 previewSummary 가 도메인에 그대로 전달된다")
+        void should_pass_preview_summary_through_as_is() {
             // given
+            String userPreview = "협업 에디터를 직접 구현해본 경험을 정리한 글";
             CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
-                    "title", null, null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<h2>제목</h2><p>본문</p>"),
+                    new JobCategoryCommand("DEV_BACKEND", null),
+                    CollaborationType.TEAM, Visibility.PUBLIC,
+                    "title", null, userPreview, null, null, null, null,
+                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>본문</p>"),
                     null, null
             );
             given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -231,77 +237,7 @@ class CreatePortfolioUseCaseImplTest {
             // then
             ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
             then(savePortfolioPort).should().save(captor.capture());
-            assertThat(captor.getValue().getPreviewSummary()).isEqualTo("제목본문");
-        }
-
-        @Test
-        @DisplayName("HTML 본문에 텍스트가 없으면(이미지 위주) title 로 previewSummary 가 fallback 된다")
-        void should_fallback_to_title_when_html_has_no_text() {
-            // given — content.html 이 이미지 태그만 포함하여 stripping 결과가 빈 문자열인 케이스
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
-                    "이미지 위주 포트폴리오 제목", null, null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p><img src=\"https://example.com/image.png\"/></p>"),
-                    null, null
-            );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
-            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
-                    .given(savePortfolioPort).save(any(Portfolio.class));
-
-            // when
-            sut.execute(MEMBER_ACCOUNT_ID, command);
-
-            // then
-            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
-            then(savePortfolioPort).should().save(captor.capture());
-            assertThat(captor.getValue().getPreviewSummary()).isEqualTo("이미지 위주 포트폴리오 제목");
-        }
-
-        @Test
-        @DisplayName("HTML 본문이 빈 태그만 포함하여 텍스트가 없을 때도 title 로 fallback 된다")
-        void should_fallback_to_title_when_html_has_only_empty_tags() {
-            // given
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
-                    "fallback 제목", null, null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p></p><br/>"),
-                    null, null
-            );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
-            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
-                    .given(savePortfolioPort).save(any(Portfolio.class));
-
-            // when
-            sut.execute(MEMBER_ACCOUNT_ID, command);
-
-            // then
-            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
-            then(savePortfolioPort).should().save(captor.capture());
-            assertThat(captor.getValue().getPreviewSummary()).isEqualTo("fallback 제목");
-        }
-
-        @Test
-        @DisplayName("PREVIEW_SUMMARY_MAX_LENGTH 를 초과하면 잘라낸 previewSummary가 도메인에 전달된다")
-        void should_truncate_preview_summary() {
-            // given
-            String longHtml = "<p>" + "가".repeat(Portfolio.PREVIEW_SUMMARY_MAX_LENGTH + 100) + "</p>";
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.TEAM, Visibility.PUBLIC,
-                    "title", null, null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), longHtml),
-                    null, null
-            );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
-            willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
-                    .given(savePortfolioPort).save(any(Portfolio.class));
-
-            // when
-            sut.execute(MEMBER_ACCOUNT_ID, command);
-
-            // then
-            ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
-            then(savePortfolioPort).should().save(captor.capture());
-            assertThat(captor.getValue().getPreviewSummary()).hasSize(Portfolio.PREVIEW_SUMMARY_MAX_LENGTH);
+            assertThat(captor.getValue().getPreviewSummary()).isEqualTo(userPreview);
         }
 
         @Test
@@ -332,8 +268,9 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_empty_tags_when_input_is_null() {
             // given
             CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
-                    "title", null, null, null, null, null,
+                    new JobCategoryCommand("DEV_BACKEND", null),
+                    CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, "한 줄 소개", null, null, null, null,
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
@@ -355,8 +292,9 @@ class CreatePortfolioUseCaseImplTest {
         void should_coerce_null_external_links_to_empty() {
             // given — externalLinks=null
             CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
-                    "title", null, null, null, null, null,
+                    new JobCategoryCommand("DEV_BACKEND", null),
+                    CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, "한 줄 소개", null, null, null, null,
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
@@ -379,8 +317,9 @@ class CreatePortfolioUseCaseImplTest {
             // given
             ExternalLink link = new ExternalLink("Repo", "https://github.com/example");
             CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    "DEV_BACKEND", null, CollaborationType.PERSONAL, Visibility.PRIVATE,
-                    "title", null, null, null, null, List.of(link),
+                    new JobCategoryCommand("DEV_BACKEND", null),
+                    CollaborationType.PERSONAL, Visibility.PRIVATE,
+                    "title", null, "한 줄 소개", null, null, null, List.of(link),
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );

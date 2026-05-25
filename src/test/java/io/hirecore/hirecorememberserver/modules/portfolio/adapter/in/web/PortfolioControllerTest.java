@@ -98,12 +98,15 @@ class PortfolioControllerTest {
 
     private String createValidRequestBody() throws Exception {
         return objectMapper.writeValueAsString(Map.ofEntries(
-                Map.entry("categoryCode", "DEV_BACKEND"),
-                Map.entry("customCategory", "Spring Boot 백엔드"),
+                Map.entry("jobCategory", Map.of(
+                        "code", "DEV_BACKEND",
+                        "userInput", "백엔드 직무"
+                )),
                 Map.entry("collaborationType", "team"),
                 Map.entry("visibility", "public"),
                 Map.entry("title", "회원 서비스 도메인 모델링 회고"),
                 Map.entry("privateMemo", "회고 작성 시 참고용 메모입니다."),
+                Map.entry("previewSummary", "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다."),
                 Map.entry("thumbnailImageId", "100"),
                 Map.entry("contentImageIds", List.of("101", "102")),
                 Map.entry("tags", List.of(
@@ -163,7 +166,7 @@ class PortfolioControllerTest {
                                                         [처리 흐름]
                                                          1. 요청에 포함된 이미지 식별자(썸네일, 본문 이미지)의 소유권을 검증하고 UPLOADED 상태로 전이합니다.
                                                             전이 시 ImageUploadedEvent가 발행되어, 트랜잭션 커밋 이후 storage BC가 사용량을 갱신합니다.
-                                                         2. categoryCode를 직무 카테고리 ID로 해석합니다.
+                                                         2. jobCategory.code 를 직무 카테고리 ID로 해석합니다.
                                                          3. Portfolio 도메인을 생성하고 영속화합니다.
 
                                                         [응답 방식]
@@ -173,16 +176,19 @@ class PortfolioControllerTest {
                                                          - 400 REQUEST_VALUE_INVALID: 요청 본문 필수 필드 누락
                                                          - 403 IMAGE_OWNERSHIP_VIOLATION: 다른 사용자 소유 이미지 사용 시도
                                                          - 404 IMAGE_NOT_FOUND: 존재하지 않는 imageFileMetaId 참조
-                                                         - 404 JOB_CATEGORY_CODE_NOT_FOUND: 유효하지 않은 categoryCode
+                                                         - 404 JOB_CATEGORY_CODE_NOT_FOUND: 유효하지 않은 jobCategory.code
                                                          - 409 INVALID_UPLOAD_STATUS_TRANSITION: 이미지가 PENDING 상태가 아님
                                                     """)
                                             .requestFields(
-                                                    fieldWithPath("categoryCode")
+                                                    fieldWithPath("jobCategory")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("직무 카테고리 선택 정보"),
+                                                    fieldWithPath("jobCategory.code")
                                                             .type(JsonFieldType.STRING)
                                                             .description("직무 카테고리 코드 (예: DEV_BACKEND)"),
-                                                    fieldWithPath("customCategory")
+                                                    fieldWithPath("jobCategory.userInput")
                                                             .type(JsonFieldType.STRING)
-                                                            .description("사용자 정의 직무 카테고리명 (allowsCustomInput 카테고리에서만 입력)")
+                                                            .description("사용자가 입력한 포트폴리오 카테고리 라벨 (allowsCustomInput 카테고리에서만 입력)")
                                                             .optional(),
                                                     fieldWithPath("collaborationType")
                                                             .type(JsonFieldType.STRING)
@@ -197,6 +203,9 @@ class PortfolioControllerTest {
                                                             .type(JsonFieldType.STRING)
                                                             .description("나만보기 메모 (작성자에게만 노출)")
                                                             .optional(),
+                                                    fieldWithPath("previewSummary")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카드 노출용 한 줄 소개 (최대 100자)"),
                                                     fieldWithPath("thumbnailImageId")
                                                             .type(JsonFieldType.STRING)
                                                             .description("썸네일 imageFileMetaId (TSID 정밀도 보존을 위해 문자열로 송신, UPLOADED 전이 대상)")
@@ -412,10 +421,11 @@ class PortfolioControllerTest {
         void create_portfolio_validation_missing_required_fields() throws Exception {
             // given — title을 비운 요청
             String requestBody = objectMapper.writeValueAsString(Map.ofEntries(
-                    Map.entry("categoryCode", "DEV_BACKEND"),
+                    Map.entry("jobCategory", Map.of("code", "DEV_BACKEND")),
                     Map.entry("collaborationType", "team"),
                     Map.entry("visibility", "public"),
                     Map.entry("title", ""),
+                    Map.entry("previewSummary", "한 줄 소개"),
                     Map.entry("content", Map.of(
                             "json", Map.of("type", "doc"),
                             "html", "<p>본문</p>"
@@ -442,6 +452,35 @@ class PortfolioControllerTest {
                                             .build()
                             )
                     ));
+        }
+
+        @Test
+        @DisplayName("[400 Bad Request] jobCategory.userInput 길이가 10자를 초과하면 REQUEST_VALUE_INVALID 에러를 반환한다.")
+        void create_portfolio_validation_user_input_too_long() throws Exception {
+            // given — userInput 11자
+            String requestBody = objectMapper.writeValueAsString(Map.ofEntries(
+                    Map.entry("jobCategory", Map.of(
+                            "code", "DEV_BACKEND",
+                            "userInput", "가".repeat(11)
+                    )),
+                    Map.entry("collaborationType", "team"),
+                    Map.entry("visibility", "public"),
+                    Map.entry("title", "회원 서비스 회고"),
+                    Map.entry("previewSummary", "한 줄 소개"),
+                    Map.entry("content", Map.of(
+                            "json", Map.of("type", "doc"),
+                            "html", "<p>본문</p>"
+                    ))
+            ));
+
+            // when & then
+            mockMvc.perform(post("/api/portfolios")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errorCode").value("REQUEST_VALUE_INVALID"))
+                    .andExpect(jsonPath("$.fieldErrors").isArray());
         }
     }
 

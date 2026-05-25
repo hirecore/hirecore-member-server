@@ -11,9 +11,12 @@ import java.time.Instant;
 
 @Getter
 public class PortfolioJobCategory  {
+
+    public static final int USER_INPUT_MAX_LENGTH = 10;
+
     private final Long id;
     private final Long jobCategoryId;
-    private final String customJobCategoryName;
+    private final String userInput;
     private final Boolean isDeleted;
     private final Instant deletedAt;
     private final Instant connectedAt;
@@ -22,26 +25,26 @@ public class PortfolioJobCategory  {
     private PortfolioJobCategory(
             Long id,
             Long jobCategoryId,
-            String customJobCategoryName,
+            String userInput,
             Boolean isDeleted,
             Instant deletedAt,
             Instant connectedAt
     ) {
-        ensureInvariants(id, jobCategoryId, isDeleted, connectedAt);
+        ensureInvariants(id, jobCategoryId, userInput, isDeleted, connectedAt);
 
         this.id = id;
         this.jobCategoryId = jobCategoryId;
-        this.customJobCategoryName = customJobCategoryName;
+        this.userInput = userInput;
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
         this.connectedAt = connectedAt;
     }
 
-    public static PortfolioJobCategory create(Long jobCategoryId, String customJobCategoryName) {
+    public static PortfolioJobCategory create(Long jobCategoryId, String userInput) {
         return PortfolioJobCategory.builder()
                 .id(TsidCreator.getTsid().toLong())
                 .jobCategoryId(jobCategoryId)
-                .customJobCategoryName(customJobCategoryName)
+                .userInput(userInput)
                 .isDeleted(false)
                 .deletedAt(null)
                 .connectedAt(Instant.now())
@@ -51,6 +54,7 @@ public class PortfolioJobCategory  {
     private static void ensureInvariants(
             Long id,
             Long jobCategoryId,
+            String userInput,
             Boolean isDeleted,
             Instant connectedAt
     ) {
@@ -62,6 +66,11 @@ public class PortfolioJobCategory  {
         AssertionUtils.notNull(
                 jobCategoryId,
                 PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_ID_MISSING,
+                PortfolioJobCategoryDomainException::new
+        );
+        AssertionUtils.isTrue(
+                userInput == null || userInput.length() <= USER_INPUT_MAX_LENGTH,
+                PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.USER_INPUT_TOO_LONG,
                 PortfolioJobCategoryDomainException::new
         );
         AssertionUtils.notNull(

@@ -10,9 +10,12 @@ import java.time.Instant;
 
 @Getter
 public class CoverLetterJobCategory {
+
+    public static final int USER_INPUT_MAX_LENGTH = 10;
+
     private final Long id;
     private final Long jobCategoryId;
-    private final String customJobCategoryName;
+    private final String userInput;
     private final Instant isDeleted;
     private final Instant deletedAt;
     private final Instant connectedAt;
@@ -21,16 +24,16 @@ public class CoverLetterJobCategory {
     private CoverLetterJobCategory(
             Long id,
             Long jobCategoryId,
-            String customJobCategoryName,
+            String userInput,
             Instant isDeleted,
             Instant deletedAt,
             Instant connectedAt
     ) {
-        ensureInvariants(id, jobCategoryId, isDeleted, connectedAt);
+        ensureInvariants(id, jobCategoryId, userInput, isDeleted, connectedAt);
 
         this.id = id;
         this.jobCategoryId = jobCategoryId;
-        this.customJobCategoryName = customJobCategoryName;
+        this.userInput = userInput;
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
         this.connectedAt = connectedAt;
@@ -39,6 +42,7 @@ public class CoverLetterJobCategory {
     private static void ensureInvariants(
             Long id,
             Long jobCategoryId,
+            String userInput,
             Instant isDeleted,
             Instant connectedAt
     ) {
@@ -50,6 +54,11 @@ public class CoverLetterJobCategory {
         AssertionUtils.notNull(
                 jobCategoryId,
                 CoverLetterJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_ID_MISSING,
+                CoverLetterJobCategoryDomainException::new
+        );
+        AssertionUtils.isTrue(
+                userInput == null || userInput.length() <= USER_INPUT_MAX_LENGTH,
+                CoverLetterJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.USER_INPUT_TOO_LONG,
                 CoverLetterJobCategoryDomainException::new
         );
         AssertionUtils.notNull(

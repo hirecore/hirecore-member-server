@@ -3,8 +3,8 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain.exception;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.BaseDomainException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCode;
 
-public class PortfolioInterestDomainException extends BaseDomainException {
-    public PortfolioInterestDomainException(DomainExceptionCode domainExceptionCode) {
-        super("PortfolioInterestDomainException", domainExceptionCode);
+public class PortfolioMemberInterestDomainException extends BaseDomainException {
+    public PortfolioMemberInterestDomainException(DomainExceptionCode domainExceptionCode) {
+        super("PortfolioMemberInterestDomainException", domainExceptionCode);
     }
 }

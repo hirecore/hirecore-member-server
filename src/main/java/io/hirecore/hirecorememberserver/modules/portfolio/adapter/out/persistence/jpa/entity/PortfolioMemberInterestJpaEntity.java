@@ -9,14 +9,14 @@ import java.time.Instant;
 
 @Entity
 @Table(
-        name = "portfolio_interests",
+        name = "portfolio_member_interests",
         uniqueConstraints = @UniqueConstraint(columnNames = {"portfolio_id", "member_account_id"})
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
-public class PortfolioInterestJpaEntity extends AbstractPersistableEntity<Long> {
+public class PortfolioMemberInterestJpaEntity extends AbstractPersistableEntity<Long> {
     @Id
     private Long id;
 

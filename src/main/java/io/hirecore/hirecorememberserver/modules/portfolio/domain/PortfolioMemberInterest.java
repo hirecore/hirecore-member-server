@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioInterestDomainException;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioInterestDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioMemberInterestDomainException;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioMemberInterestDomainExceptionCodeCluster;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Getter;
 import java.time.Instant;
 
 @Getter
-public class PortfolioInterest {
+public class PortfolioMemberInterest {
     private final Long id;
     private final Long memberAccountId;
     private final Instant interestAt;
@@ -18,7 +18,7 @@ public class PortfolioInterest {
     private final Instant deletedAt;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private PortfolioInterest(
+    private PortfolioMemberInterest(
             Long id,
             Long memberAccountId,
             Instant interestAt,
@@ -41,18 +41,18 @@ public class PortfolioInterest {
     ) {
         AssertionUtils.notNull(
                 id,
-                PortfolioInterestDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
-                PortfolioInterestDomainException::new
+                PortfolioMemberInterestDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
+                PortfolioMemberInterestDomainException::new
         );
         AssertionUtils.notNull(
                 memberAccountId,
-                PortfolioInterestDomainExceptionCodeCluster.HiddenDetailResponse.MEMBER_ACCOUNT_ID_MISSING,
-                PortfolioInterestDomainException::new
+                PortfolioMemberInterestDomainExceptionCodeCluster.HiddenDetailResponse.MEMBER_ACCOUNT_ID_MISSING,
+                PortfolioMemberInterestDomainException::new
         );
         AssertionUtils.notNull(
                 interestAt,
-                PortfolioInterestDomainExceptionCodeCluster.HiddenDetailResponse.INTEREST_AT_MISSING,
-                PortfolioInterestDomainException::new
+                PortfolioMemberInterestDomainExceptionCodeCluster.HiddenDetailResponse.INTEREST_AT_MISSING,
+                PortfolioMemberInterestDomainException::new
         );
     }
 }

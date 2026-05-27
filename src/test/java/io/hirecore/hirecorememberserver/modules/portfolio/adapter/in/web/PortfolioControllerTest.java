@@ -24,7 +24,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -513,8 +513,8 @@ class PortfolioControllerTest {
                             new PortfolioTagResponse("Hexagonal", 2)
                     ))
                     .externalLinks(List.of(
-                            new ExternalLink("GitHub Repo", "https://github.com/example/repo"),
-                            new ExternalLink("데모", "https://demo.example.com")
+                            new PortfolioExternalLinkResponse("GitHub Repo", "https://github.com/example/repo"),
+                            new PortfolioExternalLinkResponse("데모", "https://demo.example.com")
                     ))
                     .updatedAt(null)
                     .build();

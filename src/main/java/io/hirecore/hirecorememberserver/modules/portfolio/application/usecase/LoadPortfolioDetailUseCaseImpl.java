@@ -5,11 +5,13 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioTagPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -76,7 +78,16 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 .title(portfolio.getTitle())
                 .content(content)
                 .tags(tags)
-                .externalLinks(portfolio.getExternalLinks())
+                .externalLinks(toExternalLinkResponses(portfolio.getExternalLinks()))
                 .build();
+    }
+
+    private static List<PortfolioExternalLinkResponse> toExternalLinkResponses(List<ExternalLink> links) {
+        if (links == null || links.isEmpty()) {
+            return List.of();
+        }
+        return links.stream()
+                .map(link -> new PortfolioExternalLinkResponse(link.label(), link.url()))
+                .toList();
     }
 }

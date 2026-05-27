@@ -3,15 +3,15 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.JobCategoryApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioExternalLinkApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.CollaborationTypeApiValue;
-import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.ExternalLinkApiValue;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.VisibilityApiValue;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -55,7 +55,7 @@ class PortfolioWebMapperTest {
                             new PortfolioTagApiRequest("Spring", 0),
                             new PortfolioTagApiRequest("DDD", 1)
                     ),
-                    List.of(new ExternalLinkApiValue("GitHub", "https://github.com/example/repo")),
+                    List.of(new PortfolioExternalLinkApiRequest("GitHub", "https://github.com/example/repo")),
                     new PortfolioContentApiRequest(
                             Map.of("type", "doc"),
                             "<p>본문</p>"
@@ -85,7 +85,7 @@ class PortfolioWebMapperTest {
                             org.assertj.core.groups.Tuple.tuple("DDD", 1)
                     );
             assertThat(command.externalLinks())
-                    .extracting(ExternalLink::url)
+                    .extracting(PortfolioExternalLinkCommand::url)
                     .containsExactly("https://github.com/example/repo");
             assertThat(command.linkedResumeId()).isEqualTo(7001L);
             assertThat(command.linkedCoverLetterId()).isEqualTo(8001L);

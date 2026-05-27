@@ -3,7 +3,6 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.re
 import io.hirecore.hirecorememberserver.common.web.json.TsidId;
 import io.hirecore.hirecorememberserver.common.web.json.TsidIds;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.CollaborationTypeApiValue;
-import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.ExternalLinkApiValue;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.VisibilityApiValue;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -39,9 +38,10 @@ public record CreatePortfolioApiRequest(
         List<Long> contentImageIds,
 
         @Valid
-        List<PortfolioTagApiRequest> tags,
+        List<@NotNull PortfolioTagApiRequest> tags,
 
-        List<ExternalLinkApiValue> externalLinks,
+        @Valid
+        List<@NotNull PortfolioExternalLinkApiRequest> externalLinks,
 
         @Valid
         @NotNull(message = "포트폴리오 본문은 필수입니다.")

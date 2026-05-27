@@ -10,6 +10,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryIdByCodePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
@@ -315,11 +316,11 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("externalLinks가 채워져 있으면 도메인에 그대로 전달된다")
         void should_pass_external_links_as_is() {
             // given
-            ExternalLink link = new ExternalLink("Repo", "https://github.com/example");
+            PortfolioExternalLinkCommand linkCommand = new PortfolioExternalLinkCommand("Repo", "https://github.com/example");
             CreatePortfolioCommand command = new CreatePortfolioCommand(
                     new JobCategoryCommand("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
-                    "title", null, "한 줄 소개", null, null, null, List.of(link),
+                    "title", null, "한 줄 소개", null, null, null, List.of(linkCommand),
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
@@ -333,7 +334,8 @@ class CreatePortfolioUseCaseImplTest {
             // then
             ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
             then(savePortfolioPort).should().save(captor.capture());
-            assertThat(captor.getValue().getExternalLinks()).containsExactly(link);
+            assertThat(captor.getValue().getExternalLinks())
+                    .containsExactly(new ExternalLink(linkCommand.label(), linkCommand.url()));
         }
     }
 

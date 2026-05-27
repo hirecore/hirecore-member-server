@@ -4,16 +4,20 @@ import io.hirecore.hirecorememberserver.common.config.GlobalMapStructConfig;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.JobCategoryApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioExternalLinkApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioContentApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioDetailApiResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioExternalLinkApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioTagApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.JobCategoryCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapper;
 import org.mapstruct.Mapper;
@@ -29,9 +33,11 @@ public abstract class PortfolioWebMapper {
     public abstract JobCategoryCommand toJobCategoryCommand(JobCategoryApiRequest jobCategory);
     public abstract PortfolioContentCommand toPortfolioContentCommand(PortfolioContentApiRequest content);
     public abstract PortfolioTagCommand toPortfolioTagCommand(PortfolioTagApiRequest tag);
+    public abstract PortfolioExternalLinkCommand toPortfolioExternalLinkCommand(PortfolioExternalLinkApiRequest request);
 
     public abstract PortfolioDetailApiResponse toPortfolioDetailApiResponse(PortfolioDetailResponse response);
     public abstract PortfolioContentApiResponse toPortfolioContentApiResponse(PortfolioContentResponse response);
     public abstract List<PortfolioTagApiResponse> toPortfolioTagApiResponses(List<PortfolioTagResponse> responses);
     public abstract PortfolioTagApiResponse toPortfolioTagApiResponse(PortfolioTagResponse response);
+    public abstract PortfolioExternalLinkApiResponse toPortfolioExternalLinkApiResponse(PortfolioExternalLinkResponse response);
 }

@@ -7,6 +7,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
@@ -61,7 +62,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
     private Portfolio buildPortfolio(Long memberId, CreatePortfolioCommand command, Long jobCategoryId) {
         PortfolioContentCommand content = command.content();
         List<PortfolioTag> portfolioTags = toPortfolioTags(command.tags());
-        List<ExternalLink> externalLinks = command.externalLinks() != null ? command.externalLinks() : List.of();
+        List<ExternalLink> externalLinks = toExternalLinks(command.externalLinks());
 
         return Portfolio.create(
                 memberId,
@@ -88,6 +89,15 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
         }
         return tagCommands.stream()
                 .map(tag -> PortfolioTag.create(tag.userInputTag(), tag.sortOrder()))
+                .toList();
+    }
+
+    private static List<ExternalLink> toExternalLinks(List<PortfolioExternalLinkCommand> linkCommands) {
+        if (linkCommands == null || linkCommands.isEmpty()) {
+            return List.of();
+        }
+        return linkCommands.stream()
+                .map(link -> new ExternalLink(link.label(), link.url()))
                 .toList();
     }
 

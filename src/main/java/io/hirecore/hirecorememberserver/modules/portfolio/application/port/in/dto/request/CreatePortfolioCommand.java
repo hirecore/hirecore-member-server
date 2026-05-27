@@ -4,7 +4,6 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public record CreatePortfolioCommand(
         Long thumbnailImageId,
         List<Long> contentImageIds,
         List<PortfolioTagCommand> tags,
-        List<ExternalLink> externalLinks,
+        List<PortfolioExternalLinkCommand> externalLinks,
         PortfolioContentCommand content,
         Long linkedResumeId,
         Long linkedCoverLetterId

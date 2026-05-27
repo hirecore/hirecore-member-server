@@ -1,7 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import lombok.Builder;
 
@@ -15,9 +14,9 @@ public record PortfolioDetailResponse(
         CollaborationType collaborationType,
         Visibility visibility,
         String title,
-        PortfolioContentResponse content,
         List<PortfolioTagResponse> tags,
-        List<ExternalLink> externalLinks,
+        List<PortfolioExternalLinkResponse> externalLinks,
+        PortfolioContentResponse content,
         Instant updatedAt
 ) {
 }

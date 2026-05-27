@@ -17,7 +17,7 @@ public class PortfolioJobCategoryJpaEntity extends AbstractPersistableEntity<Lon
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", nullable = false)
     private PortfolioJpaEntity portfolio;
 
@@ -41,7 +41,7 @@ public class PortfolioJobCategoryJpaEntity extends AbstractPersistableEntity<Lon
     @Column(name = "connected_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant connectedAt;
 
-    public void attachPortfolio(PortfolioJpaEntity portfolio) {
+    void setPortfolio(PortfolioJpaEntity portfolio) {
         this.portfolio = portfolio;
     }
 }

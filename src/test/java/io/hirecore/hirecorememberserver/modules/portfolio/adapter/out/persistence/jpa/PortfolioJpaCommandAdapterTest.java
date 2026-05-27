@@ -84,7 +84,6 @@ class PortfolioJpaCommandAdapterTest {
 
         // 자식들이 Aggregate Root 헬퍼를 통해 부착됨
         then(portfolioEntity).should().syncPortfolioContent(contentEntity);
-        then(portfolioEntity).should().addPortfolioJobCategory(jobCategoryEntity);
         then(portfolioEntity).should().addPortfolioTag(tagEntity1);
         then(portfolioEntity).should().addPortfolioTag(tagEntity2);
 
@@ -115,7 +114,6 @@ class PortfolioJpaCommandAdapterTest {
 
         // then
         then(portfolioEntity).should(never()).addPortfolioTag(org.mockito.ArgumentMatchers.any());
-        then(portfolioEntity).should().addPortfolioJobCategory(jobCategoryEntity);
         then(portfolioRepository).should().save(portfolioEntity);
     }
 }

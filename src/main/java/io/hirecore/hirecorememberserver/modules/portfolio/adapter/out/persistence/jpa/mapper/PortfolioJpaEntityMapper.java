@@ -5,7 +5,6 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioTagJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -28,7 +27,7 @@ public abstract class PortfolioJpaEntityMapper {
     protected PortfolioJobCategoryJpaEntityMapper portfolioJobCategoryMapper;
 
     @Mapping(target = "portfolioContent", ignore = true)
-    @Mapping(target = "portfolioJobCategories", ignore = true)
+    @Mapping(target = "portfolioJobCategory", ignore = true)
     @Mapping(target = "portfolioTags", ignore = true)
     public abstract PortfolioJpaEntity toJpaEntity(Portfolio domain);
 
@@ -39,7 +38,7 @@ public abstract class PortfolioJpaEntityMapper {
         return Portfolio.builder()
                 .id(entity.getId())
                 .memberAccountId(entity.getMemberAccountId())
-                .portfolioJobCategory(resolveJobCategory(entity.getPortfolioJobCategories()))
+                .portfolioJobCategory(portfolioJobCategoryMapper.toDomain(entity.getPortfolioJobCategory()))
                 .thumbnailImageId(entity.getThumbnailImageId())
                 .coverLetterId(entity.getCoverLetterId())
                 .resumeId(entity.getResumeId())
@@ -54,18 +53,6 @@ public abstract class PortfolioJpaEntityMapper {
                 .visibility(entity.getVisibility())
                 .auditingInfo(toAuditingInfo(entity.getAuditingInfo()))
                 .build();
-    }
-
-    private PortfolioJobCategory resolveJobCategory(List<PortfolioJobCategoryJpaEntity> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return null;
-        }
-        return entities.stream()
-                .filter(e -> !Boolean.TRUE.equals(e.getIsDeleted()))
-                .findFirst()
-                .or(() -> entities.stream().findFirst())
-                .map(portfolioJobCategoryMapper::toDomain)
-                .orElse(null);
     }
 
     private List<PortfolioTag> toDomainTags(List<PortfolioTagJpaEntity> entities) {

@@ -21,7 +21,11 @@ import java.util.List;
 @Getter
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
 
+    public static final int TITLE_MAX_LENGTH = 80;
     public static final int PREVIEW_SUMMARY_MAX_LENGTH = 100;
+    public static final int PRIVATE_MEMO_MAX_LENGTH = 200;
+    public static final int EXTERNAL_LINKS_MAX_COUNT = 6;
+    public static final int PORTFOLIO_TAGS_MAX_COUNT = 10;
 
     private final Long id;
     private final Long memberAccountId;
@@ -71,7 +75,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     ) {
         ensureInvariants(
                 id, memberAccountId, portfolioJobCategory, title,
-                previewSummary, portfolioContent, status, collaborationType, visibility, auditingInfo
+                previewSummary, privateMemo, externalLinks, portfolioTags,
+                portfolioContent, status, collaborationType, visibility, auditingInfo
         );
 
         this.id = id;
@@ -137,6 +142,9 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             PortfolioJobCategory portfolioJobCategory,
             String title,
             String previewSummary,
+            String privateMemo,
+            List<ExternalLink> externalLinks,
+            List<PortfolioTag> portfolioTags,
             PortfolioContent portfolioContent,
             PortfolioStatus status,
             CollaborationType collaborationType,
@@ -163,6 +171,11 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.TITLE_MISSING,
                 PortfolioDomainException::new
         );
+        AssertionUtils.isTrue(
+                title.length() <= TITLE_MAX_LENGTH,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.TITLE_TOO_LONG,
+                PortfolioDomainException::new
+        );
         AssertionUtils.notBlank(
                 previewSummary,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PREVIEW_SUMMARY_MISSING,
@@ -171,6 +184,21 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         AssertionUtils.isTrue(
                 previewSummary.length() <= PREVIEW_SUMMARY_MAX_LENGTH,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PREVIEW_SUMMARY_TOO_LONG,
+                PortfolioDomainException::new
+        );
+        AssertionUtils.isTrue(
+                privateMemo == null || privateMemo.length() <= PRIVATE_MEMO_MAX_LENGTH,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PRIVATE_MEMO_TOO_LONG,
+                PortfolioDomainException::new
+        );
+        AssertionUtils.isTrue(
+                externalLinks == null || externalLinks.size() <= EXTERNAL_LINKS_MAX_COUNT,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.EXTERNAL_LINKS_TOO_MANY,
+                PortfolioDomainException::new
+        );
+        AssertionUtils.isTrue(
+                portfolioTags == null || portfolioTags.size() <= PORTFOLIO_TAGS_MAX_COUNT,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_TAGS_TOO_MANY,
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(

@@ -52,8 +52,11 @@ class PortfolioJpaCommandAdapterTest {
 
     private static Portfolio buildPortfolio() {
         return Portfolio.create(
-                1L, 9L, null, 100L, 8001L, 7001L,
-                "title", "본문", "{}", "<p>본문</p>", List.of(), null,
+                1L, 100L, 8001L, 7001L,
+                "title", "본문", null,
+                9L, null,
+                "{}", "<p>본문</p>",
+                List.of(),
                 List.of(PortfolioTag.create("Spring", 0), PortfolioTag.create("DDD", 1)),
                 CollaborationType.TEAM, Visibility.PUBLIC
         );
@@ -96,9 +99,13 @@ class PortfolioJpaCommandAdapterTest {
     void should_not_invoke_add_tag_when_no_tags() {
         // given — 태그 비어있는 포트폴리오
         Portfolio domain = Portfolio.create(
-                1L, 9L, null, null, null, null,
-                "title", "본문", "{}", "<p>본문</p>", List.of(), null,
-                List.of(), CollaborationType.PERSONAL, Visibility.PRIVATE
+                1L, null, null, null,
+                "title", "본문", null,
+                9L, null,
+                "{}", "<p>본문</p>",
+                List.of(),
+                List.of(),
+                CollaborationType.PERSONAL, Visibility.PRIVATE
         );
 
         PortfolioJpaEntity portfolioEntity = mock(PortfolioJpaEntity.class);

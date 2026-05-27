@@ -22,6 +22,8 @@ import java.util.List;
 @Builder
 @Getter
 public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
+
+    // primitives
     @Id
     private Long id;
 
@@ -41,6 +43,34 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Column(name = "resume_id")
     private Long resumeId;
 
+    @Comment("포트폴리오 제목")
+    @Column(name = "title", nullable = false, columnDefinition = "VARCHAR(200)")
+    private String title;
+
+    @Comment("미리보기 요약")
+    @Column(name = "preview_summary", nullable = false, columnDefinition = "VARCHAR(100)")
+    private String previewSummary;
+
+    @Comment("나만보기 메모")
+    @Column(name = "private_memo", columnDefinition = "TEXT")
+    private String privateMemo;
+
+    @Comment("캐싱된 조회수")
+    @Column(name = "cached_view_count", nullable = false, columnDefinition = "VARCHAR(20)")
+    private String cachedViewCount;
+
+    @Comment("캐싱된 관심수")
+    @Column(name = "cached_interest_count", nullable = false, columnDefinition = "VARCHAR(20)")
+    private String cachedInterestCount;
+
+    // sub-aggregate
+    @OneToOne(
+            mappedBy = "portfolio",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private PortfolioJobCategoryJpaEntity portfolioJobCategory;
+
     @OneToOne(
             mappedBy = "portfolio",
             cascade = CascadeType.ALL,
@@ -48,12 +78,10 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     )
     private PortfolioContentJpaEntity portfolioContent;
 
-    @OneToOne(
-            mappedBy = "portfolio",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private PortfolioJobCategoryJpaEntity portfolioJobCategory;
+    @Comment("사용자 입력 외부 링크")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "external_link_json", columnDefinition = "json")
+    private List<ExternalLink> externalLinks = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "portfolio",
@@ -63,14 +91,23 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Builder.Default
     private List<PortfolioTagJpaEntity> portfolioTags = new ArrayList<>();
 
-    @Comment("포트폴리오 제목")
-    @Column(name = "title", nullable = false, columnDefinition = "VARCHAR(200)")
-    private String title;
+    @OneToMany(
+            mappedBy = "portfolio",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<PortfolioMemberInterestJpaEntity> portfolioMemberInterests = new ArrayList<>();
 
-    @Comment("미리보기 요약")
-    @Column(name = "preview_summary", nullable = false, columnDefinition = "VARCHAR(100)")
-    private String previewSummary;
+    @OneToMany(
+            mappedBy = "portfolio",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<PortfolioMemberViewJpaEntity> portfolioMemberViews = new ArrayList<>();
 
+    // vo
     @Comment("포트폴리오 상태")
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(30)")
@@ -80,15 +117,6 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "collaboration_type", nullable = false, columnDefinition = "VARCHAR(30)")
     private CollaborationType collaborationType;
-
-    @Comment("사용자 입력 외부 링크")
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "external_link_json", columnDefinition = "json")
-    private List<ExternalLink> externalLinks = new ArrayList<>();
-
-    @Comment("나만보기 메모")
-    @Column(name = "private_memo", columnDefinition = "TEXT")
-    private String privateMemo;
 
     @Comment("공개 범위")
     @Enumerated(EnumType.STRING)

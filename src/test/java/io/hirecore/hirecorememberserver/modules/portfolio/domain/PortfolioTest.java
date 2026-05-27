@@ -31,17 +31,17 @@ class PortfolioTest {
     ) {
         return Portfolio.create(
                 1L,
-                10L,
-                null,
                 100L,
                 null,
                 null,
                 title,
                 previewSummary,
+                privateMemo,
+                10L,
+                null,
                 "{\"type\":\"doc\"}",
                 "<p>본문</p>",
                 externalLinks,
-                privateMemo,
                 tags,
                 CollaborationType.TEAM,
                 Visibility.PUBLIC

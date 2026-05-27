@@ -29,21 +29,24 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
 
     private final Long id;
     private final Long memberAccountId;
-    private final PortfolioJobCategory portfolioJobCategory;
-    /** (선택) 포트폴리오 썸네일 null가능 */
     private final Long thumbnailImageId;
-    /** (선택) 연결된 자기소개서, null가능 */
     private final Long coverLetterId;
-    /** (선택) 연결된 이력서, null가능 */
     private final Long resumeId;
     private final String title;
     private final String previewSummary;
+    private final String privateMemo;
+    private final String cachedViewCount;
+    private final String cachedInterestCount;
+
+    // sub-aggregate
+    private final PortfolioJobCategory portfolioJobCategory;
     private final PortfolioContent portfolioContent;
     private final List<ExternalLink> externalLinks;
-    /** (선택) 나만보기 메모, null가능 */
-    private final String privateMemo;
-    /** (선택) 포트폴리오 태그 목록, null가능 */
     private final List<PortfolioTag> portfolioTags;
+    private final List<PortfolioMemberInterest> portfolioMemberInterests;
+    private final List<PortfolioMemberView> portfolioMemberViews;
+
+    // vo
     private final PortfolioStatus status;
     private final CollaborationType collaborationType;
     private final Visibility visibility;
@@ -58,39 +61,47 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private Portfolio(
             Long id,
             Long memberAccountId,
-            PortfolioJobCategory portfolioJobCategory,
             Long thumbnailImageId,
             Long coverLetterId,
             Long resumeId,
             String title,
             String previewSummary,
+            String privateMemo,
+            String cachedViewCount,
+            String cachedInterestCount,
+            PortfolioJobCategory portfolioJobCategory,
             PortfolioContent portfolioContent,
             List<ExternalLink> externalLinks,
-            String privateMemo,
             List<PortfolioTag> portfolioTags,
+            List<PortfolioMemberInterest> portfolioMemberInterests,
+            List<PortfolioMemberView> portfolioMemberViews,
             PortfolioStatus status,
             CollaborationType collaborationType,
             Visibility visibility,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(
-                id, memberAccountId, portfolioJobCategory, title,
-                previewSummary, privateMemo, externalLinks, portfolioTags,
-                portfolioContent, status, collaborationType, visibility, auditingInfo
+                id, memberAccountId, title, previewSummary, privateMemo,
+                portfolioJobCategory, portfolioContent, externalLinks, portfolioTags,
+                status, collaborationType, visibility, auditingInfo
         );
 
         this.id = id;
         this.memberAccountId = memberAccountId;
-        this.portfolioJobCategory = portfolioJobCategory;
         this.thumbnailImageId = thumbnailImageId;
         this.coverLetterId = coverLetterId;
         this.resumeId = resumeId;
         this.title = title;
         this.previewSummary = previewSummary;
+        this.privateMemo = privateMemo;
+        this.cachedViewCount = cachedViewCount;
+        this.cachedInterestCount = cachedInterestCount;
+        this.portfolioJobCategory = portfolioJobCategory;
         this.portfolioContent = portfolioContent;
         this.externalLinks = externalLinks;
-        this.privateMemo = privateMemo;
         this.portfolioTags = portfolioTags;
+        this.portfolioMemberInterests = portfolioMemberInterests;
+        this.portfolioMemberViews = portfolioMemberViews;
         this.status = status;
         this.collaborationType = collaborationType;
         this.visibility = visibility;
@@ -99,17 +110,17 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
 
     public static Portfolio create(
             Long memberAccountId,
-            Long jobCategoryId,
-            String userInput,
             Long thumbnailImageId,
             Long coverLetterId,
             Long resumeId,
             String title,
             String previewSummary,
+            String privateMemo,
+            Long jobCategoryId,
+            String userInput,
             String contentJson,
             String contentHtml,
             List<ExternalLink> externalLinks,
-            String privateMemo,
             List<PortfolioTag> portfolioTags,
             CollaborationType collaborationType,
             Visibility visibility
@@ -119,16 +130,20 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         return Portfolio.builder()
                 .id(portfolioId)
                 .memberAccountId(memberAccountId)
-                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
                 .thumbnailImageId(thumbnailImageId)
                 .coverLetterId(coverLetterId)
                 .resumeId(resumeId)
                 .title(title)
                 .previewSummary(previewSummary)
+                .privateMemo(privateMemo)
+                .cachedViewCount("0")
+                .cachedInterestCount("0")
+                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
                 .portfolioContent(PortfolioContent.create(portfolioId, contentJson, contentHtml))
                 .externalLinks(externalLinks)
-                .privateMemo(privateMemo)
                 .portfolioTags(portfolioTags)
+                .portfolioMemberInterests(List.of())
+                .portfolioMemberViews(List.of())
                 .status(PortfolioStatus.PUBLISHED)
                 .collaborationType(collaborationType)
                 .visibility(visibility)
@@ -139,13 +154,13 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private static void ensureInvariants(
             Long id,
             Long memberAccountId,
-            PortfolioJobCategory portfolioJobCategory,
             String title,
             String previewSummary,
             String privateMemo,
+            PortfolioJobCategory portfolioJobCategory,
+            PortfolioContent portfolioContent,
             List<ExternalLink> externalLinks,
             List<PortfolioTag> portfolioTags,
-            PortfolioContent portfolioContent,
             PortfolioStatus status,
             CollaborationType collaborationType,
             Visibility visibility,
@@ -159,11 +174,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         AssertionUtils.notNull(
                 memberAccountId,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.MEMBER_ACCOUNT_ID_MISSING,
-                PortfolioDomainException::new
-        );
-        AssertionUtils.notNull(
-                portfolioJobCategory,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_JOB_CATEGORY_MISSING,
                 PortfolioDomainException::new
         );
         AssertionUtils.notBlank(
@@ -191,6 +201,16 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PRIVATE_MEMO_TOO_LONG,
                 PortfolioDomainException::new
         );
+        AssertionUtils.notNull(
+                portfolioJobCategory,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_JOB_CATEGORY_MISSING,
+                PortfolioDomainException::new
+        );
+        AssertionUtils.notNull(
+                portfolioContent,
+                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_CONTENT_MISSING,
+                PortfolioDomainException::new
+        );
         AssertionUtils.isTrue(
                 externalLinks == null || externalLinks.size() <= EXTERNAL_LINKS_MAX_COUNT,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.EXTERNAL_LINKS_TOO_MANY,
@@ -199,11 +219,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         AssertionUtils.isTrue(
                 portfolioTags == null || portfolioTags.size() <= PORTFOLIO_TAGS_MAX_COUNT,
                 PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_TAGS_TOO_MANY,
-                PortfolioDomainException::new
-        );
-        AssertionUtils.notNull(
-                portfolioContent,
-                PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_CONTENT_MISSING,
                 PortfolioDomainException::new
         );
         AssertionUtils.notNull(

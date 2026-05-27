@@ -32,7 +32,7 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort {
         portfolioEntity.syncPortfolioContent(contentEntity);
 
         PortfolioJobCategoryJpaEntity jobCategoryEntity = portfolioJobCategoryMapper.toJpaEntity(portfolio.getPortfolioJobCategory());
-        portfolioEntity.addPortfolioJobCategory(jobCategoryEntity);
+        portfolioEntity.syncPortfolioJobCategory(jobCategoryEntity);
 
         for (PortfolioTagJpaEntity tagEntity : portfolio.getPortfolioTags().stream().map(portfolioTagMapper::toJpaEntity).toList()) {
             portfolioEntity.addPortfolioTag(tagEntity);

@@ -48,13 +48,12 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     )
     private PortfolioContentJpaEntity portfolioContent;
 
-    @OneToMany(
+    @OneToOne(
             mappedBy = "portfolio",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @Builder.Default
-    private List<PortfolioJobCategoryJpaEntity> portfolioJobCategories = new ArrayList<>();
+    private PortfolioJobCategoryJpaEntity portfolioJobCategory;
 
     @OneToMany(
             mappedBy = "portfolio",
@@ -110,13 +109,11 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
         }
     }
 
-    /**
-     * 양방향 @OneToMany 관계의 양쪽 참조를 동기화하는 JPA 메커니즘 헬퍼.
-     * Aggregate Root를 통해서만 자식 엔티티가 부착되도록 강제합니다.
-     */
-    public void addPortfolioJobCategory(PortfolioJobCategoryJpaEntity jobCategory) {
-        this.portfolioJobCategories.add(jobCategory);
-        jobCategory.attachPortfolio(this);
+    public void syncPortfolioJobCategory(PortfolioJobCategoryJpaEntity newJobCategory) {
+        this.portfolioJobCategory = newJobCategory;
+        if (newJobCategory != null) {
+            newJobCategory.setPortfolio(this);
+        }
     }
 
     public void addPortfolioTag(PortfolioTagJpaEntity tag) {

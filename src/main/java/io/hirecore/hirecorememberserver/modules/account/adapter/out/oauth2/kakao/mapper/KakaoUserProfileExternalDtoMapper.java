@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.mapper;
 
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.dto.result.KakaoUserProfileExternalResult;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.response.SocialUserProfileResult;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

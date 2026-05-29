@@ -1,4 +1,4 @@
-package io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.response;
+package io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;

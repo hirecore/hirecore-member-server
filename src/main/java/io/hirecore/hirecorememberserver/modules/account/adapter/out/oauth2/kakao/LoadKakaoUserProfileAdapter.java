@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kaka
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.exception.KakaoApiException;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.mapper.KakaoUserProfileExternalDtoMapper;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.properties.KakaoOAuth2Properties;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.response.SocialUserProfileResult;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.dto.result.KakaoTokenExternalResult;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.dto.result.KakaoUserProfileExternalResult;

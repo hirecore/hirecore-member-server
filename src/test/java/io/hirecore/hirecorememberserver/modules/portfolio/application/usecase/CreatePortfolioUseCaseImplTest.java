@@ -7,7 +7,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryIdByCodePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
@@ -49,7 +49,7 @@ class CreatePortfolioUseCaseImplTest {
     private UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
 
     @Mock
-    private LoadJobCategoryIdByCodePort loadJobCategoryIdByCodePort;
+    private LoadJobCategoryPort loadJobCategoryIdByCodePort;
 
     @Mock
     private SavePortfolioPort savePortfolioPort;

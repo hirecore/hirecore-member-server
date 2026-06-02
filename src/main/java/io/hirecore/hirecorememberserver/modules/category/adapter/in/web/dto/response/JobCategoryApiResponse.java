@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.res
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.hirecore.hirecorememberserver.common.web.json.TsidId;
 
-public record JobCategoryNodeApiResponse(
+public record JobCategoryApiResponse(
         @TsidId Long id,
         Integer depth,
         Integer sortOrder,

@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response;
 
-public record JobCategoryNodeResponse(
+public record JobCategoryResponse(
         Long id,
         Integer depth,
         Integer sortOrder,

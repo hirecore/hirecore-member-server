@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.category.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryNodeMapper;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryNodeResponse;
+import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryMapper;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
 import io.hirecore.hirecorememberserver.modules.category.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -21,23 +21,23 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 /**
- * {@link LoadJobCategoriesUseCaseImpl} 단위 테스트.
+ * {@link LoadJobCategoryTreeUseCaseImpl} 단위 테스트.
  *
  * <p>Load Port 로부터 받은 도메인 리스트를 매퍼로 변환해 응답 DTO 리스트로
  * 정확히 반환하는지 검증합니다. 정렬·필터링 로직은 어댑터 책임이므로 여기서는 다루지 않습니다.</p>
  */
-@DisplayName("LoadJobCategoriesUseCaseImpl 단위 테스트")
+@DisplayName("LoadJobCategoryTreeUseCaseImpl 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class LoadJobCategoriesUseCaseImplTest {
+class LoadJobCategoryTreeUseCaseImplTest {
 
     @InjectMocks
-    private LoadJobCategoriesUseCaseImpl useCase;
+    private LoadJobCategoryTreeUseCaseImpl useCase;
 
     @Mock
     private LoadJobCategoryPort loadJobCategoryPort;
 
     @Mock
-    private JobCategoryNodeMapper jobCategoryNodeMapper;
+    private JobCategoryMapper jobCategoryMapper;
 
     private static JobCategory category(Long id, Long parentId, Integer depth, Integer sortOrder) {
         Instant now = Instant.now();
@@ -55,8 +55,8 @@ class LoadJobCategoriesUseCaseImplTest {
                 .build();
     }
 
-    private static JobCategoryNodeResponse response(Long id, Long parentId, Integer depth, Integer sortOrder) {
-        return new JobCategoryNodeResponse(id, depth, sortOrder, parentId, "NAME_" + id, "CODE_" + id, false);
+    private static JobCategoryResponse response(Long id, Long parentId, Integer depth, Integer sortOrder) {
+        return new JobCategoryResponse(id, depth, sortOrder, parentId, "NAME_" + id, "CODE_" + id, false);
     }
 
     @Nested
@@ -69,22 +69,22 @@ class LoadJobCategoriesUseCaseImplTest {
             // given
             JobCategory root = category(1L, null, 1, 1);
             JobCategory child = category(11L, 1L, 2, 1);
-            JobCategoryNodeResponse rootResponse = response(1L, null, 1, 1);
-            JobCategoryNodeResponse childResponse = response(11L, 1L, 2, 1);
+            JobCategoryResponse rootResponse = response(1L, null, 1, 1);
+            JobCategoryResponse childResponse = response(11L, 1L, 2, 1);
 
             given(loadJobCategoryPort.loadAllWithinDepth(2))
                     .willReturn(List.of(root, child));
-            given(jobCategoryNodeMapper.toResponse(root)).willReturn(rootResponse);
-            given(jobCategoryNodeMapper.toResponse(child)).willReturn(childResponse);
+            given(jobCategoryMapper.toResponse(root)).willReturn(rootResponse);
+            given(jobCategoryMapper.toResponse(child)).willReturn(childResponse);
 
             // when
-            List<JobCategoryNodeResponse> result = useCase.execute(2);
+            List<JobCategoryResponse> result = useCase.execute(2);
 
             // then
             assertThat(result).containsExactly(rootResponse, childResponse);
             then(loadJobCategoryPort).should().loadAllWithinDepth(2);
-            then(jobCategoryNodeMapper).should().toResponse(root);
-            then(jobCategoryNodeMapper).should().toResponse(child);
+            then(jobCategoryMapper).should().toResponse(root);
+            then(jobCategoryMapper).should().toResponse(child);
         }
 
         @Test
@@ -94,11 +94,11 @@ class LoadJobCategoriesUseCaseImplTest {
             given(loadJobCategoryPort.loadAllWithinDepth(1)).willReturn(List.of());
 
             // when
-            List<JobCategoryNodeResponse> result = useCase.execute(1);
+            List<JobCategoryResponse> result = useCase.execute(1);
 
             // then
             assertThat(result).isEmpty();
-            then(jobCategoryNodeMapper).shouldHaveNoInteractions();
+            then(jobCategoryMapper).shouldHaveNoInteractions();
         }
     }
 }

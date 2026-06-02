@@ -1,10 +1,10 @@
 package io.hirecore.hirecorememberserver.modules.category.adapter.in.web;
 
-import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response.JobCategoriesNodeApiResponse;
-import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response.JobCategoryNodeApiResponse;
+import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response.JobCategoriesApiResponse;
+import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response.JobCategoryApiResponse;
 import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.mapper.JobCategoryWebMapper;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoriesUseCase;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryNodeResponse;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryTreeUseCase;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +24,16 @@ import java.util.List;
 @Validated
 public class JobCategoryQueryController {
 
-    private final LoadJobCategoriesUseCase loadJobCategoriesUseCase;
+    private final LoadJobCategoryTreeUseCase loadJobCategoryTreeUseCase;
     private final JobCategoryWebMapper jobCategoryWebMapper;
 
     @GetMapping
-    public ResponseEntity<JobCategoriesNodeApiResponse> getCategories(
+    public ResponseEntity<JobCategoriesApiResponse> getCategories(
             @RequestParam(name="max-depth", required=true) @Min(1) @Max(3) Integer maxDepth
     ) {
-        List<JobCategoryNodeResponse> applicationResponse = loadJobCategoriesUseCase.execute(maxDepth);
-        List<JobCategoryNodeApiResponse> apiResponses = jobCategoryWebMapper.toApiResponses(applicationResponse);
+        List<JobCategoryResponse> applicationResponse = loadJobCategoryTreeUseCase.execute(maxDepth);
+        List<JobCategoryApiResponse> apiResponses = jobCategoryWebMapper.toApiResponses(applicationResponse);
 
-        return ResponseEntity.ok().body(new JobCategoriesNodeApiResponse(apiResponses));
+        return ResponseEntity.ok().body(new JobCategoriesApiResponse(apiResponses));
     }
 }

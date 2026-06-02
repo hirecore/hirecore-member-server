@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.res
 
 import java.util.List;
 
-public record JobCategoriesNodeApiResponse(
-        List<JobCategoryNodeApiResponse> categories
+public record JobCategoriesApiResponse(
+        List<JobCategoryApiResponse> categories
 ){
 }

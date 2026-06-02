@@ -4,10 +4,10 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
 import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
 import io.hirecore.hirecorememberserver.common.web.SwaggerDocs;
-import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response.JobCategoryNodeApiResponse;
+import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response.JobCategoryApiResponse;
 import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.mapper.JobCategoryWebMapper;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoriesUseCase;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryNodeResponse;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryTreeUseCase;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ class JobCategoryQueryControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private LoadJobCategoriesUseCase loadJobCategoriesUseCase;
+    private LoadJobCategoryTreeUseCase loadJobCategoryTreeUseCase;
 
     @MockitoBean
     private JobCategoryWebMapper jobCategoryWebMapper;
@@ -65,19 +65,19 @@ class JobCategoryQueryControllerTest {
         @DisplayName("[200 OK] max-depth=2 로 요청하면 depth 2 이하 활성 카테고리 트리를 반환한다")
         void should_return_categories_within_max_depth() throws Exception {
             // given
-            List<JobCategoryNodeResponse> applicationResponse = List.of(
-                    new JobCategoryNodeResponse(1L, 1, 1, null, "개발", "DEV", false),
-                    new JobCategoryNodeResponse(2L, 1, 2, null, "디자인", "DESIGN", false),
-                    new JobCategoryNodeResponse(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
-                    new JobCategoryNodeResponse(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
+            List<JobCategoryResponse> applicationResponse = List.of(
+                    new JobCategoryResponse(1L, 1, 1, null, "개발", "DEV", false),
+                    new JobCategoryResponse(2L, 1, 2, null, "디자인", "DESIGN", false),
+                    new JobCategoryResponse(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
+                    new JobCategoryResponse(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
             );
-            List<JobCategoryNodeApiResponse> apiResponses = List.of(
-                    new JobCategoryNodeApiResponse(1L, 1, 1, null, "개발", "DEV", false),
-                    new JobCategoryNodeApiResponse(2L, 1, 2, null, "디자인", "DESIGN", false),
-                    new JobCategoryNodeApiResponse(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
-                    new JobCategoryNodeApiResponse(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
+            List<JobCategoryApiResponse> apiResponses = List.of(
+                    new JobCategoryApiResponse(1L, 1, 1, null, "개발", "DEV", false),
+                    new JobCategoryApiResponse(2L, 1, 2, null, "디자인", "DESIGN", false),
+                    new JobCategoryApiResponse(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
+                    new JobCategoryApiResponse(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
             );
-            given(loadJobCategoriesUseCase.execute(2)).willReturn(applicationResponse);
+            given(loadJobCategoryTreeUseCase.execute(2)).willReturn(applicationResponse);
             given(jobCategoryWebMapper.toApiResponses(applicationResponse)).willReturn(apiResponses);
 
             // when & then
@@ -167,7 +167,7 @@ class JobCategoryQueryControllerTest {
         @DisplayName("[200 OK] 조건에 해당하는 카테고리가 없으면 빈 리스트를 반환한다")
         void should_return_empty_list_when_no_categories() throws Exception {
             // given
-            given(loadJobCategoriesUseCase.execute(1)).willReturn(List.of());
+            given(loadJobCategoryTreeUseCase.execute(1)).willReturn(List.of());
             given(jobCategoryWebMapper.toApiResponses(List.of())).willReturn(List.of());
 
             // when & then

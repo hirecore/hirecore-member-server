@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.category.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryNodeMapper;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoriesUseCase;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryNodeResponse;
+import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryMapper;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryTreeUseCase;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
 import io.hirecore.hirecorememberserver.modules.category.application.port.out.LoadJobCategoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,16 +13,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LoadJobCategoriesUseCaseImpl implements LoadJobCategoriesUseCase {
+public class LoadJobCategoryTreeUseCaseImpl implements LoadJobCategoryTreeUseCase {
 
     private final LoadJobCategoryPort loadJobCategoryPort;
-    private final JobCategoryNodeMapper jobCategoryNodeMapper;
+    private final JobCategoryMapper jobCategoryMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public List<JobCategoryNodeResponse> execute(Integer maxDepth) {
+    public List<JobCategoryResponse> execute(Integer maxDepth) {
         return loadJobCategoryPort.loadAllWithinDepth(maxDepth).stream()
-                .map(jobCategoryNodeMapper::toResponse)
+                .map(jobCategoryMapper::toResponse)
                 .toList();
     }
 }

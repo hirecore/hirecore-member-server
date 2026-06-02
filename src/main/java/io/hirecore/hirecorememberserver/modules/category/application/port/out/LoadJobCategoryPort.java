@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface LoadJobCategoryPort {
     List<JobCategory> loadAllWithinDepth(Integer depth);
     Optional<JobCategory> loadByCategoryCode(String categoryCode);
+    Optional<JobCategory> loadById(Long id);
 }

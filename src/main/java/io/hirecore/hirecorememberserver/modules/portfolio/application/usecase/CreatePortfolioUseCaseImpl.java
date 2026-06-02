@@ -12,7 +12,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryIdByCodePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.List;
 public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
     private final UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
-    private final LoadJobCategoryIdByCodePort loadJobCategoryIdByCodePort;
+    private final LoadJobCategoryPort loadJobCategoryIdByCodePort;
     private final SavePortfolioPort savePortfolioPort;
     private final ObjectMapper objectMapper;
 

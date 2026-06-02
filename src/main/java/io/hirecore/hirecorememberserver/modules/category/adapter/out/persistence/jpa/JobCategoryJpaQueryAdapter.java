@@ -30,4 +30,10 @@ public class JobCategoryJpaQueryAdapter implements LoadJobCategoryPort {
         return jobCategoryJpaQueryRepository.findActiveByCategoryCode(categoryCode)
                 .map(jobCategoryJpaEntityMapper::toDomain);
     }
+
+    @Override
+    public Optional<JobCategory> loadById(Long id) {
+        return jobCategoryJpaQueryRepository.findById(id)
+                .map(jobCategoryJpaEntityMapper::toDomain);
+    }
 }

@@ -67,6 +67,39 @@ public class UserStorageUsage extends AbstractDomainEventPublisher implements Do
                 .build();
     }
 
+    /**
+     * 사용량에서 양수 {@code bytes} 만큼을 차감한 새 인스턴스를 반환합니다.
+     * 차감 결과가 음수가 되면 {@link UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse#USED_QUOTA_BYTES_INSUFFICIENT}
+     * 예외가 발생합니다 — 본 invariant 위반은 데이터 정합성 사고를 의미합니다.
+     */
+    public UserStorageUsage decrease(Long bytes) {
+        AssertionUtils.notNull(
+                bytes,
+                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTES_MISSING,
+                UserStorageUsageDomainException::new
+        );
+        AssertionUtils.isTrue(
+                bytes >= 0,
+                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTES_NEGATIVE,
+                UserStorageUsageDomainException::new
+        );
+
+        long next = this.usedQuotaBytes - bytes;
+        AssertionUtils.isTrue(
+                next >= 0,
+                UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse.USED_QUOTA_BYTES_INSUFFICIENT,
+                UserStorageUsageDomainException::new
+        );
+
+        return UserStorageUsage.builder()
+                .id(this.id)
+                .version(this.version)
+                .memberAccountId(this.memberAccountId)
+                .usedQuotaBytes(next)
+                .auditingInfo(this.auditingInfo.update())
+                .build();
+    }
+
     private static void ensureInvariants(
             Long id,
             Long memberAccountId,

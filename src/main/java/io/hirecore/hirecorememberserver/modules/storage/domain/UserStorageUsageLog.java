@@ -137,6 +137,33 @@ public class UserStorageUsageLog extends AbstractDomainEventPublisher implements
                 .build();
     }
 
+    /**
+     * 리소스가 회수되어 사용량이 차감되는 이력을 생성합니다.
+     * {@code changeBytes} 는 음수 값으로 전달해야 합니다 (도메인 약속: 양수는 증가, 음수는 감소).
+     */
+    public static UserStorageUsageLog createForResourceDeletion(
+            Long memberAccountId,
+            ResourceKind resourceKind,
+            Long resourceKindId,
+            Long changeBytes,
+            Long beforeUsedQuotaBytes,
+            Long afterUsedQuotaBytes,
+            String idempotencyKey
+    ) {
+        return UserStorageUsageLog.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .memberAccountId(memberAccountId)
+                .usageChangeReason(UsageChangeReason.RESOURCE_DELETION)
+                .resourceKind(resourceKind)
+                .resourceKindId(resourceKindId)
+                .changeBytes(changeBytes)
+                .beforeUsedQuotaBytes(beforeUsedQuotaBytes)
+                .afterUsedQuotaBytes(afterUsedQuotaBytes)
+                .idempotencyKey(idempotencyKey)
+                .auditingInfo(AuditingInfo.create())
+                .build();
+    }
+
     private static void ensureInvariants(
             Long id,
             Long memberAccountId,

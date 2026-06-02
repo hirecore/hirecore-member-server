@@ -65,3 +65,8 @@ hirecore:
         secret-key: ${LOCAL_OBJECT_STORAGE_AWS_S3_SECRET_KEY}
       cloud-front:
         public-base-url: ${LOCAL_OBJECT_STORAGE_AWS_CF_PUBLIC_BASE_URL}
+
+  file:
+    orphan-cleanup:
+      grace-period: PT5M
+      batch-size: 1000

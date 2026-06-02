@@ -68,7 +68,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
     private UploadStatus uploadStatus;
     private Instant completedUploadAt;
     private Instant orphanedAt;
-    private final Instant completedDeleteAt;
+    private Instant completedDeleteAt;
     private final AuditingInfo auditingInfo;
 
     @Builder(access = AccessLevel.PUBLIC)
@@ -211,6 +211,30 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
                 this.fileSizeBytes,
                 this.orphanedAt
         ));
+    }
+
+    /**
+     * 본 이미지를 DELETED 로 전이합니다 (스토리지 청소 워커가 S3 객체 삭제 후 호출).
+     *
+     * <p>ORPHANED 에서만 DELETED 로 전이할 수 있습니다. 이미 DELETED 면 멱등 처리(no-op),
+     * 그 외 상태(PENDING, UPLOADED)에서 호출되면
+     * {@link ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse#INVALID_UPLOAD_STATUS_TRANSITION}
+     * 예외가 발생합니다.</p>
+     *
+     * <p>구독자가 없는 종결 상태 전이이므로 도메인 이벤트는 발행하지 않습니다.</p>
+     */
+    public void markDeleted() {
+        if (this.uploadStatus == UploadStatus.DELETED) {
+            return;
+        }
+        if (this.uploadStatus != UploadStatus.ORPHANED) {
+            throw new ImageFileMetaDomainException(
+                    ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION
+            );
+        }
+
+        this.uploadStatus = UploadStatus.DELETED;
+        this.completedDeleteAt = Instant.now();
     }
 
     private static void ensureInvariants(

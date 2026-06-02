@@ -102,4 +102,9 @@ public class ImageFileMetaJpaEntity extends AbstractPersistableAggregateRoot<Lon
         this.uploadStatus = UploadStatus.ORPHANED;
         this.orphanedAt = orphanedAt;
     }
+
+    public void markDeleted(Instant completedDeleteAt) {
+        this.uploadStatus = UploadStatus.DELETED;
+        this.completedDeleteAt = completedDeleteAt;
+    }
 }

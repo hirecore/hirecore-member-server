@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioViewedEvent;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
@@ -35,8 +36,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private final String title;
     private final String previewSummary;
     private final String privateMemo;
-    private final String cachedViewCount;
-    private final String cachedInterestCount;
+    private final Long cachedViewCount;
+    private final Long cachedInterestCount;
 
     // sub-aggregate
     private final PortfolioJobCategory portfolioJobCategory;
@@ -67,8 +68,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String title,
             String previewSummary,
             String privateMemo,
-            String cachedViewCount,
-            String cachedInterestCount,
+            Long cachedViewCount,
+            Long cachedInterestCount,
             PortfolioJobCategory portfolioJobCategory,
             PortfolioContent portfolioContent,
             List<ExternalLink> externalLinks,
@@ -108,6 +109,16 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.auditingInfo = auditingInfo;
     }
 
+    /**
+     * 비소유자가 본 포트폴리오를 처음 조회했음을 표기하고 {@link PortfolioViewedEvent}를 등록합니다.
+     *
+     * <p>실제 영구 카운트 증가와 {@code PortfolioMemberView} 적재는 이벤트 소비자가 처리합니다.
+     * 본 메서드는 Aggregate 상태를 변경하지 않으며, 도메인이 사건을 발행하는 책임만 갖습니다.</p>
+     */
+    public void markViewed(Long viewerMemberAccountId) {
+        registerEvent(new PortfolioViewedEvent(this.id, viewerMemberAccountId));
+    }
+
     public static Portfolio create(
             Long memberAccountId,
             Long thumbnailImageId,
@@ -136,8 +147,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 .title(title)
                 .previewSummary(previewSummary)
                 .privateMemo(privateMemo)
-                .cachedViewCount("0")
-                .cachedInterestCount("0")
+                .cachedViewCount(0L)
+                .cachedInterestCount(0L)
                 .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
                 .portfolioContent(PortfolioContent.create(portfolioId, contentJson, contentHtml))
                 .externalLinks(externalLinks)

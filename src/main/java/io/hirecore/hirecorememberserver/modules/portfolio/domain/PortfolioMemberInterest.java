@@ -14,24 +14,18 @@ public class PortfolioMemberInterest {
     private final Long id;
     private final Long memberAccountId;
     private final Instant interestAt;
-    private final Boolean isDeleted;
-    private final Instant deletedAt;
 
     @Builder(access = AccessLevel.PUBLIC)
     private PortfolioMemberInterest(
             Long id,
             Long memberAccountId,
-            Instant interestAt,
-            Boolean isDeleted,
-            Instant deletedAt
+            Instant interestAt
     ) {
         ensureInvariants(id, memberAccountId, interestAt);
 
         this.id = id;
         this.memberAccountId = memberAccountId;
         this.interestAt = interestAt;
-        this.isDeleted = isDeleted;
-        this.deletedAt = deletedAt;
     }
 
     private static void ensureInvariants(

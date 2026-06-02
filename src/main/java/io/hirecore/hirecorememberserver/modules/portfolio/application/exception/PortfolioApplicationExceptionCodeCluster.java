@@ -58,6 +58,12 @@ public class PortfolioApplicationExceptionCodeCluster {
                 "포트폴리오 작성자의 닉네임이 존재하지 않습니다.",
                 "포트폴리오 작성자의 닉네임을 불러올 수 없습니다. 존재하지 않습니다."),
 
+        // JOB_CATEGORY
+        JOB_CATEGORY_NOT_FOUND(
+                HttpStatus.NOT_FOUND,
+                "포트폴리오에 해당하는 직무 카테고리가 존재하지 않습니다.",
+                "포트폴리오에 해당하는 직무 카테고리를 찾을 수 없습니다. 관리자에게 문의해주세요."),
+
         // PORTFOLIO
         PORTFOLIO_NOT_FOUND(
                 HttpStatus.NOT_FOUND,
@@ -73,7 +79,6 @@ public class PortfolioApplicationExceptionCodeCluster {
                 HttpStatus.NOT_FOUND,
                 "포트폴리오 작성자의 닉네임을 불러올 수 없습니다.",
                 "포트폴리오 작성자의 닉네임을 불러올 수 없습니다. 관리자에게 문의해주세요."),
-
         // 5XX
         // CONTENT_JSON
         CONTENT_JSON_SERIALIZATION_FAILED(

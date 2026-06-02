@@ -24,8 +24,6 @@ class PortfolioTagTest {
             assertThat(tag.getUserInputTag()).isEqualTo("Full Stack");
             assertThat(tag.getNormalizedTag()).isEqualTo("full_stack");
             assertThat(tag.getSortOrder()).isEqualTo(0);
-            assertThat(tag.getIsDeleted()).isFalse();
-            assertThat(tag.getDeletedAt()).isNull();
             assertThat(tag.getId()).isNotNull();
         }
 

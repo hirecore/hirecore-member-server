@@ -11,8 +11,11 @@ import java.util.List;
 public record PortfolioDetailResponse(
         Boolean isOwner,
         String publisher,
+        List<PortfolioJobCategoryResponse> jobCategories,
         CollaborationType collaborationType,
         Visibility visibility,
+        Long viewCount,
+        Long interestCount,
         String title,
         List<PortfolioTagResponse> tags,
         List<PortfolioExternalLinkResponse> externalLinks,

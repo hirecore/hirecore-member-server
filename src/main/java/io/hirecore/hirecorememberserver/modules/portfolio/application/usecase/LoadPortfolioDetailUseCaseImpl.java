@@ -3,29 +3,37 @@ package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.*;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioTagPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfilePort;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final LoadProfileNicknamePort loadProfileNicknamePort;
-    private final LoadPortfolioTagPort loadPortfolioTagPort;
+    private final LoadProfilePort loadProfilePort;
+    private final LoadJobCategoryPort loadJobCategoryPort;
+    private final ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional(readOnly = true)
@@ -34,14 +42,35 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         boolean isOwner = portfolio.getMemberAccountId().equals(viewerId);
         ensureAccessible(portfolio, isOwner);
 
-        String publisherNickname = loadProfileNicknamePort.findNickname(portfolio.getMemberAccountId())
+        String publisherNickname = loadProfilePort.findNickname(portfolio.getMemberAccountId())
                 .orElseThrow(() -> new PortfolioApplicationException(
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NICKNAME_NOT_FOUND
                 ));
 
-        List<PortfolioTagResponse> tags = loadPortfolioTagPort.findTags(portfolioId);
+        long displayedViewCount = resolveDisplayedViewCount(portfolio, viewerId, isOwner);
 
-        return buildResponse(portfolio, publisherNickname, isOwner, tags);
+        return buildResponse(
+                portfolio,
+                publisherNickname,
+                isOwner,
+                displayedViewCount,
+                toTagResponses(portfolio.getPortfolioTags()),
+                toJobCategoriesResponse(portfolio.getPortfolioJobCategory())
+        );
+    }
+
+    private long resolveDisplayedViewCount(Portfolio portfolio, Long viewerId, boolean isOwner) {
+        long cachedViewCount = portfolio.getCachedViewCount();
+        if (viewerId == null || isOwner) {
+            return cachedViewCount;
+        }
+        boolean isFirstView = !existsPortfolioMemberViewPort.exists(portfolio.getId(), viewerId);
+        if (!isFirstView) {
+            return cachedViewCount;
+        }
+        portfolio.markViewed(viewerId);
+        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
+        return cachedViewCount + 1;
     }
 
     private Portfolio loadPortfolio(Long portfolioId) {
@@ -63,7 +92,9 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
             Portfolio portfolio,
             String publisherNickname,
             boolean isOwner,
-            List<PortfolioTagResponse> tags
+            long displayedViewCount,
+            List<PortfolioTagResponse> tags,
+            List<PortfolioJobCategoryResponse> jobCategories
     ) {
         PortfolioContentResponse content = PortfolioContentResponse.builder()
                 .json(portfolio.getPortfolioContent().getContentJson())
@@ -73,21 +104,72 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         return PortfolioDetailResponse.builder()
                 .isOwner(isOwner)
                 .publisher(publisherNickname)
+                .jobCategories(jobCategories)
                 .collaborationType(portfolio.getCollaborationType())
                 .visibility(portfolio.getVisibility())
+                .viewCount(displayedViewCount)
+                .interestCount(portfolio.getCachedInterestCount())
                 .title(portfolio.getTitle())
                 .content(content)
                 .tags(tags)
                 .externalLinks(toExternalLinkResponses(portfolio.getExternalLinks()))
+                .updatedAt(resolveLatestUpdatedAt(portfolio))
                 .build();
     }
 
-    private static List<PortfolioExternalLinkResponse> toExternalLinkResponses(List<ExternalLink> links) {
+    private Instant resolveLatestUpdatedAt(Portfolio portfolio) {
+        Stream<Instant> portfolioAndContent = Stream.of(
+                portfolio.getAuditingInfo().updatedAt(),
+                portfolio.getPortfolioContent().getAuditingInfo().updatedAt()
+        );
+        Stream<Instant> tagUpdates = portfolio.getPortfolioTags() == null
+                ? Stream.empty()
+                : portfolio.getPortfolioTags().stream()
+                        .map(tag -> tag.getAuditingInfo().updatedAt());
+        return Stream.concat(portfolioAndContent, tagUpdates)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+    }
+
+    private List<PortfolioExternalLinkResponse> toExternalLinkResponses(List<ExternalLink> links) {
         if (links == null || links.isEmpty()) {
             return List.of();
         }
         return links.stream()
                 .map(link -> new PortfolioExternalLinkResponse(link.label(), link.url()))
+                .toList();
+    }
+
+    private List<PortfolioTagResponse> toTagResponses(List<PortfolioTag> tags) {
+        if (tags == null || tags.isEmpty()) {
+            return List.of();
+        }
+        return tags.stream()
+                .map(tag -> new PortfolioTagResponse(tag.getUserInputTag(), tag.getSortOrder()))
+                .toList();
+    }
+
+    /*
+     *   (@Parameter) PortfolioJobCategory = id, jobCategoryId, userInput, connectedAt
+     *   (@Response) PortfolioJobCategoryResponse = id, depth, categoryCode, name
+     * */
+    private List<PortfolioJobCategoryResponse> toJobCategoriesResponse(PortfolioJobCategory portfolioJobCategory) {
+        // JOB_CATEGORY의 NOT_NULL 보장
+        AssertionUtils.notNull(
+                portfolioJobCategory,
+                PortfolioApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_NOT_FOUND,
+                PortfolioApplicationException::new
+        );
+
+        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryId())
+                .stream()
+                .map(hierarchy -> new PortfolioJobCategoryResponse(
+                        hierarchy.id(),
+                        hierarchy.depth(),
+                        hierarchy.categoryCode(),
+                        hierarchy.name()
+                ))
                 .toList();
     }
 }

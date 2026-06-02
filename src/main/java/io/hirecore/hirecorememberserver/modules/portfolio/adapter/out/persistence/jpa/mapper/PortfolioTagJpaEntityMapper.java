@@ -23,8 +23,6 @@ public abstract class PortfolioTagJpaEntityMapper {
                 .userInputTag(entity.getUserInputTag())
                 .normalizedTag(entity.getNormalizedTag())
                 .sortOrder(entity.getSortOrder())
-                .isDeleted(entity.getIsDeleted())
-                .deletedAt(entity.getDeletedAt())
                 .auditingInfo(toAuditingInfo(entity.getAuditingInfo()))
                 .build();
     }

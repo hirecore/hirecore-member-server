@@ -31,12 +31,4 @@ public class PortfolioMemberInterestJpaEntity extends AbstractPersistableEntity<
     @Comment("관심 등록 시각")
     @Column(name = "interest_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant interestAt;
-
-    @Comment("삭제 여부")
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
-
-    @Comment("삭제 시각")
-    @Column(name = "deleted_at", columnDefinition = "DATETIME(6)")
-    private Instant deletedAt;
 }

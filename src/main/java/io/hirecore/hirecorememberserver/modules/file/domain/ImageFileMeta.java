@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.file.domain;
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageOrphanedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageUploadedEvent;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
@@ -66,6 +67,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
     private final Integer height;
     private UploadStatus uploadStatus;
     private Instant completedUploadAt;
+    private Instant orphanedAt;
     private final Instant completedDeleteAt;
     private final AuditingInfo auditingInfo;
 
@@ -86,6 +88,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
             Integer height,
             UploadStatus uploadStatus,
             Instant completedUploadAt,
+            Instant orphanedAt,
             Instant completedDeleteAt,
             AuditingInfo auditingInfo
     ) {
@@ -110,6 +113,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
         this.height = height;
         this.uploadStatus = uploadStatus;
         this.completedUploadAt = completedUploadAt;
+        this.orphanedAt = orphanedAt;
         this.completedDeleteAt = completedDeleteAt;
         this.auditingInfo = auditingInfo;
     }
@@ -173,6 +177,40 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
                     this.completedUploadAt
             ));
         }
+    }
+
+    /**
+     * 본 이미지를 ORPHANED 로 전이합니다.
+     *
+     * <p>UPLOADED 에서만 ORPHANED 로 전이할 수 있습니다. 이미 ORPHANED 인 경우 멱등 처리되며
+     * (no-op, 이벤트도 재발행하지 않음), 그 외 상태(PENDING, DELETED)에서 호출되면
+     * {@link ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse#INVALID_UPLOAD_STATUS_TRANSITION}
+     * 예외가 발생합니다.</p>
+     *
+     * <p>전이 직후 {@link ImageOrphanedEvent} 가 등록되어, 사용자 스토리지 사용량 회수 등
+     * 후속 BC 핸들러가 부수효과를 처리할 수 있게 합니다.</p>
+     */
+    public void markOrphaned() {
+        if (this.uploadStatus == UploadStatus.ORPHANED) {
+            return;
+        }
+        if (this.uploadStatus != UploadStatus.UPLOADED) {
+            throw new ImageFileMetaDomainException(
+                    ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION
+            );
+        }
+
+        this.uploadStatus = UploadStatus.ORPHANED;
+        this.orphanedAt = Instant.now();
+
+        registerEvent(new ImageOrphanedEvent(
+                this.id,
+                this.memberAccountId,
+                this.domainType,
+                this.purpose,
+                this.fileSizeBytes,
+                this.orphanedAt
+        ));
     }
 
     private static void ensureInvariants(

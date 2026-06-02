@@ -69,4 +69,33 @@ public class ImageFileMetaJpaCommandAdapter
             imageFileMetaJpaCommandRepository.save(entity);
         }
     }
+
+    @Override
+    public void markAllAsOrphaned(List<ImageFileMeta> imageFileMetas) {
+        if (imageFileMetas == null || imageFileMetas.isEmpty()) {
+            return;
+        }
+
+        List<Long> ids = imageFileMetas.stream().map(ImageFileMeta::getId).toList();
+        Map<Long, ImageFileMetaJpaEntity> entityById = imageFileMetaJpaQueryRepository
+                .findAllByIdIn(ids)
+                .stream()
+                .collect(Collectors.toMap(ImageFileMetaJpaEntity::getId, Function.identity()));
+
+        for (ImageFileMeta domain : imageFileMetas) {
+            ImageFileMetaJpaEntity entity = entityById.get(domain.getId());
+            if (entity == null) {
+                continue;
+            }
+
+            entity.markOrphaned(domain.getOrphanedAt());
+
+            Collection<Object> domainEvents = domain.pollAllEvents();
+            if (domainEvents != null && !domainEvents.isEmpty()) {
+                domainEvents.forEach(entity::recordPersistenceEvent);
+            }
+
+            imageFileMetaJpaCommandRepository.save(entity);
+        }
+    }
 }

@@ -5,5 +5,5 @@ import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import java.util.List;
 
 public interface LoadJobCategoryHierarchyUseCase {
-    List<JobCategory> execute(Long leafJobCategoryId);
+    List<JobCategory> loadHierarchyFromLeaf(Long leafJobCategoryId);
 }

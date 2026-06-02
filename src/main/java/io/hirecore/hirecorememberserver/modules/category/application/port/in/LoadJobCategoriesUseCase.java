@@ -5,5 +5,5 @@ import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto
 import java.util.List;
 
 public interface LoadJobCategoriesUseCase {
-    List<JobCategoryNodeResponse> execute(Integer maxDepth);
+    List<JobCategoryNodeResponse> loadAllWithinDepth(Integer maxDepth);
 }

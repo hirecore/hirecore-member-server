@@ -31,7 +31,7 @@ public class JobCategoryQueryController {
     public ResponseEntity<JobCategoriesNodeApiResponse> getCategories(
             @RequestParam(name="max-depth", required=true) @Min(1) @Max(3) Integer maxDepth
     ) {
-        List<JobCategoryNodeResponse> applicationResponse = loadJobCategoriesUseCase.execute(maxDepth);
+        List<JobCategoryNodeResponse> applicationResponse = loadJobCategoriesUseCase.loadAllWithinDepth(maxDepth);
         List<JobCategoryNodeApiResponse> apiResponses = jobCategoryWebMapper.toApiResponses(applicationResponse);
 
         return ResponseEntity.ok().body(new JobCategoriesNodeApiResponse(apiResponses));

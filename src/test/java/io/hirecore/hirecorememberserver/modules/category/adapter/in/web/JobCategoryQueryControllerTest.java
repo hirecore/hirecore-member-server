@@ -77,7 +77,7 @@ class JobCategoryQueryControllerTest {
                     new JobCategoryNodeApiResponse(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
                     new JobCategoryNodeApiResponse(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
             );
-            given(loadJobCategoriesUseCase.execute(2)).willReturn(applicationResponse);
+            given(loadJobCategoriesUseCase.loadAllWithinDepth(2)).willReturn(applicationResponse);
             given(jobCategoryWebMapper.toApiResponses(applicationResponse)).willReturn(apiResponses);
 
             // when & then
@@ -167,7 +167,7 @@ class JobCategoryQueryControllerTest {
         @DisplayName("[200 OK] 조건에 해당하는 카테고리가 없으면 빈 리스트를 반환한다")
         void should_return_empty_list_when_no_categories() throws Exception {
             // given
-            given(loadJobCategoriesUseCase.execute(1)).willReturn(List.of());
+            given(loadJobCategoriesUseCase.loadAllWithinDepth(1)).willReturn(List.of());
             given(jobCategoryWebMapper.toApiResponses(List.of())).willReturn(List.of());
 
             // when & then

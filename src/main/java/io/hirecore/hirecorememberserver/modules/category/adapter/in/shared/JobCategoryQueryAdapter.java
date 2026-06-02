@@ -18,12 +18,12 @@ public class JobCategoryQueryAdapter implements LoadJobCategoryPort {
 
     @Override
     public Long findIdByCode(String categoryCode) {
-        return loadJobCategoryIdByCodeUseCase.execute(categoryCode);
+        return loadJobCategoryIdByCodeUseCase.loadIdByCode(categoryCode);
     }
 
     @Override
     public List<PortfolioJobCategoryHierarchyResult> loadJobCategoryHierarchy(Long leafJobCategoryId) {
-        return loadJobCategoryHierarchyUseCase.execute(leafJobCategoryId).stream()
+        return loadJobCategoryHierarchyUseCase.loadHierarchyFromLeaf(leafJobCategoryId).stream()
                 .map(category -> new PortfolioJobCategoryHierarchyResult(
                         category.getId(),
                         category.getDepth().longValue(),

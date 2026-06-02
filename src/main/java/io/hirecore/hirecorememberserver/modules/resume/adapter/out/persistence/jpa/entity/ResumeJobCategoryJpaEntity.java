@@ -29,14 +29,6 @@ public class ResumeJobCategoryJpaEntity extends AbstractPersistableEntity<Long> 
     @Column(name = "user_input", columnDefinition = "VARCHAR(10)")
     private String userInput;
 
-    @Comment("삭제 여부")
-    @Column(name = "is_deleted", nullable = false, columnDefinition = "DATETIME(6)")
-    private Instant isDeleted;
-
-    @Comment("삭제 시각")
-    @Column(name = "deleted_at", columnDefinition = "DATETIME(6)")
-    private Instant deletedAt;
-
     @Comment("연결 시각")
     @Column(name = "connected_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant connectedAt;

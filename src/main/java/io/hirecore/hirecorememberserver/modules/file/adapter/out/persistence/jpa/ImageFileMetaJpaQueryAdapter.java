@@ -4,9 +4,12 @@ import io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jpa
 import io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jpa.repository.ImageFileMetaJpaQueryRepository;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.LoadImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
+import io.hirecore.hirecorememberserver.modules.file.domain.vo.UploadStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +36,18 @@ public class ImageFileMetaJpaQueryAdapter implements LoadImageFileMetaPort {
     public Optional<ImageFileMeta> findById(Long id) {
         return imageFileMetaJpaQueryRepository.findById(id)
                 .map(imageFileMetaJpaEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<ImageFileMeta> findOrphanedCandidates(Instant orphanedBefore, int limit) {
+        return imageFileMetaJpaQueryRepository
+                .findAllByUploadStatusAndOrphanedAtBeforeOrderByOrphanedAtAsc(
+                        UploadStatus.ORPHANED,
+                        orphanedBefore,
+                        PageRequest.of(0, limit)
+                )
+                .stream()
+                .map(imageFileMetaJpaEntityMapper::toDomain)
+                .toList();
     }
 }

@@ -13,7 +13,8 @@ import java.util.TimeZone;
 		"io.hirecore.hirecorememberserver.sharedkernel.adapter.out.aws",
 		"io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.properties",
 		"io.hirecore.hirecorememberserver.modules.file.adapter.out.s3.properties",
-		"io.hirecore.hirecorememberserver.modules.file.adapter.out.cloudfront.properties"
+		"io.hirecore.hirecorememberserver.modules.file.adapter.out.cloudfront.properties",
+		"io.hirecore.hirecorememberserver.modules.file.application.properties"
 
 })
 public class HirecoreMemberServerApplication {

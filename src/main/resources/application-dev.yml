@@ -65,3 +65,8 @@ hirecore:
         path-style-access: false
       cloud-front:
         public-base-url: ${DEV_OBJECT_STORAGE_AWS_CF_PUBLIC_BASE_URL}
+
+  file:
+    orphan-cleanup:
+      grace-period: PT1H
+      batch-size: 1000

@@ -182,6 +182,67 @@ class ImageFileMetaTest {
     }
 
     @Nested
+    @DisplayName("markDeleted 상태 전이")
+    class MarkDeletedTest {
+
+        @Test
+        @DisplayName("ORPHANED 상태에서 DELETED 로 전이되고 completedDeleteAt 이 채워진다")
+        void should_transition_orphaned_to_deleted() {
+            ImageFileMeta meta = createValid();
+            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markOrphaned();
+            meta.pollAllEvents();
+
+            meta.markDeleted();
+
+            assertThat(meta.getUploadStatus()).isEqualTo(UploadStatus.DELETED);
+            assertThat(meta.getCompletedDeleteAt()).isNotNull();
+            assertThat(meta.pollAllEvents()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("이미 DELETED 인 상태에서 markDeleted 를 호출하면 멱등 처리된다")
+        void should_be_idempotent_when_already_deleted() {
+            ImageFileMeta meta = createValid();
+            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markOrphaned();
+            meta.markDeleted();
+            Instant firstCompletedAt = meta.getCompletedDeleteAt();
+            meta.pollAllEvents();
+
+            meta.markDeleted();
+
+            assertThat(meta.getUploadStatus()).isEqualTo(UploadStatus.DELETED);
+            assertThat(meta.getCompletedDeleteAt()).isEqualTo(firstCompletedAt);
+            assertThat(meta.pollAllEvents()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("PENDING 상태에서 markDeleted 를 호출하면 INVALID_UPLOAD_STATUS_TRANSITION 예외가 발생한다")
+        void should_throw_when_call_mark_deleted_in_pending_status() {
+            ImageFileMeta meta = createValid();
+
+            assertThatThrownBy(meta::markDeleted)
+                    .isInstanceOf(ImageFileMetaDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION.getErrorCode());
+        }
+
+        @Test
+        @DisplayName("UPLOADED 상태에서 markDeleted 를 호출하면 INVALID_UPLOAD_STATUS_TRANSITION 예외가 발생한다")
+        void should_throw_when_call_mark_deleted_in_uploaded_status() {
+            ImageFileMeta meta = createValid();
+            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.pollAllEvents();
+
+            assertThatThrownBy(meta::markDeleted)
+                    .isInstanceOf(ImageFileMetaDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION.getErrorCode());
+        }
+    }
+
+    @Nested
     @DisplayName("불변식 (Invariants) 검증")
     class InvariantsTest {
 

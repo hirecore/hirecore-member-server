@@ -24,4 +24,12 @@ public interface UpdateImageFileMetaPort {
      * {@code ImageFileMeta.markOrphaned()} 호출 시점에 채워진 값이 그대로 사용됩니다.</p>
      */
     void markAllAsOrphaned(List<ImageFileMeta> imageFileMetas);
+
+    /**
+     * 전달받은 도메인들에 DELETED 상태 전이를 적용합니다 (스토리지 청소 워커 전용).
+     *
+     * <p>도메인 {@code ImageFileMeta.markDeleted()} 호출 시점에 채워진 {@code completedDeleteAt}
+     * 값이 그대로 영속 엔티티로 옮겨집니다. 종결 상태 전이라 발행되는 도메인 이벤트는 없습니다.</p>
+     */
+    void markAllAsDeleted(List<ImageFileMeta> imageFileMetas);
 }

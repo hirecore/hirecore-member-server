@@ -31,6 +31,11 @@ public class UserStorageUsageDomainExceptionCodeCluster {
         USED_QUOTA_BYTES_NEGATIVE(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "UserStorageUsage 도메인 객체 생성에서 usedQuotaBytes 필드가 음수입니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        USED_QUOTA_BYTES_INSUFFICIENT(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "UserStorageUsage 차감 결과가 음수가 됩니다. 사용량 데이터 정합성 위반.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요.")
         ;
 

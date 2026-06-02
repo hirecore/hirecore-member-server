@@ -24,4 +24,13 @@ public interface PortfolioJpaCommandRepository extends Repository<PortfolioJpaEn
              WHERE p.id = :id
             """)
     int incrementCachedInterestCountById(@Param("id") Long id);
+
+    @Modifying
+    @Query("""
+            UPDATE PortfolioJpaEntity p
+               SET p.cachedInterestCount = p.cachedInterestCount - 1
+             WHERE p.id = :id
+               AND p.cachedInterestCount > 0
+            """)
+    int decrementCachedInterestCountById(@Param("id") Long id);
 }

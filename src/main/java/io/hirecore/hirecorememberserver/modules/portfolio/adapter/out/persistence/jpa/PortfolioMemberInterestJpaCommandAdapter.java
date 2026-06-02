@@ -4,6 +4,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioMemberInterestJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioMemberInterestJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioMemberInterestJpaCommandRepository;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.DeletePortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioMemberInterest;
 import jakarta.persistence.EntityManager;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PortfolioMemberInterestJpaCommandAdapter implements SavePortfolioMemberInterestPort {
+public class PortfolioMemberInterestJpaCommandAdapter implements SavePortfolioMemberInterestPort, DeletePortfolioMemberInterestPort {
 
     private final EntityManager entityManager;
     private final PortfolioMemberInterestJpaCommandRepository repository;
@@ -25,5 +26,11 @@ public class PortfolioMemberInterestJpaCommandAdapter implements SavePortfolioMe
         entity.attachPortfolio(portfolioRef);
         repository.save(entity);
         return portfolioMemberInterest;
+    }
+
+    @Override
+    public boolean deleteBy(Long portfolioId, Long memberAccountId) {
+        int affected = repository.deleteByPortfolioIdAndMemberAccountId(portfolioId, memberAccountId);
+        return affected > 0;
     }
 }

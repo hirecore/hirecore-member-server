@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -26,5 +27,11 @@ public class ImageFileMetaJpaQueryAdapter implements LoadImageFileMetaPort {
                 .stream()
                 .map(imageFileMetaJpaEntityMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<ImageFileMeta> findById(Long id) {
+        return imageFileMetaJpaQueryRepository.findById(id)
+                .map(imageFileMetaJpaEntityMapper::toDomain);
     }
 }

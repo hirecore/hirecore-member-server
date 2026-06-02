@@ -24,10 +24,10 @@ import java.net.URI;
  * dev/prod 환경에서는 endpoint 가 null 이므로 기본 AWS S3 endpoint 와 환경 자격증명 체인을 사용합니다.</p>
  */
 @Configuration
-public class LocalS3ClientConfig {
+public class S3ClientConfig {
 
     @Bean
-    public S3Client localS3Client(AwsRegionProperties awsRegionProperties, S3Properties s3Properties) {
+    public S3Client s3Client(AwsRegionProperties awsRegionProperties, S3Properties s3Properties) {
         S3ClientBuilder builder = S3Client.builder()
                 .region(Region.of(awsRegionProperties.region()));
 

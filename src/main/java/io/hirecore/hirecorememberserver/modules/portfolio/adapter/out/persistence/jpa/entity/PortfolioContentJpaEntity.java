@@ -37,6 +37,7 @@ public class PortfolioContentJpaEntity extends AbstractPersistableEntity<Long> {
     @Comment("본문에서 사용 중인 이미지 식별자 집합")
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "image_ids_json", nullable = false, columnDefinition = "json")
+    @Builder.Default
     private List<Long> imageIds = new ArrayList<>();
 
     @Embedded

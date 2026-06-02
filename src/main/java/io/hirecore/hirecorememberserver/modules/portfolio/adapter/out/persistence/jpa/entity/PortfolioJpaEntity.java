@@ -81,6 +81,7 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Comment("사용자 입력 외부 링크")
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "external_link_json", columnDefinition = "json")
+    @Builder.Default
     private List<ExternalLink> externalLinks = new ArrayList<>();
 
     @OneToMany(

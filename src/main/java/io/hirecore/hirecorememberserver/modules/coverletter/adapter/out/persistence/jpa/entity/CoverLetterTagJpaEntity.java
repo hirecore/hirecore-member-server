@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
-import java.time.Instant;
-
 @Entity
 @Table(name = "cover_letter_tags")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,14 +27,6 @@ public class CoverLetterTagJpaEntity extends AbstractPersistableEntity<Long> {
     @Comment("정규화된 태그")
     @Column(name = "normalized_tag", nullable = false, columnDefinition = "VARCHAR(50)")
     private String normalizedTag;
-
-    @Comment("삭제 여부")
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
-
-    @Comment("삭제 시각")
-    @Column(name = "deleted_at", columnDefinition = "DATETIME(6)")
-    private Instant deletedAt;
 
     @Embedded
     private AuditingJpaInfo auditingInfo;

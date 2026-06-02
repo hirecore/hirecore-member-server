@@ -17,8 +17,6 @@ public class CoverLetterTag {
     private final Long id;
     private final String userInputTag;
     private final String normalizedTag;
-    private final Boolean isDeleted;
-    private final Instant deletedAt;
     private final AuditingInfo auditingInfo;
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -26,8 +24,6 @@ public class CoverLetterTag {
             Long id,
             String userInputTag,
             String normalizedTag,
-            Boolean isDeleted,
-            Instant deletedAt,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(id, userInputTag, normalizedTag, auditingInfo);
@@ -35,8 +31,6 @@ public class CoverLetterTag {
         this.id = id;
         this.userInputTag = userInputTag;
         this.normalizedTag = normalizedTag;
-        this.isDeleted = isDeleted;
-        this.deletedAt = deletedAt;
         this.auditingInfo = auditingInfo;
     }
 

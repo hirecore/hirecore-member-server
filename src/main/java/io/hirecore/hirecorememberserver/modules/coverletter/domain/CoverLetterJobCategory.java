@@ -16,8 +16,6 @@ public class CoverLetterJobCategory {
     private final Long id;
     private final Long jobCategoryId;
     private final String userInput;
-    private final Instant isDeleted;
-    private final Instant deletedAt;
     private final Instant connectedAt;
 
     @Builder(access = lombok.AccessLevel.PUBLIC)
@@ -25,17 +23,13 @@ public class CoverLetterJobCategory {
             Long id,
             Long jobCategoryId,
             String userInput,
-            Instant isDeleted,
-            Instant deletedAt,
             Instant connectedAt
     ) {
-        ensureInvariants(id, jobCategoryId, userInput, isDeleted, connectedAt);
+        ensureInvariants(id, jobCategoryId, userInput, connectedAt);
 
         this.id = id;
         this.jobCategoryId = jobCategoryId;
         this.userInput = userInput;
-        this.isDeleted = isDeleted;
-        this.deletedAt = deletedAt;
         this.connectedAt = connectedAt;
     }
 
@@ -43,7 +37,6 @@ public class CoverLetterJobCategory {
             Long id,
             Long jobCategoryId,
             String userInput,
-            Instant isDeleted,
             Instant connectedAt
     ) {
         AssertionUtils.notNull(
@@ -59,11 +52,6 @@ public class CoverLetterJobCategory {
         AssertionUtils.isTrue(
                 userInput == null || userInput.length() <= USER_INPUT_MAX_LENGTH,
                 CoverLetterJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.USER_INPUT_TOO_LONG,
-                CoverLetterJobCategoryDomainException::new
-        );
-        AssertionUtils.notNull(
-                isDeleted,
-                CoverLetterJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.IS_DELETED_MISSING,
                 CoverLetterJobCategoryDomainException::new
         );
         AssertionUtils.notNull(

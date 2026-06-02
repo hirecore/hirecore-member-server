@@ -1,10 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.file.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationException;
-import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.UpdateUploadStatusOfImageFileMetaUseCase;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.LoadImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.UpdateImageFileMetaPort;
+import io.hirecore.hirecorememberserver.modules.file.application.util.ImageFileMetaOwnershipVerifier;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.UploadStatus;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +30,8 @@ public class UpdateUploadStatusOfImageFileMetaUseCaseImpl implements UpdateUploa
         List<Long> distinctImageIds = imageIds.stream().distinct().toList();
         List<ImageFileMeta> imageFileMetas = loadImageFileMetaPort.findAllByIds(distinctImageIds);
 
-        verifyAllExist(distinctImageIds, imageFileMetas);
-        verifyAllOwnedBy(memberAccountId, imageFileMetas);
+        ImageFileMetaOwnershipVerifier.verifyAllExist(distinctImageIds, imageFileMetas);
+        ImageFileMetaOwnershipVerifier.verifyAllOwnedBy(memberAccountId, imageFileMetas);
 
         // 멱등 처리: 이미 UPLOADED 인 항목은 전이 대상에서 제외합니다.
         // PUT 수정 흐름에서 변동 없는 이미지가 재요청되어도 INVALID_UPLOAD_STATUS_TRANSITION 이 나지 않도록 합니다.
@@ -52,32 +48,5 @@ public class UpdateUploadStatusOfImageFileMetaUseCaseImpl implements UpdateUploa
         toTransition.forEach(meta -> meta.updateUploadStatus(UploadStatus.UPLOADED));
 
         updateImageFileMetaPort.markAllAsUploaded(toTransition);
-    }
-
-    /**
-     * 요청한 모든 imageId 가 로드된 메타에 ID 단위로 정확히 매칭됨을 확인합니다.
-     * 단순 size 비교만으로는 동일 size 의 서로 다른 집합을 통과시킬 위험이 있어,
-     * 로드 결과 ID set 이 요청 ID 전부를 포함하는지(containsAll) 검증합니다.
-     */
-    private static void verifyAllExist(List<Long> requestedIds, List<ImageFileMeta> loadedMetas) {
-        Set<Long> loadedIds = loadedMetas.stream()
-                .map(ImageFileMeta::getId)
-                .collect(Collectors.toSet());
-
-        if (!loadedIds.containsAll(requestedIds)) {
-            throw new FileApplicationException(
-                    FileApplicationExceptionCodeCluster.DetailResponse.IMAGE_NOT_FOUND
-            );
-        }
-    }
-
-    private static void verifyAllOwnedBy(Long memberAccountId, List<ImageFileMeta> imageFileMetas) {
-        for (ImageFileMeta imageFileMeta : imageFileMetas) {
-            if (!Objects.equals(memberAccountId, imageFileMeta.getMemberAccountId())) {
-                throw new FileApplicationException(
-                        FileApplicationExceptionCodeCluster.DetailResponse.IMAGE_OWNERSHIP_VIOLATION
-                );
-            }
-        }
     }
 }

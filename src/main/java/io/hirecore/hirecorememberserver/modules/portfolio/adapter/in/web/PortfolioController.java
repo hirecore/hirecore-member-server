@@ -68,8 +68,7 @@ public class PortfolioController {
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @PathVariable("portfolioId") Long portfolioId
     ){
-        Long viewerId = authPrincipal != null ? authPrincipal.id() : null;
-        PortfolioEditResponse applicationResponse = loadPortfolioEditUseCase.execute(portfolioId, viewerId);
+        PortfolioEditResponse applicationResponse = loadPortfolioEditUseCase.execute(portfolioId, authPrincipal.id());
         PortfolioEditApiResponse response = portfolioWebMapper.toPortfolioEditApiResponse(applicationResponse);
         return ResponseEntity.ok(response);
     }

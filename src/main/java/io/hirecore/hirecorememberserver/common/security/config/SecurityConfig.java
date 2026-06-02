@@ -46,7 +46,8 @@ public class SecurityConfig {
                                 .requestMatchers("/docs/**").permitAll()
                                 .requestMatchers("/api/auth/login/**").permitAll()
                                 .requestMatchers("/api/categories/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/portfolios/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/portfolios/{portfolioId}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/portfolios/{portfolioId}/edit").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -4,6 +4,7 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.in.LoadIma
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.LoadImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.ResolveImageObjectUrlPort;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
+import io.hirecore.hirecorememberserver.modules.file.domain.vo.UploadStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class LoadImageUrlUseCaseImpl implements LoadImageUrlUseCase {
             return Optional.empty();
         }
         return loadImageFileMetaPort.findById(imageId)
+                .filter(meta -> meta.getUploadStatus() == UploadStatus.UPLOADED)
                 .map(ImageFileMeta::getObjectKey)
                 .map(resolveImageObjectUrlPort::resolveUrl);
     }

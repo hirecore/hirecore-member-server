@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioMemberInterestDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioMemberInterestDomainExceptionCodeCluster;
@@ -26,6 +27,14 @@ public class PortfolioMemberInterest {
         this.id = id;
         this.memberAccountId = memberAccountId;
         this.interestAt = interestAt;
+    }
+
+    public static PortfolioMemberInterest create(Long memberAccountId) {
+        return PortfolioMemberInterest.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .memberAccountId(memberAccountId)
+                .interestAt(Instant.now())
+                .build();
     }
 
     private static void ensureInvariants(

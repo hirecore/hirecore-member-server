@@ -6,6 +6,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.res
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.UpdatePortfolioApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.RegisterPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.UpdatePortfolioCommand;
@@ -31,6 +32,7 @@ public class PortfolioCommandController {
 
     private final CreatePortfolioUseCase createPortfolioUseCase;
     private final UpdatePortfolioUseCase updatePortfolioUseCase;
+    private final RegisterPortfolioInterestUseCase registerPortfolioInterestUseCase;
     private final PortfolioWebMapper portfolioWebMapper;
 
     @PostMapping
@@ -58,5 +60,14 @@ public class PortfolioCommandController {
         UpdatePortfolioCommand command = portfolioWebMapper.toUpdatePortfolioCommand(request);
         Long updatedPortfolioId = updatePortfolioUseCase.execute(portfolioId, authPrincipal.id(), command);
         return ResponseEntity.ok(new UpdatePortfolioApiResponse(updatedPortfolioId));
+    }
+
+    @PostMapping("{portfolioId}/interest")
+    public ResponseEntity<Void> registerPortfolioInterest(
+            @AuthenticationPrincipal AuthPrincipal authPrincipal,
+            @PathVariable("portfolioId") Long portfolioId
+    ){
+        registerPortfolioInterestUseCase.execute(portfolioId, authPrincipal.id());
+        return ResponseEntity.noContent().build();
     }
 }

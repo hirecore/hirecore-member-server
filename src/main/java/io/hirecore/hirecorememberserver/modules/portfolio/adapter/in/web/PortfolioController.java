@@ -1,14 +1,18 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.UpdatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.CreatePortfolioApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioDetailApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioEditApiResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.UpdatePortfolioApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.UpdatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioEditResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
@@ -29,6 +33,7 @@ public class PortfolioController {
     private final CreatePortfolioUseCase createPortfolioUseCase;
     private final LoadPortfolioDetailUseCase loadPortfolioDetailUseCase;
     private final LoadPortfolioEditUseCase loadPortfolioEditUseCase;
+    private final UpdatePortfolioUseCase updatePortfolioUseCase;
     private final PortfolioWebMapper portfolioWebMapper;
 
     @PostMapping
@@ -67,5 +72,17 @@ public class PortfolioController {
         PortfolioEditResponse applicationResponse = loadPortfolioEditUseCase.execute(portfolioId, viewerId);
         PortfolioEditApiResponse response = portfolioWebMapper.toPortfolioEditApiResponse(applicationResponse);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("{portfolioId}")
+    public ResponseEntity<UpdatePortfolioApiResponse> updatePortfolio(
+            @AuthenticationPrincipal AuthPrincipal authPrincipal,
+            @PathVariable("portfolioId") Long portfolioId,
+            @Valid @RequestBody UpdatePortfolioApiRequest request
+    ){
+        Long viewerId = authPrincipal != null ? authPrincipal.id() : null;
+        UpdatePortfolioCommand command = portfolioWebMapper.toUpdatePortfolioCommand(request);
+        Long updatedPortfolioId = updatePortfolioUseCase.execute(portfolioId, viewerId, command);
+        return ResponseEntity.ok(new UpdatePortfolioApiResponse(updatedPortfolioId));
     }
 }

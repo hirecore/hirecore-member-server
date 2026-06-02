@@ -19,6 +19,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioEditResponse;
@@ -57,6 +58,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -92,6 +94,9 @@ class PortfolioControllerTest {
 
     @MockitoBean
     private LoadPortfolioEditUseCase loadPortfolioEditUseCase;
+
+    @MockitoBean
+    private UpdatePortfolioUseCase updatePortfolioUseCase;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
     private static final Long CREATED_PORTFOLIO_ID = 9001L;
@@ -988,6 +993,240 @@ class PortfolioControllerTest {
 
                     // 문서화
                     .andDo(document("404-portfolio-load-edit-not-found",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 수정: 성공 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 수정: 성공 케이스 (Happy Path)")
+    class UpdatePortfolioSuccessTest {
+
+        private static final Long TARGET_PORTFOLIO_ID = 5234567890123456789L;
+
+        @Test
+        @DisplayName("[200 OK] 작성자 본인이 PUT 요청하면 portfolioId 를 반환한다.")
+        void update_portfolio_success() throws Exception {
+            // given - 소유자 본인 인증 (setUpAuthentication)
+            String requestBody = createValidRequestBody();
+            given(updatePortfolioUseCase.execute(eq(TARGET_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID), any()))
+                    .willReturn(TARGET_PORTFOLIO_ID);
+
+            // when & then
+            mockMvc.perform(put("/api/portfolios/{portfolioId}", TARGET_PORTFOLIO_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.portfolioId").value(String.valueOf(TARGET_PORTFOLIO_ID)))
+
+                    // 문서화
+                    .andDo(document("200-portfolio-update-success",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .summary("\"포트폴리오 수정\": 작성자 본인의 포트폴리오를 전체 교체 갱신한다.")
+                                            .description("""
+                                                    작성자가 편집 화면에서 변경한 포트폴리오를 저장합니다 (PUT 전체 교체 시맨틱).
+
+                                                        [접근 정책]
+                                                         - 작성자 본인만 호출 가능
+                                                         - 비로그인 또는 비소유자: 403 PORTFOLIO_FORBIDDEN
+                                                         - 존재하지 않는 포트폴리오: 404 PORTFOLIO_NOT_FOUND
+
+                                                        [처리 흐름]
+                                                         1. 신규 이미지(thumbnailImageId, contentImageIds)에 대해 markUploaded 호출 (PENDING → UPLOADED 전이)
+                                                         2. jobCategory.code 를 직무 카테고리 ID 로 해석
+                                                         3. Portfolio.modify(...) 로 도메인 invariant 재검증 + 자식 컬렉션 전체 교체
+                                                         4. UpdatePortfolioPort.update(...) 로 영속화 (cascade + orphanRemoval)
+
+                                                        [범위 외]
+                                                         - 이전 썸네일/본문 이미지의 storage cleanup 은 별도 이슈에서 처리 예정
+
+                                                        [응답]
+                                                         - 200 OK + body { portfolioId } (등록 응답과 일관)
+
+                                                        [에러 응답]
+                                                         - 400 REQUEST_VALUE_INVALID: 요청 본문 필수 필드 누락
+                                                         - 403 PORTFOLIO_FORBIDDEN: 비소유자/비로그인
+                                                         - 404 PORTFOLIO_NOT_FOUND: 존재하지 않는 portfolioId
+                                                    """)
+                                            .pathParameters(
+                                                    ResourceDocumentation.parameterWithName("portfolioId")
+                                                            .type(SimpleType.STRING)
+                                                            .description("수정 대상 포트폴리오 ID (TSID, JSON 문자열)")
+                                            )
+                                            .requestFields(
+                                                    fieldWithPath("jobCategory")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("직무 카테고리 선택 정보"),
+                                                    fieldWithPath("jobCategory.code")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("직무 카테고리 코드 (예: DEV_BACKEND)"),
+                                                    fieldWithPath("jobCategory.userInput")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("사용자 입력 카테고리 라벨")
+                                                            .optional(),
+                                                    fieldWithPath("collaborationType")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("협업 유형 (team, personal)"),
+                                                    fieldWithPath("visibility")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("공개 범위 (public, private)"),
+                                                    fieldWithPath("title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("포트폴리오 제목"),
+                                                    fieldWithPath("privateMemo")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("나만보기 메모")
+                                                            .optional(),
+                                                    fieldWithPath("previewSummary")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("한 줄 소개 (최대 100자)"),
+                                                    fieldWithPath("thumbnailImageId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 imageFileMetaId (TSID 문자열). null 이면 썸네일 제거 의도")
+                                                            .optional(),
+                                                    fieldWithPath("contentImageIds")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("본문 참조 imageFileMetaId 목록")
+                                                            .optional(),
+                                                    fieldWithPath("tags")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("사용자 입력 태그 목록 (전체 교체)")
+                                                            .optional(),
+                                                    fieldWithPath("tags[].userInputTag")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("태그 문자열")
+                                                            .optional(),
+                                                    fieldWithPath("tags[].sortOrder")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("표시 순서 (0 이상)")
+                                                            .optional(),
+                                                    fieldWithPath("externalLinks")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("외부 링크 목록 (전체 교체)")
+                                                            .optional(),
+                                                    fieldWithPath("externalLinks[].label")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 라벨")
+                                                            .optional(),
+                                                    fieldWithPath("externalLinks[].url")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 URL (http/https)")
+                                                            .optional(),
+                                                    fieldWithPath("content")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("포트폴리오 본문 wrapper"),
+                                                    fieldWithPath("content.json")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("에디터 직렬화 JSON 구조"),
+                                                    fieldWithPath("content.json.type")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("에디터 노드 type")
+                                                            .optional(),
+                                                    fieldWithPath("content.json.content")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("에디터 노드 content 배열")
+                                                            .optional(),
+                                                    fieldWithPath("content.html")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("렌더링된 HTML 본문"),
+                                                    fieldWithPath("linkedResumeId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 이력서 ID (TSID 문자열)")
+                                                            .optional(),
+                                                    fieldWithPath("linkedCoverLetterId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 자기소개서 ID (TSID 문자열)")
+                                                            .optional()
+                                            )
+                                            .responseFields(
+                                                    fieldWithPath("portfolioId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("수정된 포트폴리오 ID (path variable 과 동일, TSID 문자열)")
+                                            )
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 수정: 비즈니스 로직 실패 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 수정: 비즈니스 로직 실패 케이스")
+    class UpdatePortfolioBusinessFailureTest {
+
+        private static final Long OTHERS_PORTFOLIO_ID = 6234567890123456789L;
+        private static final Long NONEXISTENT_PORTFOLIO_ID = 9000000000000000001L;
+
+        @Test
+        @DisplayName("[403 Forbidden] 비소유자가 PUT 요청하면 PORTFOLIO_FORBIDDEN 에러를 반환한다.")
+        void update_portfolio_forbidden_non_owner() throws Exception {
+            // given
+            String requestBody = createValidRequestBody();
+            given(updatePortfolioUseCase.execute(eq(OTHERS_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID), any()))
+                    .willThrow(new PortfolioApplicationException(
+                            PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN
+                    ));
+
+            // when & then
+            mockMvc.perform(put("/api/portfolios/{portfolioId}", OTHERS_PORTFOLIO_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody))
+                    .andDo(print())
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_FORBIDDEN"))
+
+                    // 문서화
+                    .andDo(document("403-portfolio-update-forbidden",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[404 Not Found] 존재하지 않는 portfolioId PUT 요청 시 PORTFOLIO_NOT_FOUND 에러를 반환한다.")
+        void update_portfolio_not_found() throws Exception {
+            // given
+            String requestBody = createValidRequestBody();
+            given(updatePortfolioUseCase.execute(eq(NONEXISTENT_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID), any()))
+                    .willThrow(new PortfolioApplicationException(
+                            PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
+                    ));
+
+            // when & then
+            mockMvc.perform(put("/api/portfolios/{portfolioId}", NONEXISTENT_PORTFOLIO_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_NOT_FOUND"))
+
+                    // 문서화
+                    .andDo(document("404-portfolio-update-not-found",
                             preprocessRequest(prettyPrint()),
                             preprocessResponse(prettyPrint()),
                             resource(

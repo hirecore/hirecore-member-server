@@ -30,28 +30,28 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
 
     private final Long id;
     private final Long memberAccountId;
-    private final Long thumbnailImageId;
-    private final Long coverLetterId;
-    private final Long resumeId;
-    private final String title;
-    private final String previewSummary;
-    private final String privateMemo;
+    private Long thumbnailImageId;
+    private Long coverLetterId;
+    private Long resumeId;
+    private String title;
+    private String previewSummary;
+    private String privateMemo;
     private final Long cachedViewCount;
     private final Long cachedInterestCount;
 
     // sub-aggregate
-    private final PortfolioJobCategory portfolioJobCategory;
-    private final PortfolioContent portfolioContent;
-    private final List<ExternalLink> externalLinks;
-    private final List<PortfolioTag> portfolioTags;
+    private PortfolioJobCategory portfolioJobCategory;
+    private PortfolioContent portfolioContent;
+    private List<ExternalLink> externalLinks;
+    private List<PortfolioTag> portfolioTags;
     private final List<PortfolioMemberInterest> portfolioMemberInterests;
     private final List<PortfolioMemberView> portfolioMemberViews;
 
     // vo
     private final PortfolioStatus status;
-    private final CollaborationType collaborationType;
-    private final Visibility visibility;
-    private final AuditingInfo auditingInfo;
+    private CollaborationType collaborationType;
+    private Visibility visibility;
+    private AuditingInfo auditingInfo;
 
     /**
      * [복원용 빌더]
@@ -117,6 +117,53 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
      */
     public void markViewed(Long viewerMemberAccountId) {
         registerEvent(new PortfolioViewedEvent(this.id, viewerMemberAccountId));
+    }
+
+    /**
+     * 포트폴리오의 편집 가능한 모든 필드를 새 값으로 교체합니다 (PUT 시맨틱).
+     *
+     * <p>자식 컬렉션({@code externalLinks}, {@code portfolioTags}) 은 전체 교체되며,
+     * 단일 자식 집계({@code portfolioJobCategory}, {@code portfolioContent}) 는 새 인스턴스로 교체됩니다.
+     * 식별자/소유자/통계/상태는 변경되지 않습니다.</p>
+     */
+    public void modify(
+            Long thumbnailImageId,
+            Long coverLetterId,
+            Long resumeId,
+            String title,
+            String previewSummary,
+            String privateMemo,
+            Long jobCategoryId,
+            String jobCategoryUserInput,
+            String contentJson,
+            String contentHtml,
+            List<ExternalLink> newExternalLinks,
+            List<PortfolioTag> newPortfolioTags,
+            CollaborationType collaborationType,
+            Visibility visibility
+    ) {
+        PortfolioJobCategory newJobCategory = PortfolioJobCategory.create(jobCategoryId, jobCategoryUserInput);
+        PortfolioContent newContent = PortfolioContent.create(this.id, contentJson, contentHtml);
+
+        ensureInvariants(
+                this.id, this.memberAccountId, title, previewSummary, privateMemo,
+                newJobCategory, newContent, newExternalLinks, newPortfolioTags,
+                this.status, collaborationType, visibility, this.auditingInfo
+        );
+
+        this.thumbnailImageId = thumbnailImageId;
+        this.coverLetterId = coverLetterId;
+        this.resumeId = resumeId;
+        this.title = title;
+        this.previewSummary = previewSummary;
+        this.privateMemo = privateMemo;
+        this.portfolioJobCategory = newJobCategory;
+        this.portfolioContent = newContent;
+        this.externalLinks = newExternalLinks != null ? newExternalLinks : List.of();
+        this.portfolioTags = newPortfolioTags != null ? newPortfolioTags : List.of();
+        this.collaborationType = collaborationType;
+        this.visibility = visibility;
+        this.auditingInfo = this.auditingInfo.update();
     }
 
     public static Portfolio create(

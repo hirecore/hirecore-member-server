@@ -14,6 +14,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.S
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,6 +26,7 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementP
     private final PortfolioJobCategoryJpaEntityMapper portfolioJobCategoryMapper;
     private final PortfolioTagJpaEntityMapper portfolioTagMapper;
     private final PortfolioJpaCommandRepository portfolioRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Portfolio save(Portfolio portfolio) {
@@ -41,6 +43,7 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementP
         }
 
         portfolioRepository.save(portfolioEntity);
+        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
         return portfolio;
     }
 
@@ -69,5 +72,6 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementP
 
         portfolioEntity.markPersisted();
         portfolioRepository.save(portfolioEntity);
+        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
     }
 }

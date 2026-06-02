@@ -236,6 +236,10 @@ class PortfolioQueryControllerTest {
                                                     fieldWithPath("interestCount")
                                                             .type(JsonFieldType.NUMBER)
                                                             .description("포트폴리오 관심등록수"),
+                                                    fieldWithPath("isInterested")
+                                                            .type(JsonFieldType.BOOLEAN)
+                                                            .description("현재 요청자의 관심 등록 여부. 비로그인 또는 본인(isOwner=true) 호출 시 null")
+                                                            .optional(),
                                                     fieldWithPath("title")
                                                             .type(JsonFieldType.STRING)
                                                             .description("포트폴리오 제목"),

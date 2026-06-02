@@ -1,13 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.storage.adapter.in.shared;
 
 import io.hirecore.hirecorememberserver.modules.storage.application.port.in.LoadUserStorageUsageUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageUsagePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserUsedQuotaPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserStorageUsageQueryAdapter implements LoadUserStorageUsagePort {
+public class UserStorageUsageQueryAdapter implements LoadUserUsedQuotaPort {
 
     private final LoadUserStorageUsageUseCase userStorageUsageUseCase;
 

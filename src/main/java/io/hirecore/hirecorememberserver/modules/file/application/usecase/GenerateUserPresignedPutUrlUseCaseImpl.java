@@ -10,7 +10,7 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveIm
 import io.hirecore.hirecorememberserver.modules.file.application.util.ImageObjectKeyResolver;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageUsagePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserUsedQuotaPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import java.util.UUID;
 public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresignedPutUrlUseCase {
 
     private final LoadUserStorageLimitPort loadUserStorageLimitPort;
-    private final LoadUserStorageUsagePort loadUserStorageUsagePort;
+    private final LoadUserUsedQuotaPort loadUserStorageUsagePort;
     private final GeneratePresignedPutUrlPort generatePresignedPutUrlPort;
     private final SaveImageFileMetaPort saveImageFileMetaPort;
 

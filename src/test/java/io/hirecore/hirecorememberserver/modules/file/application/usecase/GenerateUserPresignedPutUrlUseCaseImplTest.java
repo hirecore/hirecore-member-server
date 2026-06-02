@@ -10,7 +10,7 @@ import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageUsagePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserUsedQuotaPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
     private LoadUserStorageLimitPort loadUserStorageLimitPort;
 
     @Mock
-    private LoadUserStorageUsagePort loadUserStorageUsagePort;
+    private LoadUserUsedQuotaPort loadUserStorageUsagePort;
 
     @Mock
     private GeneratePresignedPutUrlPort generatePresignedPutUrlPort;

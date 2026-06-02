@@ -76,6 +76,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
                 command.jobCategory().userInput(),
                 serializeContentJson(content),
                 content.html(),
+                command.contentImageIds(),
                 externalLinks,
                 portfolioTags,
                 command.collaborationType(),

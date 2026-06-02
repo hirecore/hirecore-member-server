@@ -57,6 +57,7 @@ class PortfolioJpaCommandAdapterTest {
                 9L, null,
                 "{}", "<p>본문</p>",
                 List.of(),
+                List.of(),
                 List.of(PortfolioTag.create("Spring", 0), PortfolioTag.create("DDD", 1)),
                 CollaborationType.TEAM, Visibility.PUBLIC
         );
@@ -103,6 +104,7 @@ class PortfolioJpaCommandAdapterTest {
                 "title", "본문", null,
                 9L, null,
                 "{}", "<p>본문</p>",
+                List.of(),
                 List.of(),
                 List.of(),
                 CollaborationType.PERSONAL, Visibility.PRIVATE

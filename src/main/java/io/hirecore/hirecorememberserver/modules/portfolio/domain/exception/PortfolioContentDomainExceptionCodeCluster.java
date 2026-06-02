@@ -25,6 +25,16 @@ public class PortfolioContentDomainExceptionCodeCluster {
         CONTENT_HTML_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "PortfolioContent 도메인 객체 생성에서 contentHtml 필드가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        // IMAGE_IDS
+        IMAGE_IDS_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "PortfolioContent 도메인 객체 생성에서 imageIds 필드가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+        IMAGE_IDS_CONTAINS_NULL(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "PortfolioContent 의 imageIds 에 null 요소가 포함되어 있습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요.");
 
         private final HttpStatus httpStatus;

@@ -8,6 +8,7 @@ import java.util.List;
 public record PortfolioEditResponse(
         String privateMemo,
         String previewSummary,
+        Long thumbnailImageId,
         String thumbnailImageUrl,
         List<PortfolioJobCategoryResponse> jobCategories,
         CollaborationType collaborationType,
@@ -15,6 +16,7 @@ public record PortfolioEditResponse(
         String title,
         List<PortfolioTagResponse> tags,
         List<PortfolioExternalLinkResponse> externalLinks,
+        List<PortfolioContentImageResponse> contentImages,
         PortfolioContentResponse content
 ) {
 }

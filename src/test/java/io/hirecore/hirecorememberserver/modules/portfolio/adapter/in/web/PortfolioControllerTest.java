@@ -20,6 +20,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.Cr
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentImageResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioEditResponse;
@@ -786,7 +787,8 @@ class PortfolioControllerTest {
             return new PortfolioEditResponse(
                     "회고 작성 시 참고용 메모입니다.",
                     "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.",
-                    "https://cdn.example.com/portfolio/thumbnail/2026/06/9876543210987654321.webp",
+                    7876543210987654321L,
+                    "https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp",
                     List.of(
                             new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발"),
                             new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드")
@@ -800,6 +802,16 @@ class PortfolioControllerTest {
                     ),
                     List.of(
                             new PortfolioExternalLinkResponse("GitHub Repo", "https://github.com/example/repo")
+                    ),
+                    List.of(
+                            new PortfolioContentImageResponse(
+                                    1111111111111111111L,
+                                    "https://cdn.example.com/portfolio/content/2026/06/1111111111111111111.webp"
+                            ),
+                            new PortfolioContentImageResponse(
+                                    2222222222222222222L,
+                                    "https://cdn.example.com/portfolio/content/2026/06/2222222222222222222.webp"
+                            )
                     ),
                     PortfolioContentResponse.builder()
                             .json("{\"type\":\"doc\",\"content\":[]}")
@@ -821,7 +833,7 @@ class PortfolioControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.privateMemo").value("회고 작성 시 참고용 메모입니다."))
                     .andExpect(jsonPath("$.previewSummary").value("회원 서비스를 도메인 모델링한 회고를 정리한 글입니다."))
-                    .andExpect(jsonPath("$.thumbnailImageUrl").value("https://cdn.example.com/portfolio/thumbnail/2026/06/9876543210987654321.webp"))
+                    .andExpect(jsonPath("$.thumbnailImageUrl").value("https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp"))
                     .andExpect(jsonPath("$.jobCategories[0].categoryCode").value("DEV"))
                     .andExpect(jsonPath("$.collaborationType").value("team"))
                     .andExpect(jsonPath("$.visibility").value("public"))
@@ -875,6 +887,10 @@ class PortfolioControllerTest {
                                                     fieldWithPath("previewSummary")
                                                             .type(JsonFieldType.STRING)
                                                             .description("미리보기 요약 텍스트"),
+                                                    fieldWithPath("thumbnailImageId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 이미지의 ImageFileMeta ID (TSID, JSON 문자열). PUT 요청 시 클라이언트가 이 값을 그대로 thumbnailImageId 로 돌려보내야 서버가 동일 썸네일 유지로 인식. 썸네일 미등록 시 null.")
+                                                            .optional(),
                                                     fieldWithPath("thumbnailImageUrl")
                                                             .type(JsonFieldType.STRING)
                                                             .description("썸네일 이미지의 전체 URL (환경별 CloudFront/CDN base URL + object key 가 서버에서 조합됨). `null` 인 경우 사용자가 포트폴리오 등록 시 썸네일을 등록하지 않은 상태로 해석. 편집 UI 는 이 상태를 신규 업로드(드롭존 등) 노출 근거로 사용 가능.")
@@ -929,7 +945,16 @@ class PortfolioControllerTest {
                                                             .description("링크 표시 라벨"),
                                                     fieldWithPath("externalLinks[].url")
                                                             .type(JsonFieldType.STRING)
-                                                            .description("링크 URL (http:// 또는 https://)")
+                                                            .description("링크 URL (http:// 또는 https://)"),
+                                                    fieldWithPath("contentImages")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("본문에서 사용 중인 이미지의 (imageId, url) 매핑 목록. 본문에 이미지가 없으면 빈 배열. 클라이언트는 편집 진입 시 이 매핑으로 url→imageId 룩업 테이블을 초기화하고, PUT 요청 시 본문 내 image 노드 src 로부터 imageId 를 역추적해 contentImageIds 를 채워 보냄."),
+                                                    fieldWithPath("contentImages[].imageId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("ImageFileMeta ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("contentImages[].url")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("이미지의 전체 URL (본문 image 노드 src 와 동일 값)")
                                             )
                                             .build()
                             )

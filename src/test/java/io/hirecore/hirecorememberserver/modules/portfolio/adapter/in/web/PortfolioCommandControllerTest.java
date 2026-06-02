@@ -57,6 +57,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -725,6 +728,208 @@ class PortfolioCommandControllerTest {
                                     ResourceSnippetParameters.builder()
                                             .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
                                             .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 관심 등록: 성공 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 관심 등록: 성공 케이스 (Happy Path)")
+    class RegisterPortfolioInterestSuccessTest {
+
+        private static final Long TARGET_PORTFOLIO_ID = 5234567890123456800L;
+
+        @Test
+        @DisplayName("[204 No Content] 로그인 사용자가 비소유 공개 포트폴리오에 POST 하면 본문 없이 204 를 반환한다.")
+        void register_interest_success() throws Exception {
+            // given
+            willDoNothing().given(registerPortfolioInterestUseCase).execute(TARGET_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(post("/api/portfolios/{portfolioId}/interest", TARGET_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isNoContent())
+
+                    // 문서화
+                    .andDo(document("204-portfolio-interest-register-success",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .summary("\"포트폴리오 관심 등록\": 사용자가 포트폴리오에 관심을 표시한다.")
+                                            .description("""
+                                                    로그인 사용자가 비소유 공개 포트폴리오에 관심을 등록합니다.
+
+                                                        [접근 정책]
+                                                         - 로그인 필수
+                                                         - 본인이 등록한 포트폴리오에는 관심 등록 불가 (403 INTEREST_OWNER_NOT_ALLOWED)
+                                                         - 비공개 포트폴리오에 비소유자가 시도하면 403 INTEREST_PORTFOLIO_FORBIDDEN
+                                                         - 존재하지 않는 포트폴리오: 404 INTEREST_PORTFOLIO_NOT_FOUND
+
+                                                        [멱등]
+                                                         - 이미 등록된 상태에서 다시 호출해도 204 (서버 상태 변경 없음)
+
+                                                        [응답]
+                                                         - 204 No Content
+                                                    """)
+                                            .pathParameters(
+                                                    ResourceDocumentation.parameterWithName("portfolioId")
+                                                            .type(SimpleType.STRING)
+                                                            .description("관심 등록 대상 포트폴리오 ID (TSID, JSON 문자열)")
+                                            )
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 관심 등록: 비즈니스 로직 실패 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 관심 등록: 비즈니스 로직 실패 케이스")
+    class RegisterPortfolioInterestFailureTest {
+
+        private static final Long OWN_PORTFOLIO_ID = 5234567890123456801L;
+        private static final Long PRIVATE_PORTFOLIO_ID = 5234567890123456802L;
+        private static final Long NONEXISTENT_PORTFOLIO_ID = 9000000000000000002L;
+
+        @Test
+        @DisplayName("[403 Forbidden] 본인이 등록한 포트폴리오에 POST 하면 INTEREST_OWNER_NOT_ALLOWED 에러를 반환한다.")
+        void register_interest_forbidden_owner() throws Exception {
+            // given
+            willThrow(new PortfolioApplicationException(
+                    PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_OWNER_NOT_ALLOWED
+            )).given(registerPortfolioInterestUseCase).execute(OWN_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(post("/api/portfolios/{portfolioId}/interest", OWN_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.errorCode").value("INTEREST_OWNER_NOT_ALLOWED"))
+
+                    // 문서화
+                    .andDo(document("403-portfolio-interest-register-owner-not-allowed",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[403 Forbidden] 비공개 포트폴리오에 비소유자가 POST 하면 INTEREST_PORTFOLIO_FORBIDDEN 에러를 반환한다.")
+        void register_interest_forbidden_private() throws Exception {
+            // given
+            willThrow(new PortfolioApplicationException(
+                    PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_FORBIDDEN
+            )).given(registerPortfolioInterestUseCase).execute(PRIVATE_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(post("/api/portfolios/{portfolioId}/interest", PRIVATE_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.errorCode").value("INTEREST_PORTFOLIO_FORBIDDEN"))
+
+                    // 문서화
+                    .andDo(document("403-portfolio-interest-register-private-forbidden",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[404 Not Found] 존재하지 않는 portfolioId 로 POST 하면 INTEREST_PORTFOLIO_NOT_FOUND 에러를 반환한다.")
+        void register_interest_not_found() throws Exception {
+            // given
+            willThrow(new PortfolioApplicationException(
+                    PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_NOT_FOUND
+            )).given(registerPortfolioInterestUseCase).execute(NONEXISTENT_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(post("/api/portfolios/{portfolioId}/interest", NONEXISTENT_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.errorCode").value("INTEREST_PORTFOLIO_NOT_FOUND"))
+
+                    // 문서화
+                    .andDo(document("404-portfolio-interest-register-not-found",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 관심 해제: 성공 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 관심 해제: 성공 케이스 (Happy Path)")
+    class CancelPortfolioInterestSuccessTest {
+
+        private static final Long TARGET_PORTFOLIO_ID = 5234567890123456810L;
+
+        @Test
+        @DisplayName("[204 No Content] 로그인 사용자가 DELETE 하면 본문 없이 204 를 반환한다 (등록 없어도 멱등 성공).")
+        void cancel_interest_success() throws Exception {
+            // given
+            willDoNothing().given(cancelPortfolioInterestUseCase).execute(TARGET_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(delete("/api/portfolios/{portfolioId}/interest", TARGET_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isNoContent())
+
+                    // 문서화
+                    .andDo(document("204-portfolio-interest-cancel-success",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .summary("\"포트폴리오 관심 해제\": 사용자가 등록한 관심을 해제한다.")
+                                            .description("""
+                                                    로그인 사용자가 포트폴리오에 등록한 관심을 해제합니다.
+
+                                                        [접근 정책]
+                                                         - 로그인 필수
+
+                                                        [멱등]
+                                                         - 등록된 적 없는 상태에서 호출해도 204 (서버 상태 변경 없음)
+                                                         - 본인이 등록한 포트폴리오에 대한 DELETE 는 등록 자체가 불가하므로 자연스럽게 멱등 성공으로 처리됨
+
+                                                        [응답]
+                                                         - 204 No Content
+                                                    """)
+                                            .pathParameters(
+                                                    ResourceDocumentation.parameterWithName("portfolioId")
+                                                            .type(SimpleType.STRING)
+                                                            .description("관심 해제 대상 포트폴리오 ID (TSID, JSON 문자열)")
+                                            )
                                             .build()
                             )
                     ));

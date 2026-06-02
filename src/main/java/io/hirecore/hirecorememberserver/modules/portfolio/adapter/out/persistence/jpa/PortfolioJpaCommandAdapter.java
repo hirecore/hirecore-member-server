@@ -11,13 +11,14 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.IncrementPortfolioViewCountPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementPortfolioViewCountPort {
+public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementPortfolioViewCountPort, UpdatePortfolioPort {
 
     private final PortfolioJpaEntityMapper portfolioMapper;
     private final PortfolioContentJpaEntityMapper portfolioContentMapper;
@@ -46,5 +47,27 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementP
     @Override
     public void incrementById(Long portfolioId) {
         portfolioRepository.incrementCachedViewCountById(portfolioId);
+    }
+
+    /**
+     * 도메인 변경분을 새 JPA 엔티티로 변환한 뒤 {@code markPersisted()} 로 기존 영속 객체임을 표시하고
+     * {@code save()} 의 merge 경로로 진입시킵니다. cascade + orphanRemoval 로 자식 컬렉션은 자동 동기화됩니다.
+     */
+    @Override
+    public void update(Portfolio portfolio) {
+        PortfolioJpaEntity portfolioEntity = portfolioMapper.toJpaEntity(portfolio);
+
+        PortfolioContentJpaEntity contentEntity = portfolioContentMapper.toJpaEntity(portfolio.getPortfolioContent());
+        portfolioEntity.syncPortfolioContent(contentEntity);
+
+        PortfolioJobCategoryJpaEntity jobCategoryEntity = portfolioJobCategoryMapper.toJpaEntity(portfolio.getPortfolioJobCategory());
+        portfolioEntity.syncPortfolioJobCategory(jobCategoryEntity);
+
+        for (PortfolioTagJpaEntity tagEntity : portfolio.getPortfolioTags().stream().map(portfolioTagMapper::toJpaEntity).toList()) {
+            portfolioEntity.addPortfolioTag(tagEntity);
+        }
+
+        portfolioEntity.markPersisted();
+        portfolioRepository.save(portfolioEntity);
     }
 }

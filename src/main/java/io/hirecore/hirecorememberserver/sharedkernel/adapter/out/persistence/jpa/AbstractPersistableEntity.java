@@ -70,4 +70,16 @@ public abstract class AbstractPersistableEntity<ID> implements Persistable<ID> {
     protected void markNotNew() {
         this.isNew = false;
     }
+
+    /**
+     * <h3>Update 시나리오용 명시적 영속화 상태 마킹</h3>
+     *
+     * <p>도메인 객체를 새 JPA 엔티티 인스턴스로 변환해 저장할 때 기본값 {@code isNew = true} 때문에
+     * Spring Data 가 {@code persist()} 를 호출해 INSERT 를 시도하여 PK 중복 에러가 발생합니다.
+     * 어댑터가 "이미 영속화된 ID 를 가진 객체임" 을 알 때 본 메서드를 호출해
+     * 명시적으로 {@code merge()} (UPDATE) 경로로 진입하게 합니다.</p>
+     */
+    public void markPersisted() {
+        this.isNew = false;
+    }
 }

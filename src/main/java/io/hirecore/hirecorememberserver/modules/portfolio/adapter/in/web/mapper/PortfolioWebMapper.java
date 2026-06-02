@@ -6,12 +6,14 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.req
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioExternalLinkApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.UpdatePortfolioApiRequest;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.*;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.JobCategoryCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.UpdatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.*;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapper;
 import org.mapstruct.Mapper;
@@ -24,6 +26,7 @@ import java.util.List;
 )
 public abstract class PortfolioWebMapper {
     public abstract CreatePortfolioCommand toCreatePortfolioCommand(CreatePortfolioApiRequest request);
+    public abstract UpdatePortfolioCommand toUpdatePortfolioCommand(UpdatePortfolioApiRequest request);
     public abstract JobCategoryCommand toJobCategoryCommand(JobCategoryApiRequest jobCategory);
     public abstract PortfolioContentCommand toPortfolioContentCommand(PortfolioContentApiRequest content);
     public abstract PortfolioTagCommand toPortfolioTagCommand(PortfolioTagApiRequest tag);

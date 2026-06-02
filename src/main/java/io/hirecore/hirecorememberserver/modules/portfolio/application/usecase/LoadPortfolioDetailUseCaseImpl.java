@@ -4,6 +4,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.*;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
@@ -33,6 +34,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
     private final LoadProfilePort loadProfilePort;
     private final LoadJobCategoryPort loadJobCategoryPort;
     private final ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
+    private final ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
@@ -48,15 +50,24 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 ));
 
         long displayedViewCount = resolveDisplayedViewCount(portfolio, viewerId, isOwner);
+        Boolean isInterested = resolveIsInterested(portfolio, viewerId, isOwner);
 
         return buildResponse(
                 portfolio,
                 publisherNickname,
                 isOwner,
                 displayedViewCount,
+                isInterested,
                 toTagResponses(portfolio.getPortfolioTags()),
                 toJobCategoriesResponse(portfolio.getPortfolioJobCategory())
         );
+    }
+
+    private Boolean resolveIsInterested(Portfolio portfolio, Long viewerId, boolean isOwner) {
+        if (viewerId == null || isOwner) {
+            return null;
+        }
+        return existsPortfolioMemberInterestPort.exists(portfolio.getId(), viewerId);
     }
 
     private long resolveDisplayedViewCount(Portfolio portfolio, Long viewerId, boolean isOwner) {
@@ -93,6 +104,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
             String publisherNickname,
             boolean isOwner,
             long displayedViewCount,
+            Boolean isInterested,
             List<PortfolioTagResponse> tags,
             List<PortfolioJobCategoryResponse> jobCategories
     ) {
@@ -109,6 +121,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 .visibility(portfolio.getVisibility())
                 .viewCount(displayedViewCount)
                 .interestCount(portfolio.getCachedInterestCount())
+                .isInterested(isInterested)
                 .title(portfolio.getTitle())
                 .content(content)
                 .tags(tags)

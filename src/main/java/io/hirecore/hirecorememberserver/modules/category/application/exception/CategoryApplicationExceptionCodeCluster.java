@@ -13,6 +13,11 @@ public class CategoryApplicationExceptionCodeCluster {
                 HttpStatus.NOT_FOUND,
                 "요청한 카테고리 코드에 해당하는 활성 직무 카테고리가 존재하지 않습니다.",
                 "유효하지 않은 카테고리 코드입니다."
+        ),
+        JOB_CATEGORY_NOT_FOUND(
+                HttpStatus.NOT_FOUND,
+                "요청한 ID에 해당하는 직무 카테고리가 존재하지 않습니다.",
+                "유효하지 않은 직무 카테고리입니다."
         );
 
         private final HttpStatus httpStatus;

@@ -24,4 +24,6 @@ public interface JobCategoryJpaQueryRepository extends Repository<JobCategoryJpa
               AND jc.isActive = true
             """)
     Optional<JobCategoryJpaEntity> findActiveByCategoryCode(@Param("categoryCode") String categoryCode);
+
+    Optional<JobCategoryJpaEntity> findById(Long id);
 }

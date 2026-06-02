@@ -14,6 +14,7 @@ public record PortfolioDetailApiResponse(
         VisibilityApiValue visibility,
         Long viewCount,
         Long interestCount,
+        Boolean isInterested,
         String title,
         List<PortfolioTagApiResponse> tags,
         List<PortfolioExternalLinkApiResponse> externalLinks,

@@ -31,4 +31,8 @@ public class PortfolioMemberInterestJpaEntity extends AbstractPersistableEntity<
     @Comment("관심 등록 시각")
     @Column(name = "interest_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant interestAt;
+
+    public void attachPortfolio(PortfolioJpaEntity portfolio) {
+        this.portfolio = portfolio;
+    }
 }

@@ -16,7 +16,9 @@ import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileM
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapperImpl;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CancelPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.RegisterPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentImageResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
@@ -90,6 +92,12 @@ class PortfolioCommandControllerTest {
 
     @MockitoBean
     private UpdatePortfolioUseCase updatePortfolioUseCase;
+
+    @MockitoBean
+    private RegisterPortfolioInterestUseCase registerPortfolioInterestUseCase;
+
+    @MockitoBean
+    private CancelPortfolioInterestUseCase cancelPortfolioInterestUseCase;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
     private static final Long CREATED_PORTFOLIO_ID = 9001L;

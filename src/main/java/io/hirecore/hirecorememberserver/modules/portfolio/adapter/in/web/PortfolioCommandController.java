@@ -5,7 +5,9 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.req
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.CreatePortfolioApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.UpdatePortfolioApiResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapper;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CancelPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.RegisterPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.UpdatePortfolioCommand;
@@ -14,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +34,8 @@ public class PortfolioCommandController {
 
     private final CreatePortfolioUseCase createPortfolioUseCase;
     private final UpdatePortfolioUseCase updatePortfolioUseCase;
+    private final RegisterPortfolioInterestUseCase registerPortfolioInterestUseCase;
+    private final CancelPortfolioInterestUseCase cancelPortfolioInterestUseCase;
     private final PortfolioWebMapper portfolioWebMapper;
 
     @PostMapping
@@ -58,5 +63,23 @@ public class PortfolioCommandController {
         UpdatePortfolioCommand command = portfolioWebMapper.toUpdatePortfolioCommand(request);
         Long updatedPortfolioId = updatePortfolioUseCase.execute(portfolioId, authPrincipal.id(), command);
         return ResponseEntity.ok(new UpdatePortfolioApiResponse(updatedPortfolioId));
+    }
+
+    @PostMapping("{portfolioId}/interest")
+    public ResponseEntity<Void> registerPortfolioInterest(
+            @AuthenticationPrincipal AuthPrincipal authPrincipal,
+            @PathVariable("portfolioId") Long portfolioId
+    ){
+        registerPortfolioInterestUseCase.execute(portfolioId, authPrincipal.id());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("{portfolioId}/interest")
+    public ResponseEntity<Void> cancelPortfolioInterest(
+            @AuthenticationPrincipal AuthPrincipal authPrincipal,
+            @PathVariable("portfolioId") Long portfolioId
+    ){
+        cancelPortfolioInterestUseCase.execute(portfolioId, authPrincipal.id());
+        return ResponseEntity.noContent().build();
     }
 }

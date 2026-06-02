@@ -13,7 +13,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.S
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
-    private final UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
+    private final MarkImagesAsUploadedPort markImagesAsUploadedPort;
     private final LoadJobCategoryPort loadJobCategoryPort;
     private final SavePortfolioPort savePortfolioPort;
     private final ObjectMapper objectMapper;
@@ -51,7 +51,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
     public Long execute(Long memberId, CreatePortfolioCommand command) {
         List<Long> imageIds = aggregateImageIds(command.thumbnailImageId(), command.contentImageIds());
 
-        updateUploadStatusOfImageFileMetaPort.markUploaded(memberId, imageIds);
+        markImagesAsUploadedPort.markUploaded(memberId, imageIds);
 
         Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
         Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryId);

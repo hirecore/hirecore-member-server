@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.shared;
 
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.UpdateUploadStatusOfImageFileMetaUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
-public class ImageFileMetaCommandAdapter implements UpdateUploadStatusOfImageFileMetaPort {
+public class ImageFileMetaCommandAdapter implements MarkImagesAsUploadedPort {
 
     private final UpdateUploadStatusOfImageFileMetaUseCase updateUploadStatusOfImageFileMetaUseCase;
 

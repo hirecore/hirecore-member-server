@@ -106,6 +106,37 @@ public class SharedKernelExceptionCodeCluster {
                 "ImageUploadedEvent 생성에서 purpose가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
+        // IMAGE_ORPHANED_EVENT
+        IMAGE_ORPHANED_EVENT_IMAGE_FILE_META_ID_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageOrphanedEvent 생성에서 imageFileMetaId가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_ORPHANED_EVENT_MEMBER_ACCOUNT_ID_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageOrphanedEvent 생성에서 memberAccountId가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_ORPHANED_EVENT_DOMAIN_TYPE_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageOrphanedEvent 생성에서 domainType이 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_ORPHANED_EVENT_PURPOSE_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageOrphanedEvent 생성에서 purpose가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_ORPHANED_EVENT_FILE_SIZE_BYTES_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageOrphanedEvent 생성에서 fileSizeBytes가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        IMAGE_ORPHANED_EVENT_ORPHANED_AT_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ImageOrphanedEvent 생성에서 orphanedAt이 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
         // DOMAIN_TYPE
         DOMAIN_TYPE_INVALID(
                 HttpStatus.BAD_REQUEST,

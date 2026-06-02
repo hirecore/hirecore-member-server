@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.file.domain;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainException;
 import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileMetaDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageOrphanedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.ImageUploadedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,6 +123,61 @@ class ImageFileMetaTest {
             meta.updateUploadStatus(UploadStatus.ORPHANED);
 
             assertThat(meta.pollAllEvents()).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("markOrphaned 상태 전이")
+    class MarkOrphanedTest {
+
+        @Test
+        @DisplayName("UPLOADED 상태에서 ORPHANED 로 전이하면 ImageOrphanedEvent 가 emit 된다")
+        void should_emit_image_orphaned_event_when_transition_uploaded_to_orphaned() {
+            ImageFileMeta meta = createValid();
+            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.pollAllEvents(); // 기존 ImageUploadedEvent 비움
+
+            meta.markOrphaned();
+
+            assertThat(meta.getUploadStatus()).isEqualTo(UploadStatus.ORPHANED);
+            assertThat(meta.getOrphanedAt()).isNotNull();
+            Collection<Object> events = meta.pollAllEvents();
+            assertThat(events).hasSize(1);
+            assertThat(events.iterator().next()).isInstanceOfSatisfying(ImageOrphanedEvent.class, e -> {
+                assertThat(e.imageFileMetaId()).isEqualTo(meta.getId());
+                assertThat(e.memberAccountId()).isEqualTo(meta.getMemberAccountId());
+                assertThat(e.domainType()).isEqualTo(meta.getDomainType());
+                assertThat(e.purpose()).isEqualTo(meta.getPurpose());
+                assertThat(e.fileSizeBytes()).isEqualTo(meta.getFileSizeBytes());
+                assertThat(e.orphanedAt()).isEqualTo(meta.getOrphanedAt());
+            });
+        }
+
+        @Test
+        @DisplayName("이미 ORPHANED 인 상태에서 markOrphaned 를 호출하면 멱등 처리되어 이벤트가 emit 되지 않는다")
+        void should_be_idempotent_when_already_orphaned() {
+            ImageFileMeta meta = createValid();
+            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markOrphaned();
+            Instant firstOrphanedAt = meta.getOrphanedAt();
+            meta.pollAllEvents(); // 기존 이벤트 비움
+
+            meta.markOrphaned();
+
+            assertThat(meta.getUploadStatus()).isEqualTo(UploadStatus.ORPHANED);
+            assertThat(meta.getOrphanedAt()).isEqualTo(firstOrphanedAt);
+            assertThat(meta.pollAllEvents()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("PENDING 상태에서 markOrphaned 를 호출하면 INVALID_UPLOAD_STATUS_TRANSITION 예외가 발생한다")
+        void should_throw_when_call_mark_orphaned_in_pending_status() {
+            ImageFileMeta meta = createValid();
+
+            assertThatThrownBy(meta::markOrphaned)
+                    .isInstanceOf(ImageFileMetaDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION.getErrorCode());
         }
     }
 

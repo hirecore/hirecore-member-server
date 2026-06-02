@@ -82,6 +82,10 @@ public class ImageFileMetaJpaEntity extends AbstractPersistableAggregateRoot<Lon
     @Column(name = "completed_upload_at", columnDefinition = "DATETIME(6)")
     private Instant completedUploadAt;
 
+    @Comment("ORPHANED 전이 시각")
+    @Column(name = "orphaned_at", columnDefinition = "DATETIME(6)")
+    private Instant orphanedAt;
+
     @Comment("삭제 완료 시각")
     @Column(name = "completed_delete_at", columnDefinition = "DATETIME(6)")
     private Instant completedDeleteAt;
@@ -92,5 +96,10 @@ public class ImageFileMetaJpaEntity extends AbstractPersistableAggregateRoot<Lon
     public void updateUploadStatus(UploadStatus uploadStatus, Instant completedUploadAt) {
         this.uploadStatus = uploadStatus;
         this.completedUploadAt = completedUploadAt;
+    }
+
+    public void markOrphaned(Instant orphanedAt) {
+        this.uploadStatus = UploadStatus.ORPHANED;
+        this.orphanedAt = orphanedAt;
     }
 }

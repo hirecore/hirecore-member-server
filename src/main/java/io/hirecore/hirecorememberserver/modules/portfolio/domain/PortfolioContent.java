@@ -9,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class PortfolioContent {
     /**
@@ -17,6 +19,12 @@ public class PortfolioContent {
     private final Long portfolioId;
     private final String contentJson;
     private final String contentHtml;
+    /**
+     * 본문에서 사용 중인 이미지 식별자 집합입니다.
+     * 본문 JSON/HTML 내부에 임베드된 이미지와 일치하는 ID 들만 보관하며,
+     * 포트폴리오 수정 시 차집합 계산을 통해 고아 이미지 회수 트리거에 사용됩니다.
+     */
+    private final List<Long> imageIds;
     private final AuditingInfo auditingInfo;
 
     /**
@@ -29,21 +37,29 @@ public class PortfolioContent {
             Long portfolioId,
             String contentJson,
             String contentHtml,
+            List<Long> imageIds,
             AuditingInfo auditingInfo
     ) {
-        ensureInvariants(portfolioId, contentJson, contentHtml, auditingInfo);
+        ensureInvariants(portfolioId, contentJson, contentHtml, imageIds, auditingInfo);
 
         this.portfolioId = portfolioId;
         this.contentJson = contentJson;
         this.contentHtml = contentHtml;
+        this.imageIds = List.copyOf(imageIds);
         this.auditingInfo = auditingInfo;
     }
 
-    public static PortfolioContent create(Long portfolioId, String contentJson, String contentHtml) {
+    public static PortfolioContent create(
+            Long portfolioId,
+            String contentJson,
+            String contentHtml,
+            List<Long> imageIds
+    ) {
         return PortfolioContent.builder()
                 .portfolioId(portfolioId)
                 .contentJson(contentJson)
                 .contentHtml(contentHtml)
+                .imageIds(imageIds)
                 .auditingInfo(AuditingInfo.create())
                 .build();
     }
@@ -52,6 +68,7 @@ public class PortfolioContent {
             Long portfolioId,
             String contentJson,
             String contentHtml,
+            List<Long> imageIds,
             AuditingInfo auditingInfo
     ) {
         AssertionUtils.notNull(
@@ -70,9 +87,25 @@ public class PortfolioContent {
                 PortfolioContentDomainException::new
         );
         AssertionUtils.notNull(
+                imageIds,
+                PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.IMAGE_IDS_MISSING,
+                PortfolioContentDomainException::new
+        );
+        ensureImageIdsAreClean(imageIds);
+        AssertionUtils.notNull(
                 auditingInfo,
                 SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 PortfolioContentDomainException::new
         );
+    }
+
+    private static void ensureImageIdsAreClean(List<Long> imageIds) {
+        for (Long imageId : imageIds) {
+            if (imageId == null) {
+                throw new PortfolioContentDomainException(
+                        PortfolioContentDomainExceptionCodeCluster.HiddenDetailResponse.IMAGE_IDS_CONTAINS_NULL
+                );
+            }
+        }
     }
 }

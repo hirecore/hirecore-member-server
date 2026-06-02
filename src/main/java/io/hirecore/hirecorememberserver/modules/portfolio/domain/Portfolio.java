@@ -137,13 +137,19 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String jobCategoryUserInput,
             String contentJson,
             String contentHtml,
+            List<Long> newContentImageIds,
             List<ExternalLink> newExternalLinks,
             List<PortfolioTag> newPortfolioTags,
             CollaborationType collaborationType,
             Visibility visibility
     ) {
         PortfolioJobCategory newJobCategory = PortfolioJobCategory.create(jobCategoryId, jobCategoryUserInput);
-        PortfolioContent newContent = PortfolioContent.create(this.id, contentJson, contentHtml);
+        PortfolioContent newContent = PortfolioContent.create(
+                this.id,
+                contentJson,
+                contentHtml,
+                newContentImageIds != null ? newContentImageIds : List.of()
+        );
 
         ensureInvariants(
                 this.id, this.memberAccountId, title, previewSummary, privateMemo,
@@ -178,6 +184,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String userInput,
             String contentJson,
             String contentHtml,
+            List<Long> contentImageIds,
             List<ExternalLink> externalLinks,
             List<PortfolioTag> portfolioTags,
             CollaborationType collaborationType,
@@ -197,7 +204,12 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 .cachedViewCount(0L)
                 .cachedInterestCount(0L)
                 .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
-                .portfolioContent(PortfolioContent.create(portfolioId, contentJson, contentHtml))
+                .portfolioContent(PortfolioContent.create(
+                        portfolioId,
+                        contentJson,
+                        contentHtml,
+                        contentImageIds != null ? contentImageIds : List.of()
+                ))
                 .externalLinks(externalLinks)
                 .portfolioTags(portfolioTags)
                 .portfolioMemberInterests(List.of())

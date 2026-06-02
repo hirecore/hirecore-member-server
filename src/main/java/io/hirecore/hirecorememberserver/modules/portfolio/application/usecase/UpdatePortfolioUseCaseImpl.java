@@ -68,6 +68,7 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
                 command.jobCategory().userInput(),
                 serializeContentJson(content),
                 content.html(),
+                command.contentImageIds(),
                 toExternalLinks(command.externalLinks()),
                 toPortfolioTags(command.tags()),
                 command.collaborationType(),

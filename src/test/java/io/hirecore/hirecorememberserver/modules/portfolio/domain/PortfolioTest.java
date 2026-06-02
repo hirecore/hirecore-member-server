@@ -41,6 +41,7 @@ class PortfolioTest {
                 null,
                 "{\"type\":\"doc\"}",
                 "<p>본문</p>",
+                List.of(),
                 externalLinks,
                 tags,
                 CollaborationType.TEAM,

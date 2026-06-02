@@ -8,6 +8,8 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(config = GlobalMapStructConfig.class)
 public abstract class PortfolioContentJpaEntityMapper {
 
@@ -23,6 +25,7 @@ public abstract class PortfolioContentJpaEntityMapper {
                 .portfolioId(entity.getId())
                 .contentJson(entity.getContentJson())
                 .contentHtml(entity.getContentHtml())
+                .imageIds(entity.getImageIds() != null ? entity.getImageIds() : List.of())
                 .auditingInfo(toAuditingInfo(entity.getAuditingInfo()))
                 .build();
     }

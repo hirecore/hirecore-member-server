@@ -35,6 +35,7 @@ public abstract class PortfolioWebMapper {
     public abstract PortfolioDetailApiResponse toPortfolioDetailApiResponse(PortfolioDetailResponse response);
     public abstract PortfolioEditApiResponse toPortfolioEditApiResponse(PortfolioEditResponse response);
     public abstract PortfolioContentApiResponse toPortfolioContentApiResponse(PortfolioContentResponse response);
+    public abstract PortfolioContentImageApiResponse toPortfolioContentImageApiResponse(PortfolioContentImageResponse response);
     public abstract PortfolioTagApiResponse toPortfolioTagApiResponse(PortfolioTagResponse response);
     public abstract PortfolioExternalLinkApiResponse toPortfolioExternalLinkApiResponse(PortfolioExternalLinkResponse response);
     public abstract PortfolioJobCategoryApiResponse toPortfolioJobCategoryApiResponse(PortfolioJobCategoryResponse response);

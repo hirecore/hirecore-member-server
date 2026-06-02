@@ -35,12 +35,35 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
         String thumbnailImageUrl = loadImageUrlPort.findUrlById(portfolio.getThumbnailImageId())
                 .orElse(null);
 
+        List<PortfolioContentImageResponse> contentImages = resolveContentImages(
+                portfolio.getPortfolioContent().getImageIds()
+        );
+
         return buildResponse(
                 portfolio,
                 thumbnailImageUrl,
+                contentImages,
                 toTagResponses(portfolio.getPortfolioTags()),
                 toJobCategoriesResponse(portfolio.getPortfolioJobCategory())
         );
+    }
+
+    /**
+     * 본문 imageId 들을 publicUrl 과 함께 묶어 응답합니다.
+     * 클라이언트는 이 매핑으로 편집 진입 시 url ↔ imageId 룩업 테이블을 초기화하며,
+     * PUT 요청 시 본문 내 image 노드 src 로부터 imageId 를 역추적합니다.
+     * URL 해석에 실패한 항목은 묶지 못하므로 응답에서 제외합니다.
+     */
+    private List<PortfolioContentImageResponse> resolveContentImages(List<Long> imageIds) {
+        if (imageIds == null || imageIds.isEmpty()) {
+            return List.of();
+        }
+        return imageIds.stream()
+                .map(imageId -> loadImageUrlPort.findUrlById(imageId)
+                        .map(url -> new PortfolioContentImageResponse(imageId, url))
+                        .orElse(null))
+                .filter(java.util.Objects::nonNull)
+                .toList();
     }
 
     private Portfolio loadPortfolio(Long portfolioId) {
@@ -61,6 +84,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
     private PortfolioEditResponse buildResponse(
             Portfolio portfolio,
             String thumbnailImageUrl,
+            List<PortfolioContentImageResponse> contentImages,
             List<PortfolioTagResponse> tags,
             List<PortfolioJobCategoryResponse> jobCategories
     ) {
@@ -72,6 +96,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
         return new PortfolioEditResponse(
                 portfolio.getPrivateMemo(),
                 portfolio.getPreviewSummary(),
+                portfolio.getThumbnailImageId(),
                 thumbnailImageUrl,
                 jobCategories,
                 portfolio.getCollaborationType(),
@@ -79,6 +104,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
                 portfolio.getTitle(),
                 tags,
                 toExternalLinkResponses(portfolio.getExternalLinks()),
+                contentImages,
                 content
         );
     }

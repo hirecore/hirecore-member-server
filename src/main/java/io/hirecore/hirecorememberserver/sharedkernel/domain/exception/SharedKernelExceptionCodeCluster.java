@@ -137,6 +137,27 @@ public class SharedKernelExceptionCodeCluster {
                 "ImageOrphanedEvent 생성에서 orphanedAt이 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
+        // PORTFOLIO_IMAGES_UNLINKED_EVENT
+        PORTFOLIO_IMAGES_UNLINKED_EVENT_PORTFOLIO_ID_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "PortfolioImagesUnlinkedEvent 생성에서 portfolioId가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        PORTFOLIO_IMAGES_UNLINKED_EVENT_MEMBER_ACCOUNT_ID_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "PortfolioImagesUnlinkedEvent 생성에서 memberAccountId가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        PORTFOLIO_IMAGES_UNLINKED_EVENT_IMAGE_FILE_META_IDS_MISSING(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "PortfolioImagesUnlinkedEvent 생성에서 imageFileMetaIds가 누락되었습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
+        PORTFOLIO_IMAGES_UNLINKED_EVENT_IMAGE_FILE_META_IDS_EMPTY(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "PortfolioImagesUnlinkedEvent 생성에서 imageFileMetaIds가 비어있습니다. 회수 대상이 없으면 이벤트 발행 자체를 생략해야 합니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
+
         // DOMAIN_TYPE
         DOMAIN_TYPE_INVALID(
                 HttpStatus.BAD_REQUEST,

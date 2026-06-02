@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.PortfolioImagesUnlinkedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +46,47 @@ class PortfolioTest {
                 List.of(),
                 externalLinks,
                 tags,
+                CollaborationType.TEAM,
+                Visibility.PUBLIC
+        );
+    }
+
+    private static Portfolio createWithImages(Long thumbnailImageId, List<Long> contentImageIds) {
+        return Portfolio.create(
+                1L,
+                thumbnailImageId,
+                null,
+                null,
+                "title",
+                "본문 미리보기",
+                null,
+                10L,
+                null,
+                "{\"type\":\"doc\"}",
+                "<p>본문</p>",
+                contentImageIds,
+                List.of(),
+                List.of(),
+                CollaborationType.TEAM,
+                Visibility.PUBLIC
+        );
+    }
+
+    private static void modifyWithImages(Portfolio portfolio, Long thumbnailImageId, List<Long> contentImageIds) {
+        portfolio.modify(
+                thumbnailImageId,
+                null,
+                null,
+                "title",
+                "본문 미리보기",
+                null,
+                10L,
+                null,
+                "{\"type\":\"doc\"}",
+                "<p>본문</p>",
+                contentImageIds,
+                List.of(),
+                List.of(),
                 CollaborationType.TEAM,
                 Visibility.PUBLIC
         );
@@ -89,6 +132,108 @@ class PortfolioTest {
             Portfolio portfolio = createValid("본문", List.of(), links);
 
             assertThat(portfolio.getExternalLinks()).isSameAs(links);
+        }
+    }
+
+    @Nested
+    @DisplayName("modify() 시 이미지 회수 이벤트 발행")
+    class ModifyImagesUnlinkedEventTest {
+
+        @Test
+        @DisplayName("이미지를 추가만 하고 빠진 게 없으면 PortfolioImagesUnlinkedEvent 가 발행되지 않는다")
+        void should_not_emit_event_when_only_added() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L));
+            portfolio.pollAllEvents();
+
+            modifyWithImages(portfolio, 100L, List.of(10L, 20L, 30L));
+
+            assertThat(filterUnlinkedEvents(portfolio.pollAllEvents())).isEmpty();
+        }
+
+        @Test
+        @DisplayName("이미지 변동이 전혀 없으면 PortfolioImagesUnlinkedEvent 가 발행되지 않는다")
+        void should_not_emit_event_when_no_image_change() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L));
+            portfolio.pollAllEvents();
+
+            modifyWithImages(portfolio, 100L, List.of(10L, 20L));
+
+            assertThat(filterUnlinkedEvents(portfolio.pollAllEvents())).isEmpty();
+        }
+
+        @Test
+        @DisplayName("본문 이미지 일부가 빠지면 빠진 ID 만 담은 PortfolioImagesUnlinkedEvent 가 발행된다")
+        void should_emit_event_with_removed_content_image_ids() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L, 30L));
+            portfolio.pollAllEvents();
+
+            modifyWithImages(portfolio, 100L, List.of(10L, 30L));
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).hasSize(1);
+            assertThat(events.get(0).portfolioId()).isEqualTo(portfolio.getId());
+            assertThat(events.get(0).memberAccountId()).isEqualTo(portfolio.getMemberAccountId());
+            assertThat(events.get(0).imageFileMetaIds()).containsExactly(20L);
+        }
+
+        @Test
+        @DisplayName("썸네일이 교체되면 이전 thumbnailImageId 가 PortfolioImagesUnlinkedEvent 에 포함된다")
+        void should_emit_event_with_old_thumbnail_when_replaced() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L));
+            portfolio.pollAllEvents();
+
+            modifyWithImages(portfolio, 101L, List.of(10L, 20L));
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).hasSize(1);
+            assertThat(events.get(0).imageFileMetaIds()).containsExactly(100L);
+        }
+
+        @Test
+        @DisplayName("썸네일이 제거되면(null로 교체) 이전 thumbnailImageId 가 PortfolioImagesUnlinkedEvent 에 포함된다")
+        void should_emit_event_with_old_thumbnail_when_removed() {
+            Portfolio portfolio = createWithImages(100L, List.of());
+            portfolio.pollAllEvents();
+
+            modifyWithImages(portfolio, null, List.of());
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).hasSize(1);
+            assertThat(events.get(0).imageFileMetaIds()).containsExactly(100L);
+        }
+
+        @Test
+        @DisplayName("본문 이미지가 교체되면 빠진 본문 ID 가 PortfolioImagesUnlinkedEvent 에 포함된다 (수정 = 사실상 삭제)")
+        void should_emit_event_with_swapped_content_image() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L));
+            portfolio.pollAllEvents();
+
+            modifyWithImages(portfolio, 100L, List.of(10L, 30L));
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).hasSize(1);
+            assertThat(events.get(0).imageFileMetaIds()).containsExactly(20L);
+        }
+
+        @Test
+        @DisplayName("썸네일과 본문 이미지가 동시에 빠지면 모두 한 이벤트의 imageFileMetaIds 에 합쳐서 담긴다")
+        void should_emit_event_with_both_thumbnail_and_content_removals() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L));
+            portfolio.pollAllEvents();
+
+            modifyWithImages(portfolio, 200L, List.of(30L));
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).hasSize(1);
+            assertThat(events.get(0).imageFileMetaIds()).containsExactlyInAnyOrder(100L, 10L, 20L);
+        }
+
+        @SuppressWarnings("unchecked")
+        private static List<PortfolioImagesUnlinkedEvent> filterUnlinkedEvents(Collection<Object> events) {
+            return events.stream()
+                    .filter(PortfolioImagesUnlinkedEvent.class::isInstance)
+                    .map(e -> (PortfolioImagesUnlinkedEvent) e)
+                    .toList();
         }
     }
 

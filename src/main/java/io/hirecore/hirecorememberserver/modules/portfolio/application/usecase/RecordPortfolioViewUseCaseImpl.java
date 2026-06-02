@@ -6,6 +6,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.S
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioMemberView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -16,7 +17,7 @@ public class RecordPortfolioViewUseCaseImpl implements RecordPortfolioViewUseCas
     private final IncrementPortfolioViewCountPort incrementPortfolioViewCountPort;
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void execute(Long portfolioId, Long viewerMemberAccountId) {
         PortfolioMemberView view = PortfolioMemberView.create(viewerMemberAccountId);
         savePortfolioMemberViewPort.save(portfolioId, view);

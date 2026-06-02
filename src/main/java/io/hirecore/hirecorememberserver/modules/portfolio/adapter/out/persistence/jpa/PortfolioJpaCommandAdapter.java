@@ -9,6 +9,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistenc
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioTagJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaCommandRepository;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.IncrementPortfolioViewCountPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PortfolioJpaCommandAdapter implements SavePortfolioPort {
+public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementPortfolioViewCountPort {
 
     private final PortfolioJpaEntityMapper portfolioMapper;
     private final PortfolioContentJpaEntityMapper portfolioContentMapper;
@@ -40,5 +41,10 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort {
 
         portfolioRepository.save(portfolioEntity);
         return portfolio;
+    }
+
+    @Override
+    public void incrementById(Long portfolioId) {
+        portfolioRepository.incrementCachedViewCountById(portfolioId);
     }
 }

@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioMemberViewDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioMemberViewDomainExceptionCodeCluster;
+import com.github.f4b6a3.tsid.TsidCreator;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,14 @@ public class PortfolioMemberView {
         this.id = id;
         this.memberAccountId = memberAccountId;
         this.viewedAt = viewedAt;
+    }
+
+    public static PortfolioMemberView create(Long memberAccountId) {
+        return PortfolioMemberView.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .memberAccountId(memberAccountId)
+                .viewedAt(Instant.now())
+                .build();
     }
 
     private static void ensureInvariants(

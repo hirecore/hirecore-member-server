@@ -10,16 +10,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.Instant;
-
 @Getter
 public class PortfolioTag {
     private final Long id;
     private final String userInputTag;
     private final String normalizedTag;
     private final Integer sortOrder;
-    private final Boolean isDeleted;
-    private final Instant deletedAt;
     private final AuditingInfo auditingInfo;
 
     /**
@@ -33,8 +29,6 @@ public class PortfolioTag {
             String userInputTag,
             String normalizedTag,
             Integer sortOrder,
-            Boolean isDeleted,
-            Instant deletedAt,
             AuditingInfo auditingInfo
     ) {
         ensureInvariants(id, userInputTag, normalizedTag, sortOrder, auditingInfo);
@@ -43,8 +37,6 @@ public class PortfolioTag {
         this.userInputTag = userInputTag;
         this.normalizedTag = normalizedTag;
         this.sortOrder = sortOrder;
-        this.isDeleted = isDeleted;
-        this.deletedAt = deletedAt;
         this.auditingInfo = auditingInfo;
     }
 
@@ -54,8 +46,6 @@ public class PortfolioTag {
                 .userInputTag(userInputTag)
                 .normalizedTag(normalize(userInputTag))
                 .sortOrder(sortOrder)
-                .isDeleted(false)
-                .deletedAt(null)
                 .auditingInfo(AuditingInfo.create())
                 .build();
     }

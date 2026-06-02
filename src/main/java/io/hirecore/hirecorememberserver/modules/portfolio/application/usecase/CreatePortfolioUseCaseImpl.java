@@ -27,7 +27,7 @@ import java.util.List;
 public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
     private final UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
-    private final LoadJobCategoryPort loadJobCategoryIdByCodePort;
+    private final LoadJobCategoryPort loadJobCategoryPort;
     private final SavePortfolioPort savePortfolioPort;
     private final ObjectMapper objectMapper;
 
@@ -53,7 +53,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
         updateUploadStatusOfImageFileMetaPort.markUploaded(memberId, imageIds);
 
-        Long jobCategoryId = loadJobCategoryIdByCodePort.findIdByCode(command.jobCategory().code());
+        Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
         Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryId);
 
         return savePortfolioPort.save(portfolio).getId();

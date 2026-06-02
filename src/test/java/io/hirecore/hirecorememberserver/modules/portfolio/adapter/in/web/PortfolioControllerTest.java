@@ -20,12 +20,14 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.Cr
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioJobCategoryResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
+import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -500,8 +502,14 @@ class PortfolioControllerTest {
             return PortfolioDetailResponse.builder()
                     .isOwner(isOwner)
                     .publisher(PUBLISHER_NICKNAME)
+                    .jobCategories(List.of(
+                            new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발"),
+                            new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드")
+                    ))
                     .collaborationType(CollaborationType.TEAM)
                     .visibility(visibility)
+                    .viewCount(0L)
+                    .interestCount(0L)
                     .title("회원 서비스 도메인 모델링 회고")
                     .content(PortfolioContentResponse.builder()
                             .json("{\"type\":\"doc\",\"content\":[]}")
@@ -516,7 +524,7 @@ class PortfolioControllerTest {
                             new PortfolioExternalLinkResponse("GitHub Repo", "https://github.com/example/repo"),
                             new PortfolioExternalLinkResponse("데모", "https://demo.example.com")
                     ))
-                    .updatedAt(null)
+                    .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
                     .build();
         }
 
@@ -534,6 +542,8 @@ class PortfolioControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.isOwner").value(false))
                     .andExpect(jsonPath("$.publisher").value(PUBLISHER_NICKNAME))
+                    .andExpect(jsonPath("$.jobCategories[0].categoryCode").value("DEV"))
+                    .andExpect(jsonPath("$.jobCategories[0].name").value("개발"))
                     .andExpect(jsonPath("$.collaborationType").value("team"))
                     .andExpect(jsonPath("$.visibility").value("public"))
                     .andExpect(jsonPath("$.title").value("회원 서비스 도메인 모델링 회고"))
@@ -585,12 +595,33 @@ class PortfolioControllerTest {
                                                     fieldWithPath("publisher")
                                                             .type(JsonFieldType.STRING)
                                                             .description("작성자 닉네임"),
+                                                    fieldWithPath("jobCategories")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("작성자가 선택한 직무 카테고리 목록"),
+                                                    fieldWithPath("jobCategories[].id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("직무 카테고리 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("jobCategories[].depth")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("카테고리 계층 깊이"),
+                                                    fieldWithPath("jobCategories[].categoryCode")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 코드"),
+                                                    fieldWithPath("jobCategories[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 표시 이름"),
                                                     fieldWithPath("collaborationType")
                                                             .type(JsonFieldType.STRING)
                                                             .description("협업 유형 (team, personal)"),
                                                     fieldWithPath("visibility")
                                                             .type(JsonFieldType.STRING)
                                                             .description("공개 범위 (public, private)"),
+                                                    fieldWithPath("viewCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("포트폴리오 조회수"),
+                                                    fieldWithPath("interestCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("포트폴리오 관심등록수"),
                                                     fieldWithPath("title")
                                                             .type(JsonFieldType.STRING)
                                                             .description("포트폴리오 제목"),

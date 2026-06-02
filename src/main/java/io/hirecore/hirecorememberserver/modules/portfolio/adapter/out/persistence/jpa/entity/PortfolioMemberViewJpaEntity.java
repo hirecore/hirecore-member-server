@@ -31,4 +31,8 @@ public class PortfolioMemberViewJpaEntity extends AbstractPersistableEntity<Long
     @Comment("조회 시각")
     @Column(name = "viewed_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant viewedAt;
+
+    public void attachPortfolio(PortfolioJpaEntity portfolio) {
+        this.portfolio = portfolio;
+    }
 }

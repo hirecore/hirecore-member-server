@@ -9,8 +9,11 @@ import java.util.List;
 public record PortfolioDetailApiResponse(
         Boolean isOwner,
         String publisher,
+        List<PortfolioJobCategoryApiResponse> jobCategories,
         CollaborationTypeApiValue collaborationType,
         VisibilityApiValue visibility,
+        Long viewCount,
+        Long interestCount,
         String title,
         List<PortfolioTagApiResponse> tags,
         List<PortfolioExternalLinkApiResponse> externalLinks,

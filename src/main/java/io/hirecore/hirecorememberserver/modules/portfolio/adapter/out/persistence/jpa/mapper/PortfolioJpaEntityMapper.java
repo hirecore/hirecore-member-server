@@ -83,8 +83,6 @@ public abstract class PortfolioJpaEntityMapper {
                         .id(e.getId())
                         .memberAccountId(e.getMemberAccountId())
                         .interestAt(e.getInterestAt())
-                        .isDeleted(e.getIsDeleted())
-                        .deletedAt(e.getDeletedAt())
                         .build())
                 .toList();
     }

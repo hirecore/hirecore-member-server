@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
-import java.time.Instant;
-
 @Entity
 @Table(name = "portfolio_tags")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,14 +31,6 @@ public class PortfolioTagJpaEntity extends AbstractPersistableEntity<Long> {
     @Comment("사용자 의도 정렬 순서 (0부터 시작)")
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
-
-    @Comment("삭제 여부")
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
-
-    @Comment("삭제 시각")
-    @Column(name = "deleted_at", columnDefinition = "DATETIME(6)")
-    private Instant deletedAt;
 
     @Embedded
     private AuditingJpaInfo auditingInfo;

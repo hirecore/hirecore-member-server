@@ -19,14 +19,12 @@ class PortfolioJobCategoryTest {
     class CreateTest {
 
         @Test
-        @DisplayName("isDeleted=false, deletedAt=null인 미삭제 상태로 생성된다")
-        void should_create_with_not_deleted_state() {
+        @DisplayName("id/jobCategoryId/connectedAt 가 채워진 상태로 생성된다")
+        void should_create_with_required_fields() {
             PortfolioJobCategory category = PortfolioJobCategory.create(10L, null);
 
             assertThat(category.getId()).isNotNull();
             assertThat(category.getJobCategoryId()).isEqualTo(10L);
-            assertThat(category.getIsDeleted()).isFalse();
-            assertThat(category.getDeletedAt()).isNull();
             assertThat(category.getConnectedAt()).isNotNull();
         }
 
@@ -44,41 +42,11 @@ class PortfolioJobCategoryTest {
     class InvariantsTest {
 
         @Test
-        @DisplayName("isDeleted=false로 미삭제 상태를 표현할 수 있다")
-        void should_allow_not_deleted_state_with_false() {
-            PortfolioJobCategory category = PortfolioJobCategory.builder()
-                    .id(1L)
-                    .jobCategoryId(10L)
-                    .isDeleted(false)
-                    .deletedAt(null)
-                    .connectedAt(Instant.now())
-                    .build();
-
-            assertThat(category.getIsDeleted()).isFalse();
-            assertThat(category.getDeletedAt()).isNull();
-        }
-
-        @Test
-        @DisplayName("isDeleted가 null이면 IS_DELETED_MISSING 예외가 발생한다")
-        void should_throw_when_is_deleted_is_null() {
-            assertThatThrownBy(() -> PortfolioJobCategory.builder()
-                    .id(1L)
-                    .jobCategoryId(10L)
-                    .isDeleted(null)
-                    .connectedAt(Instant.now())
-                    .build())
-                    .isInstanceOf(PortfolioJobCategoryDomainException.class)
-                    .extracting("errorCode")
-                    .isEqualTo(PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.IS_DELETED_MISSING.getErrorCode());
-        }
-
-        @Test
         @DisplayName("id가 null이면 ID_MISSING 예외가 발생한다")
         void should_throw_when_id_is_null() {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .id(null)
                     .jobCategoryId(10L)
-                    .isDeleted(false)
                     .connectedAt(Instant.now())
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)
@@ -92,7 +60,6 @@ class PortfolioJobCategoryTest {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .id(1L)
                     .jobCategoryId(null)
-                    .isDeleted(false)
                     .connectedAt(Instant.now())
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)
@@ -106,7 +73,6 @@ class PortfolioJobCategoryTest {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .id(1L)
                     .jobCategoryId(10L)
-                    .isDeleted(false)
                     .connectedAt(null)
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)

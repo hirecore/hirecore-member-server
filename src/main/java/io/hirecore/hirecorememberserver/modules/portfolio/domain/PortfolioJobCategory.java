@@ -17,8 +17,6 @@ public class PortfolioJobCategory  {
     private final Long id;
     private final Long jobCategoryId;
     private final String userInput;
-    private final Boolean isDeleted;
-    private final Instant deletedAt;
     private final Instant connectedAt;
 
     @Builder(access = lombok.AccessLevel.PUBLIC)
@@ -26,17 +24,13 @@ public class PortfolioJobCategory  {
             Long id,
             Long jobCategoryId,
             String userInput,
-            Boolean isDeleted,
-            Instant deletedAt,
             Instant connectedAt
     ) {
-        ensureInvariants(id, jobCategoryId, userInput, isDeleted, connectedAt);
+        ensureInvariants(id, jobCategoryId, userInput, connectedAt);
 
         this.id = id;
         this.jobCategoryId = jobCategoryId;
         this.userInput = userInput;
-        this.isDeleted = isDeleted;
-        this.deletedAt = deletedAt;
         this.connectedAt = connectedAt;
     }
 
@@ -45,8 +39,6 @@ public class PortfolioJobCategory  {
                 .id(TsidCreator.getTsid().toLong())
                 .jobCategoryId(jobCategoryId)
                 .userInput(userInput)
-                .isDeleted(false)
-                .deletedAt(null)
                 .connectedAt(Instant.now())
                 .build();
     }
@@ -55,7 +47,6 @@ public class PortfolioJobCategory  {
             Long id,
             Long jobCategoryId,
             String userInput,
-            Boolean isDeleted,
             Instant connectedAt
     ) {
         AssertionUtils.notNull(
@@ -71,11 +62,6 @@ public class PortfolioJobCategory  {
         AssertionUtils.isTrue(
                 userInput == null || userInput.length() <= USER_INPUT_MAX_LENGTH,
                 PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.USER_INPUT_TOO_LONG,
-                PortfolioJobCategoryDomainException::new
-        );
-        AssertionUtils.notNull(
-                isDeleted,
-                PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.IS_DELETED_MISSING,
                 PortfolioJobCategoryDomainException::new
         );
         AssertionUtils.notNull(

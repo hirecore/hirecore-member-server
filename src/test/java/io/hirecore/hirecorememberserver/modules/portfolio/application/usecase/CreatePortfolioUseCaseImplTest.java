@@ -49,7 +49,7 @@ class CreatePortfolioUseCaseImplTest {
     private UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
 
     @Mock
-    private LoadJobCategoryPort loadJobCategoryIdByCodePort;
+    private LoadJobCategoryPort loadJobCategoryPort;
 
     @Mock
     private SavePortfolioPort savePortfolioPort;
@@ -95,7 +95,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_orchestrate_steps_and_return_saved_id() {
             // given
             CreatePortfolioCommand command = createCommand();
-            given(loadJobCategoryIdByCodePort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -105,7 +105,7 @@ class CreatePortfolioUseCaseImplTest {
             // then
             assertThat(result).isNotNull();
             then(updateUploadStatusOfImageFileMetaPort).should().markUploaded(eq(MEMBER_ACCOUNT_ID), any());
-            then(loadJobCategoryIdByCodePort).should().findIdByCode("DEV_BACKEND");
+            then(loadJobCategoryPort).should().findIdByCode("DEV_BACKEND");
             then(savePortfolioPort).should().save(any(Portfolio.class));
         }
 
@@ -115,7 +115,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_thumbnail_and_content_image_ids_to_mark_uploaded() {
             // given
             CreatePortfolioCommand command = createCommand();
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -143,7 +143,7 @@ class CreatePortfolioUseCaseImplTest {
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -170,7 +170,7 @@ class CreatePortfolioUseCaseImplTest {
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -190,7 +190,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_build_portfolio_with_correct_fields() {
             // given
             CreatePortfolioCommand command = createCommand();
-            given(loadJobCategoryIdByCodePort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -228,7 +228,7 @@ class CreatePortfolioUseCaseImplTest {
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>본문</p>"),
                     null, null
             );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -246,7 +246,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_map_tag_commands_to_portfolio_tags_with_sort_order() {
             // given
             CreatePortfolioCommand command = createCommand();
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -275,7 +275,7 @@ class CreatePortfolioUseCaseImplTest {
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -299,7 +299,7 @@ class CreatePortfolioUseCaseImplTest {
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -324,7 +324,7 @@ class CreatePortfolioUseCaseImplTest {
                     new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryIdByCodePort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -356,7 +356,7 @@ class CreatePortfolioUseCaseImplTest {
             assertThatThrownBy(() -> sut.execute(MEMBER_ACCOUNT_ID, command))
                     .isInstanceOf(RuntimeException.class);
 
-            then(loadJobCategoryIdByCodePort).should(never()).findIdByCode(anyString());
+            then(loadJobCategoryPort).should(never()).findIdByCode(anyString());
             then(savePortfolioPort).should(never()).save(any());
         }
     }

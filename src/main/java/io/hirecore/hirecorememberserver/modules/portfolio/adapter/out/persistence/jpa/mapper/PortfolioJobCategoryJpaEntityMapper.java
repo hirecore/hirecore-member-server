@@ -20,8 +20,6 @@ public abstract class PortfolioJobCategoryJpaEntityMapper {
                 .id(entity.getId())
                 .jobCategoryId(entity.getJobCategoryId())
                 .userInput(entity.getUserInput())
-                .isDeleted(entity.getIsDeleted())
-                .deletedAt(entity.getDeletedAt())
                 .connectedAt(entity.getConnectedAt())
                 .build();
     }

@@ -56,12 +56,12 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     private String privateMemo;
 
     @Comment("캐싱된 조회수")
-    @Column(name = "cached_view_count", nullable = false, columnDefinition = "VARCHAR(20)")
-    private String cachedViewCount;
+    @Column(name = "cached_view_count", nullable = false)
+    private Long cachedViewCount;
 
     @Comment("캐싱된 관심수")
-    @Column(name = "cached_interest_count", nullable = false, columnDefinition = "VARCHAR(20)")
-    private String cachedInterestCount;
+    @Column(name = "cached_interest_count", nullable = false)
+    private Long cachedInterestCount;
 
     // sub-aggregate
     @OneToOne(
@@ -88,6 +88,7 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @OrderBy("sortOrder ASC")
     @Builder.Default
     private List<PortfolioTagJpaEntity> portfolioTags = new ArrayList<>();
 

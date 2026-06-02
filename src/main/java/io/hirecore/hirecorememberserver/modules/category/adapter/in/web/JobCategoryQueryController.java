@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
 @Validated
-public class JobCategoryController {
+public class JobCategoryQueryController {
 
     private final LoadJobCategoriesUseCase loadJobCategoriesUseCase;
     private final JobCategoryWebMapper jobCategoryWebMapper;

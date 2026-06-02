@@ -36,17 +36,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * {@link JobCategoryController} 웹 계층 테스트.
+ * {@link JobCategoryQueryController} 웹 계층 테스트.
  *
  * <p>{@code /api/categories} 는 인증이 필요 없는 공개 엔드포인트이므로
  * 보안 필터를 비활성화하고 입력 검증/응답 매핑/문서화에 집중합니다.</p>
  */
-@DisplayName("JobCategoryController 웹 계층 테스트")
-@WebMvcTest(controllers = JobCategoryController.class)
+@DisplayName("JobCategoryQueryController 웹 계층 테스트")
+@WebMvcTest(controllers = JobCategoryQueryController.class)
 @Import({WebMvcSecuritySupport.class, StrictJsonConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
-class JobCategoryControllerTest {
+class JobCategoryQueryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

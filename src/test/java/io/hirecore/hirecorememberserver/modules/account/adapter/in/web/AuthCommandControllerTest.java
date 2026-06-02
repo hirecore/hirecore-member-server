@@ -55,8 +55,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@DisplayName("AuthController 웹 계층 테스트")
-@WebMvcTest(controllers = AuthController.class)
+@DisplayName("AuthCommandController 웹 계층 테스트")
+@WebMvcTest(controllers = AuthCommandController.class)
 @Import({
         WebMvcSecuritySupport.class,
         StrictJsonConfig.class,
@@ -64,7 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
-class AuthControllerTest {
+class AuthCommandControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

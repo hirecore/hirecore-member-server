@@ -42,8 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("UserFileController 웹 계층 테스트")
-@WebMvcTest(controllers = UserFileController.class)
+@DisplayName("UserFileCommandController 웹 계층 테스트")
+@WebMvcTest(controllers = UserFileCommandController.class)
 @Import({
         WebMvcSecuritySupport.class,
         StrictJsonConfig.class,
@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
-class UserFileControllerTest {
+class UserFileCommandControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users/files")
 @RequiredArgsConstructor
-public class UserFileController {
+public class UserFileCommandController {
 
     private final ImagePresignedPutUrlMapper imagePresignedPutUrlMapper;
     private final GenerateUserPresignedPutUrlUseCase generateUserPresignedPutUrlUseCase;

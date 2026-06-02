@@ -66,4 +66,9 @@ src/main/generated/
 /docker/dev/.env.dev.deploy
 /docker/dev/.env.dev.mysql
 
+## ==========================================
+## [docs]: 로컬 작업용 문서, 원격 추적 제외
+## ==========================================
+/docs/
+
 /docker/prod/.env.prod

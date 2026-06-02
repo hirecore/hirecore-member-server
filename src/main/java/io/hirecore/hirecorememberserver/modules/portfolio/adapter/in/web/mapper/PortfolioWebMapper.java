@@ -30,6 +30,7 @@ public abstract class PortfolioWebMapper {
     public abstract PortfolioExternalLinkCommand toPortfolioExternalLinkCommand(PortfolioExternalLinkApiRequest request);
 
     public abstract PortfolioDetailApiResponse toPortfolioDetailApiResponse(PortfolioDetailResponse response);
+    public abstract PortfolioEditApiResponse toPortfolioEditApiResponse(PortfolioEditResponse response);
     public abstract PortfolioContentApiResponse toPortfolioContentApiResponse(PortfolioContentResponse response);
     public abstract PortfolioTagApiResponse toPortfolioTagApiResponse(PortfolioTagResponse response);
     public abstract PortfolioExternalLinkApiResponse toPortfolioExternalLinkApiResponse(PortfolioExternalLinkResponse response);

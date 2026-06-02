@@ -14,7 +14,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.U
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
     private final LoadPortfolioPort loadPortfolioPort;
     private final UpdatePortfolioPort updatePortfolioPort;
     private final LoadJobCategoryPort loadJobCategoryPort;
-    private final UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
+    private final MarkImagesAsUploadedPort markImagesAsUploadedPort;
     private final ObjectMapper objectMapper;
 
     /**
@@ -52,7 +52,7 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
         ensureOwner(portfolio, viewerId);
 
         List<Long> imageIds = aggregateImageIds(command.thumbnailImageId(), command.contentImageIds());
-        updateUploadStatusOfImageFileMetaPort.markUploaded(viewerId, imageIds);
+        markImagesAsUploadedPort.markUploaded(viewerId, imageIds);
 
         Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
 

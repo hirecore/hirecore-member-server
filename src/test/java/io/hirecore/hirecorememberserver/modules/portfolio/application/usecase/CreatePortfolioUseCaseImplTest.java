@@ -8,7 +8,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
@@ -46,7 +46,7 @@ class CreatePortfolioUseCaseImplTest {
     private CreatePortfolioUseCaseImpl sut;
 
     @Mock
-    private UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
+    private MarkImagesAsUploadedPort markImagesAsUploadedPort;
 
     @Mock
     private LoadJobCategoryPort loadJobCategoryPort;
@@ -104,7 +104,7 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             assertThat(result).isNotNull();
-            then(updateUploadStatusOfImageFileMetaPort).should().markUploaded(eq(MEMBER_ACCOUNT_ID), any());
+            then(markImagesAsUploadedPort).should().markUploaded(eq(MEMBER_ACCOUNT_ID), any());
             then(loadJobCategoryPort).should().findIdByCode("DEV_BACKEND");
             then(savePortfolioPort).should().save(any(Portfolio.class));
         }
@@ -124,7 +124,7 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(updateUploadStatusOfImageFileMetaPort).should()
+            then(markImagesAsUploadedPort).should()
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), captor.capture());
 
             assertThat(captor.getValue())
@@ -152,7 +152,7 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(updateUploadStatusOfImageFileMetaPort).should()
+            then(markImagesAsUploadedPort).should()
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), captor.capture());
 
             assertThat(captor.getValue()).containsExactly(101L, 102L);
@@ -179,7 +179,7 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(updateUploadStatusOfImageFileMetaPort).should()
+            then(markImagesAsUploadedPort).should()
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), captor.capture());
 
             assertThat(captor.getValue()).isEmpty();
@@ -349,7 +349,7 @@ class CreatePortfolioUseCaseImplTest {
             // given
             CreatePortfolioCommand command = createCommand();
             doThrow(new RuntimeException("simulated"))
-                    .when(updateUploadStatusOfImageFileMetaPort)
+                    .when(markImagesAsUploadedPort)
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), any());
 
             // when & then

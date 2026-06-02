@@ -11,7 +11,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.L
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.UpdateUploadStatusOfImageFileMetaPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
@@ -57,7 +57,7 @@ class UpdatePortfolioUseCaseImplTest {
     private LoadJobCategoryPort loadJobCategoryPort;
 
     @Mock
-    private UpdateUploadStatusOfImageFileMetaPort updateUploadStatusOfImageFileMetaPort;
+    private MarkImagesAsUploadedPort markImagesAsUploadedPort;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -125,7 +125,7 @@ class UpdatePortfolioUseCaseImplTest {
 
             // then
             assertThat(result).isEqualTo(loaded.getId());
-            then(updateUploadStatusOfImageFileMetaPort).should().markUploaded(eq(OWNER_ID), any());
+            then(markImagesAsUploadedPort).should().markUploaded(eq(OWNER_ID), any());
             then(loadJobCategoryPort).should().findIdByCode("DEV_BACKEND");
             then(updatePortfolioPort).should().update(loaded);
         }
@@ -144,7 +144,7 @@ class UpdatePortfolioUseCaseImplTest {
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(updateUploadStatusOfImageFileMetaPort).should()
+            then(markImagesAsUploadedPort).should()
                     .markUploaded(eq(OWNER_ID), captor.capture());
             assertThat(captor.getValue()).containsExactly(THUMBNAIL_IMAGE_ID, 101L, 102L);
         }
@@ -184,7 +184,7 @@ class UpdatePortfolioUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND.getErrorCode());
 
-            then(updateUploadStatusOfImageFileMetaPort).should(never()).markUploaded(anyLong(), any());
+            then(markImagesAsUploadedPort).should(never()).markUploaded(anyLong(), any());
             then(loadJobCategoryPort).should(never()).findIdByCode(anyString());
             then(updatePortfolioPort).should(never()).update(any());
         }
@@ -202,7 +202,7 @@ class UpdatePortfolioUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN.getErrorCode());
 
-            then(updateUploadStatusOfImageFileMetaPort).should(never()).markUploaded(anyLong(), any());
+            then(markImagesAsUploadedPort).should(never()).markUploaded(anyLong(), any());
             then(loadJobCategoryPort).should(never()).findIdByCode(anyString());
             then(updatePortfolioPort).should(never()).update(any());
         }
@@ -228,7 +228,7 @@ class UpdatePortfolioUseCaseImplTest {
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             doThrow(new RuntimeException("simulated"))
-                    .when(updateUploadStatusOfImageFileMetaPort)
+                    .when(markImagesAsUploadedPort)
                     .markUploaded(eq(OWNER_ID), any());
 
             // when & then

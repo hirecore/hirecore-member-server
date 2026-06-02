@@ -2,6 +2,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.PortfolioImagesUnlinkedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioViewedEvent;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
@@ -17,7 +18,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
@@ -144,17 +148,23 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             Visibility visibility
     ) {
         PortfolioJobCategory newJobCategory = PortfolioJobCategory.create(jobCategoryId, jobCategoryUserInput);
+        List<Long> resolvedNewContentImageIds = newContentImageIds != null ? newContentImageIds : List.of();
         PortfolioContent newContent = PortfolioContent.create(
                 this.id,
                 contentJson,
                 contentHtml,
-                newContentImageIds != null ? newContentImageIds : List.of()
+                resolvedNewContentImageIds
         );
 
         ensureInvariants(
                 this.id, this.memberAccountId, title, previewSummary, privateMemo,
                 newJobCategory, newContent, newExternalLinks, newPortfolioTags,
                 this.status, collaborationType, visibility, this.auditingInfo
+        );
+
+        List<Long> releasedImageIds = computeReleasedImageIds(
+                this.thumbnailImageId, this.portfolioContent.getImageIds(),
+                thumbnailImageId, resolvedNewContentImageIds
         );
 
         this.thumbnailImageId = thumbnailImageId;
@@ -170,6 +180,48 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.collaborationType = collaborationType;
         this.visibility = visibility;
         this.auditingInfo = this.auditingInfo.update();
+
+        if (!releasedImageIds.isEmpty()) {
+            registerEvent(new PortfolioImagesUnlinkedEvent(
+                    this.id,
+                    this.memberAccountId,
+                    releasedImageIds
+            ));
+        }
+    }
+
+    /**
+     * 이전 이미지 집합({@code (oldThumbnail ∪ oldContent)}) 에서 새 집합({@code (newThumbnail ∪ newContent)}) 을
+     * 뺀 차집합 — 즉 본문/썸네일에서 더 이상 참조되지 않게 된 imageId 들을 반환합니다.
+     * 입력 순서를 보존하기 위해 LinkedHashSet 의미론으로 계산합니다.
+     */
+    private static List<Long> computeReleasedImageIds(
+            Long oldThumbnailImageId,
+            List<Long> oldContentImageIds,
+            Long newThumbnailImageId,
+            List<Long> newContentImageIds
+    ) {
+        Set<Long> newSet = new HashSet<>();
+        if (newThumbnailImageId != null) {
+            newSet.add(newThumbnailImageId);
+        }
+        if (newContentImageIds != null) {
+            newSet.addAll(newContentImageIds);
+        }
+
+        List<Long> released = new ArrayList<>();
+        Set<Long> seen = new HashSet<>();
+        if (oldThumbnailImageId != null && !newSet.contains(oldThumbnailImageId) && seen.add(oldThumbnailImageId)) {
+            released.add(oldThumbnailImageId);
+        }
+        if (oldContentImageIds != null) {
+            for (Long oldId : oldContentImageIds) {
+                if (oldId != null && !newSet.contains(oldId) && seen.add(oldId)) {
+                    released.add(oldId);
+                }
+            }
+        }
+        return released;
     }
 
     public static Portfolio create(

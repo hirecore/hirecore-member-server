@@ -292,7 +292,74 @@ class PortfolioQueryControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.isOwner").value(true))
-                    .andExpect(jsonPath("$.visibility").value("private"));
+                    .andExpect(jsonPath("$.visibility").value("private"))
+                    .andExpect(jsonPath("$.isInterested").doesNotExist());
+        }
+
+        @Test
+        @DisplayName("[200 OK] PUBLIC 포트폴리오를 비소유 로그인 사용자가 첫 조회 시 응답의 isInterested=false 로 반환한다.")
+        void load_portfolio_detail_non_owner_not_interested() throws Exception {
+            // given - 비소유 로그인 사용자, 관심 미등록
+            PortfolioDetailResponse response = PortfolioDetailResponse.builder()
+                    .isOwner(false)
+                    .publisher(PUBLISHER_NICKNAME)
+                    .jobCategories(List.of(new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발")))
+                    .collaborationType(CollaborationType.TEAM)
+                    .visibility(Visibility.PUBLIC)
+                    .viewCount(0L)
+                    .interestCount(0L)
+                    .isInterested(false)
+                    .title("회원 서비스 도메인 모델링 회고")
+                    .content(PortfolioContentResponse.builder()
+                            .json("{\"type\":\"doc\",\"content\":[]}")
+                            .html("<p>본문 HTML 입니다.</p>")
+                            .build())
+                    .tags(List.of())
+                    .externalLinks(List.of())
+                    .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
+                    .build();
+            given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
+                    .willReturn(response);
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", PUBLIC_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.isOwner").value(false))
+                    .andExpect(jsonPath("$.isInterested").value(false));
+        }
+
+        @Test
+        @DisplayName("[200 OK] PUBLIC 포트폴리오를 비소유 로그인 사용자가 관심 등록한 후 조회 시 응답의 isInterested=true 로 반환한다.")
+        void load_portfolio_detail_non_owner_already_interested() throws Exception {
+            // given - 비소유 로그인 사용자, 관심 등록됨
+            PortfolioDetailResponse response = PortfolioDetailResponse.builder()
+                    .isOwner(false)
+                    .publisher(PUBLISHER_NICKNAME)
+                    .jobCategories(List.of(new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발")))
+                    .collaborationType(CollaborationType.TEAM)
+                    .visibility(Visibility.PUBLIC)
+                    .viewCount(0L)
+                    .interestCount(1L)
+                    .isInterested(true)
+                    .title("회원 서비스 도메인 모델링 회고")
+                    .content(PortfolioContentResponse.builder()
+                            .json("{\"type\":\"doc\",\"content\":[]}")
+                            .html("<p>본문 HTML 입니다.</p>")
+                            .build())
+                    .tags(List.of())
+                    .externalLinks(List.of())
+                    .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
+                    .build();
+            given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
+                    .willReturn(response);
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", PUBLIC_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.isOwner").value(false))
+                    .andExpect(jsonPath("$.isInterested").value(true));
         }
     }
 

@@ -49,8 +49,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private PortfolioJobCategory portfolioJobCategory;
     private PortfolioContent portfolioContent;
     private List<PortfolioTag> portfolioTags;
-    private final List<PortfolioMemberInterest> portfolioMemberInterests;
-    private final List<PortfolioMemberView> portfolioMemberViews;
 
     // vo
     private List<ExternalLink> externalLinks;
@@ -80,8 +78,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             PortfolioContent portfolioContent,
             List<ExternalLink> externalLinks,
             List<PortfolioTag> portfolioTags,
-            List<PortfolioMemberInterest> portfolioMemberInterests,
-            List<PortfolioMemberView> portfolioMemberViews,
             PortfolioStatus status,
             CollaborationType collaborationType,
             Visibility visibility,
@@ -107,8 +103,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.portfolioContent = portfolioContent;
         this.externalLinks = externalLinks;
         this.portfolioTags = portfolioTags;
-        this.portfolioMemberInterests = portfolioMemberInterests;
-        this.portfolioMemberViews = portfolioMemberViews;
         this.status = status;
         this.collaborationType = collaborationType;
         this.visibility = visibility;
@@ -155,8 +149,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 ))
                 .externalLinks(externalLinks)
                 .portfolioTags(portfolioTags)
-                .portfolioMemberInterests(List.of())
-                .portfolioMemberViews(List.of())
                 .status(PortfolioStatus.PUBLISHED)
                 .collaborationType(collaborationType)
                 .visibility(visibility)

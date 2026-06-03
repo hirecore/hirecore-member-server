@@ -93,22 +93,6 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Builder.Default
     private List<PortfolioTagJpaEntity> portfolioTags = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "portfolio",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @Builder.Default
-    private List<PortfolioMemberInterestJpaEntity> portfolioMemberInterests = new ArrayList<>();
-
-    @OneToMany(
-            mappedBy = "portfolio",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @Builder.Default
-    private List<PortfolioMemberViewJpaEntity> portfolioMemberViews = new ArrayList<>();
-
     // vo
     @Comment("포트폴리오 상태")
     @Enumerated(EnumType.STRING)

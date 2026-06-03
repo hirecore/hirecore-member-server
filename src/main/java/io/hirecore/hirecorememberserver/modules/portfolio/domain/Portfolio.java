@@ -4,6 +4,8 @@ import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.PortfolioImagesUnlinkedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioInterestCancelledEvent;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioInterestRegisteredEvent;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioViewedEvent;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
@@ -237,6 +239,35 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
      */
     public void markViewed(Long viewerMemberAccountId) {
         registerEvent(new PortfolioViewedEvent(this.id, viewerMemberAccountId));
+    }
+
+    /**
+     * 관심 등록 정책(소유자 금지 / 비공개 금지)을 검증하고 {@link PortfolioInterestRegisteredEvent}를 등록합니다.
+     *
+     * <p>중복 검사는 set-based 제약이므로 호출 측에서 미리 확인한 결과를 {@code alreadyInterested}로 받아 멱등 처리합니다.
+     * 실제 {@code PortfolioMemberInterest} 적재와 {@code cachedInterestCount} 증가는 이벤트 소비자가 처리합니다.</p>
+     */
+    public void registerInterestBy(Long memberAccountId, boolean alreadyInterested) {
+        if (this.memberAccountId.equals(memberAccountId)) {
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_OWNER_NOT_ALLOWED);
+        }
+        if (this.visibility != Visibility.PUBLIC) {
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_PORTFOLIO_FORBIDDEN);
+        }
+        if (alreadyInterested) {
+            return;
+        }
+        registerEvent(new PortfolioInterestRegisteredEvent(this.id, memberAccountId));
+    }
+
+    /**
+     * 관심 해제 의사를 표기하고 {@link PortfolioInterestCancelledEvent}를 등록합니다.
+     *
+     * <p>실제 {@code PortfolioMemberInterest} 삭제와 {@code cachedInterestCount} 감소(실제 삭제가 발생한 경우에 한정)는
+     * 이벤트 소비자가 처리합니다. 등록된 관심이 없는 사용자의 호출은 소비자 단에서 멱등으로 종료됩니다.</p>
+     */
+    public void cancelInterestBy(Long memberAccountId) {
+        registerEvent(new PortfolioInterestCancelledEvent(this.id, memberAccountId));
     }
 
     /**

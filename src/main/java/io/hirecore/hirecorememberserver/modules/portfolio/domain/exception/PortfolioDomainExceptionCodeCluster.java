@@ -108,4 +108,28 @@ public class PortfolioDomainExceptionCodeCluster {
             return this.toString();
         }
     }
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum InterestPolicy implements DomainExceptionCode {
+        INTEREST_OWNER_NOT_ALLOWED(
+                HttpStatus.FORBIDDEN,
+                "포트폴리오 소유자 본인의 관심 등록 시도입니다.",
+                "본인이 등록한 포트폴리오에는 관심을 등록할 수 없습니다."),
+
+        INTEREST_PORTFOLIO_FORBIDDEN(
+                HttpStatus.FORBIDDEN,
+                "비공개 포트폴리오에 대한 관심 등록 시도입니다.",
+                "비공개 포트폴리오에는 관심을 등록할 수 없습니다."),
+        ;
+
+        private final HttpStatus httpStatus;
+        private final String logMessage;
+        private final String clientMessage;
+
+        @Override
+        public String getErrorCode() {
+            return this.toString();
+        }
+    }
 }

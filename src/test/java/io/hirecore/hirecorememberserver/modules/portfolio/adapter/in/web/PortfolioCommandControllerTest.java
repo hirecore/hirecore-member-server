@@ -808,7 +808,7 @@ class PortfolioCommandControllerTest {
         void register_interest_forbidden_owner() throws Exception {
             // given
             willThrow(new PortfolioDomainException(
-                    PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_OWNER_NOT_ALLOWED
+                    PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED
             )).given(registerPortfolioInterestUseCase).execute(OWN_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // when & then
@@ -835,7 +835,7 @@ class PortfolioCommandControllerTest {
         void register_interest_forbidden_private() throws Exception {
             // given
             willThrow(new PortfolioDomainException(
-                    PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_PORTFOLIO_FORBIDDEN
+                    PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN
             )).given(registerPortfolioInterestUseCase).execute(PRIVATE_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // when & then
@@ -862,7 +862,7 @@ class PortfolioCommandControllerTest {
         void register_interest_not_found() throws Exception {
             // given
             willThrow(new PortfolioApplicationException(
-                    PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_NOT_FOUND
+                    PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND
             )).given(registerPortfolioInterestUseCase).execute(NONEXISTENT_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // when & then

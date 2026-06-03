@@ -79,31 +79,19 @@ public class PortfolioApplicationExceptionCodeCluster {
                 HttpStatus.NOT_FOUND,
                 "포트폴리오 작성자의 닉네임을 불러올 수 없습니다.",
                 "포트폴리오 작성자의 닉네임을 불러올 수 없습니다. 관리자에게 문의해주세요."),
+
+        // INTEREST
+        INTEREST_PORTFOLIO_NOT_FOUND(
+                HttpStatus.NOT_FOUND,
+                "관심 등록 대상 포트폴리오를 찾을 수 없습니다.",
+                "요청한 포트폴리오가 존재하지 않습니다."),
+
         // 5XX
         // CONTENT_JSON
         CONTENT_JSON_SERIALIZATION_FAILED(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "포트폴리오 본문 JSON을 직렬화하는 데 실패했습니다.",
                 "포트폴리오 등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
-        ;
-
-        private final HttpStatus httpStatus;
-        private final String logMessage;
-        private final String clientMessage;
-
-        @Override
-        public String getErrorCode() {
-            return this.name();
-        }
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public enum InterestResponse implements ApplicationExceptionCode {
-        INTEREST_PORTFOLIO_NOT_FOUND(
-                HttpStatus.NOT_FOUND,
-                "관심 등록 대상 포트폴리오를 찾을 수 없습니다.",
-                "요청한 포트폴리오가 존재하지 않습니다."),
         ;
 
         private final HttpStatus httpStatus;

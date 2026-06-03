@@ -111,7 +111,7 @@ public class PortfolioDomainExceptionCodeCluster {
 
     @Getter
     @RequiredArgsConstructor
-    public enum InterestPolicy implements DomainExceptionCode {
+    public enum DetailResponse implements DomainExceptionCode {
         INTEREST_OWNER_NOT_ALLOWED(
                 HttpStatus.FORBIDDEN,
                 "포트폴리오 소유자 본인의 관심 등록 시도입니다.",

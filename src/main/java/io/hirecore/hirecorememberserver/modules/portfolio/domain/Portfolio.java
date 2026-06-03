@@ -249,10 +249,10 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
      */
     public void registerInterestBy(Long memberAccountId, boolean alreadyInterested) {
         if (this.memberAccountId.equals(memberAccountId)) {
-            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_OWNER_NOT_ALLOWED);
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED);
         }
         if (this.visibility != Visibility.PUBLIC) {
-            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_PORTFOLIO_FORBIDDEN);
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN);
         }
         if (alreadyInterested) {
             return;

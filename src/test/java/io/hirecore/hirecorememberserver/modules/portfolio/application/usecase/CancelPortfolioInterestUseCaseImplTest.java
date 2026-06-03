@@ -104,7 +104,7 @@ class CancelPortfolioInterestUseCaseImplTest {
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, MEMBER_ACCOUNT_ID))
                     .isInstanceOf(PortfolioApplicationException.class)
                     .extracting("errorCode")
-                    .isEqualTo(PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
+                    .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
 
             then(applicationEventPublisher).should(never()).publishEvent(any());
         }

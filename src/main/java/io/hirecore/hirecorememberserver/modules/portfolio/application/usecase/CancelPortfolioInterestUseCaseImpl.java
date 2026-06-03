@@ -22,7 +22,7 @@ public class CancelPortfolioInterestUseCaseImpl implements CancelPortfolioIntere
     public void execute(Long portfolioId, Long memberAccountId) {
         Portfolio portfolio = loadPortfolioPort.findPortfolio(portfolioId)
                 .orElseThrow(() -> new PortfolioApplicationException(
-                        PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_NOT_FOUND
+                        PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND
                 ));
         portfolio.cancelInterestBy(memberAccountId);
         portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);

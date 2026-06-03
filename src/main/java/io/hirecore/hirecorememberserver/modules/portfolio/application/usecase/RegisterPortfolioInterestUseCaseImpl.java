@@ -24,7 +24,7 @@ public class RegisterPortfolioInterestUseCaseImpl implements RegisterPortfolioIn
     public void execute(Long portfolioId, Long memberAccountId) {
         Portfolio portfolio = loadPortfolioPort.findPortfolio(portfolioId)
                 .orElseThrow(() -> new PortfolioApplicationException(
-                        PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_NOT_FOUND
+                        PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND
                 ));
         boolean alreadyInterested = existsPortfolioMemberInterestPort.exists(portfolioId, memberAccountId);
         portfolio.registerInterestBy(memberAccountId, alreadyInterested);

@@ -127,7 +127,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, VIEWER_ID))
                     .isInstanceOf(PortfolioApplicationException.class)
                     .extracting("errorCode")
-                    .isEqualTo(PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
+                    .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
 
             then(existsPortfolioMemberInterestPort).should(never()).exists(anyLong(), anyLong());
             then(applicationEventPublisher).should(never()).publishEvent(any());
@@ -145,7 +145,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OWNER_ID))
                     .isInstanceOf(PortfolioDomainException.class)
                     .extracting("errorCode")
-                    .isEqualTo(PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_OWNER_NOT_ALLOWED.getErrorCode());
+                    .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED.getErrorCode());
 
             then(applicationEventPublisher).should(never()).publishEvent(any());
         }
@@ -162,7 +162,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, VIEWER_ID))
                     .isInstanceOf(PortfolioDomainException.class)
                     .extracting("errorCode")
-                    .isEqualTo(PortfolioDomainExceptionCodeCluster.InterestPolicy.INTEREST_PORTFOLIO_FORBIDDEN.getErrorCode());
+                    .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN.getErrorCode());
 
             then(applicationEventPublisher).should(never()).publishEvent(any());
         }

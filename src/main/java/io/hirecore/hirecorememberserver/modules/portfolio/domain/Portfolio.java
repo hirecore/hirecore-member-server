@@ -4,6 +4,8 @@ import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.PortfolioImagesUnlinkedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioInterestCancelledEvent;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioInterestRegisteredEvent;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioViewedEvent;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
@@ -46,12 +48,12 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     // sub-aggregate
     private PortfolioJobCategory portfolioJobCategory;
     private PortfolioContent portfolioContent;
-    private List<ExternalLink> externalLinks;
     private List<PortfolioTag> portfolioTags;
     private final List<PortfolioMemberInterest> portfolioMemberInterests;
     private final List<PortfolioMemberView> portfolioMemberViews;
 
     // vo
+    private List<ExternalLink> externalLinks;
     private final PortfolioStatus status;
     private CollaborationType collaborationType;
     private Visibility visibility;
@@ -113,14 +115,53 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.auditingInfo = auditingInfo;
     }
 
-    /**
-     * 비소유자가 본 포트폴리오를 처음 조회했음을 표기하고 {@link PortfolioViewedEvent}를 등록합니다.
-     *
-     * <p>실제 영구 카운트 증가와 {@code PortfolioMemberView} 적재는 이벤트 소비자가 처리합니다.
-     * 본 메서드는 Aggregate 상태를 변경하지 않으며, 도메인이 사건을 발행하는 책임만 갖습니다.</p>
-     */
-    public void markViewed(Long viewerMemberAccountId) {
-        registerEvent(new PortfolioViewedEvent(this.id, viewerMemberAccountId));
+    public static Portfolio create(
+            Long memberAccountId,
+            Long thumbnailImageId,
+            Long coverLetterId,
+            Long resumeId,
+            String title,
+            String previewSummary,
+            String privateMemo,
+            Long jobCategoryId,
+            String userInput,
+            String contentJson,
+            String contentHtml,
+            List<Long> contentImageIds,
+            List<ExternalLink> externalLinks,
+            List<PortfolioTag> portfolioTags,
+            CollaborationType collaborationType,
+            Visibility visibility
+    ) {
+        Long portfolioId = TsidCreator.getTsid().toLong();
+
+        return Portfolio.builder()
+                .id(portfolioId)
+                .memberAccountId(memberAccountId)
+                .thumbnailImageId(thumbnailImageId)
+                .coverLetterId(coverLetterId)
+                .resumeId(resumeId)
+                .title(title)
+                .previewSummary(previewSummary)
+                .privateMemo(privateMemo)
+                .cachedViewCount(0L)
+                .cachedInterestCount(0L)
+                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
+                .portfolioContent(PortfolioContent.create(
+                        portfolioId,
+                        contentJson,
+                        contentHtml,
+                        contentImageIds != null ? contentImageIds : List.of()
+                ))
+                .externalLinks(externalLinks)
+                .portfolioTags(portfolioTags)
+                .portfolioMemberInterests(List.of())
+                .portfolioMemberViews(List.of())
+                .status(PortfolioStatus.PUBLISHED)
+                .collaborationType(collaborationType)
+                .visibility(visibility)
+                .auditingInfo(AuditingInfo.create())
+                .build();
     }
 
     /**
@@ -191,6 +232,45 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     }
 
     /**
+     * 비소유자가 본 포트폴리오를 처음 조회했음을 표기하고 {@link PortfolioViewedEvent}를 등록합니다.
+     *
+     * <p>실제 영구 카운트 증가와 {@code PortfolioMemberView} 적재는 이벤트 소비자가 처리합니다.
+     * 본 메서드는 Aggregate 상태를 변경하지 않으며, 도메인이 사건을 발행하는 책임만 갖습니다.</p>
+     */
+    public void markViewed(Long viewerMemberAccountId) {
+        registerEvent(new PortfolioViewedEvent(this.id, viewerMemberAccountId));
+    }
+
+    /**
+     * 관심 등록 정책(소유자 금지 / 비공개 금지)을 검증하고 {@link PortfolioInterestRegisteredEvent}를 등록합니다.
+     *
+     * <p>중복 검사는 set-based 제약이므로 호출 측에서 미리 확인한 결과를 {@code alreadyInterested}로 받아 멱등 처리합니다.
+     * 실제 {@code PortfolioMemberInterest} 적재와 {@code cachedInterestCount} 증가는 이벤트 소비자가 처리합니다.</p>
+     */
+    public void registerInterestBy(Long memberAccountId, boolean alreadyInterested) {
+        if (this.memberAccountId.equals(memberAccountId)) {
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED);
+        }
+        if (this.visibility != Visibility.PUBLIC) {
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN);
+        }
+        if (alreadyInterested) {
+            return;
+        }
+        registerEvent(new PortfolioInterestRegisteredEvent(this.id, memberAccountId));
+    }
+
+    /**
+     * 관심 해제 의사를 표기하고 {@link PortfolioInterestCancelledEvent}를 등록합니다.
+     *
+     * <p>실제 {@code PortfolioMemberInterest} 삭제와 {@code cachedInterestCount} 감소(실제 삭제가 발생한 경우에 한정)는
+     * 이벤트 소비자가 처리합니다. 등록된 관심이 없는 사용자의 호출은 소비자 단에서 멱등으로 종료됩니다.</p>
+     */
+    public void cancelInterestBy(Long memberAccountId) {
+        registerEvent(new PortfolioInterestCancelledEvent(this.id, memberAccountId));
+    }
+
+    /**
      * 이전 이미지 집합({@code (oldThumbnail ∪ oldContent)}) 에서 새 집합({@code (newThumbnail ∪ newContent)}) 을
      * 뺀 차집합 — 즉 본문/썸네일에서 더 이상 참조되지 않게 된 imageId 들을 반환합니다.
      * 입력 순서를 보존하기 위해 LinkedHashSet 의미론으로 계산합니다.
@@ -222,55 +302,6 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             }
         }
         return released;
-    }
-
-    public static Portfolio create(
-            Long memberAccountId,
-            Long thumbnailImageId,
-            Long coverLetterId,
-            Long resumeId,
-            String title,
-            String previewSummary,
-            String privateMemo,
-            Long jobCategoryId,
-            String userInput,
-            String contentJson,
-            String contentHtml,
-            List<Long> contentImageIds,
-            List<ExternalLink> externalLinks,
-            List<PortfolioTag> portfolioTags,
-            CollaborationType collaborationType,
-            Visibility visibility
-    ) {
-        Long portfolioId = TsidCreator.getTsid().toLong();
-
-        return Portfolio.builder()
-                .id(portfolioId)
-                .memberAccountId(memberAccountId)
-                .thumbnailImageId(thumbnailImageId)
-                .coverLetterId(coverLetterId)
-                .resumeId(resumeId)
-                .title(title)
-                .previewSummary(previewSummary)
-                .privateMemo(privateMemo)
-                .cachedViewCount(0L)
-                .cachedInterestCount(0L)
-                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
-                .portfolioContent(PortfolioContent.create(
-                        portfolioId,
-                        contentJson,
-                        contentHtml,
-                        contentImageIds != null ? contentImageIds : List.of()
-                ))
-                .externalLinks(externalLinks)
-                .portfolioTags(portfolioTags)
-                .portfolioMemberInterests(List.of())
-                .portfolioMemberViews(List.of())
-                .status(PortfolioStatus.PUBLISHED)
-                .collaborationType(collaborationType)
-                .visibility(visibility)
-                .auditingInfo(AuditingInfo.create())
-                .build();
     }
 
     private static void ensureInvariants(

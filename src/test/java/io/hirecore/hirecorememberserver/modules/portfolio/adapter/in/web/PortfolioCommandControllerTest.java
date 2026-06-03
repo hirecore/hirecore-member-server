@@ -16,6 +16,8 @@ import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileM
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapperImpl;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CancelPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.RegisterPortfolioInterestUseCase;
@@ -805,8 +807,8 @@ class PortfolioCommandControllerTest {
         @DisplayName("[403 Forbidden] 본인이 등록한 포트폴리오에 POST 하면 INTEREST_OWNER_NOT_ALLOWED 에러를 반환한다.")
         void register_interest_forbidden_owner() throws Exception {
             // given
-            willThrow(new PortfolioApplicationException(
-                    PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_OWNER_NOT_ALLOWED
+            willThrow(new PortfolioDomainException(
+                    PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED
             )).given(registerPortfolioInterestUseCase).execute(OWN_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // when & then
@@ -832,8 +834,8 @@ class PortfolioCommandControllerTest {
         @DisplayName("[403 Forbidden] 비공개 포트폴리오에 비소유자가 POST 하면 INTEREST_PORTFOLIO_FORBIDDEN 에러를 반환한다.")
         void register_interest_forbidden_private() throws Exception {
             // given
-            willThrow(new PortfolioApplicationException(
-                    PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_FORBIDDEN
+            willThrow(new PortfolioDomainException(
+                    PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN
             )).given(registerPortfolioInterestUseCase).execute(PRIVATE_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // when & then
@@ -860,7 +862,7 @@ class PortfolioCommandControllerTest {
         void register_interest_not_found() throws Exception {
             // given
             willThrow(new PortfolioApplicationException(
-                    PortfolioApplicationExceptionCodeCluster.InterestResponse.INTEREST_PORTFOLIO_NOT_FOUND
+                    PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND
             )).given(registerPortfolioInterestUseCase).execute(NONEXISTENT_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // when & then

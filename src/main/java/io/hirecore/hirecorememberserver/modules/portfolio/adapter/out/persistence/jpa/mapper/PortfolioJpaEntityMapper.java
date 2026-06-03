@@ -3,12 +3,8 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persisten
 import io.hirecore.hirecorememberserver.common.config.GlobalMapStructConfig;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioJobCategoryJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioJpaEntity;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioMemberInterestJpaEntity;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioMemberViewJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioTagJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioMemberInterest;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioMemberView;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -33,8 +29,6 @@ public abstract class PortfolioJpaEntityMapper {
     @Mapping(target = "portfolioContent", ignore = true)
     @Mapping(target = "portfolioJobCategory", ignore = true)
     @Mapping(target = "portfolioTags", ignore = true)
-    @Mapping(target = "portfolioMemberInterests", ignore = true)
-    @Mapping(target = "portfolioMemberViews", ignore = true)
     public abstract PortfolioJpaEntity toJpaEntity(Portfolio domain);
 
     public Portfolio toDomain(PortfolioJpaEntity entity) {
@@ -56,8 +50,6 @@ public abstract class PortfolioJpaEntityMapper {
                 .portfolioContent(portfolioContentMapper.toDomain(entity.getPortfolioContent()))
                 .externalLinks(entity.getExternalLinks())
                 .portfolioTags(toDomainTags(entity.getPortfolioTags()))
-                .portfolioMemberInterests(toDomainMemberInterests(entity.getPortfolioMemberInterests()))
-                .portfolioMemberViews(toDomainMemberViews(entity.getPortfolioMemberViews()))
                 .status(entity.getStatus())
                 .collaborationType(entity.getCollaborationType())
                 .visibility(entity.getVisibility())
@@ -71,32 +63,6 @@ public abstract class PortfolioJpaEntityMapper {
         }
         return entities.stream()
                 .map(portfolioTagMapper::toDomain)
-                .toList();
-    }
-
-    private List<PortfolioMemberInterest> toDomainMemberInterests(List<PortfolioMemberInterestJpaEntity> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return List.of();
-        }
-        return entities.stream()
-                .map(e -> PortfolioMemberInterest.builder()
-                        .id(e.getId())
-                        .memberAccountId(e.getMemberAccountId())
-                        .interestAt(e.getInterestAt())
-                        .build())
-                .toList();
-    }
-
-    private List<PortfolioMemberView> toDomainMemberViews(List<PortfolioMemberViewJpaEntity> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return List.of();
-        }
-        return entities.stream()
-                .map(e -> PortfolioMemberView.builder()
-                        .id(e.getId())
-                        .memberAccountId(e.getMemberAccountId())
-                        .viewedAt(e.getViewedAt())
-                        .build())
                 .toList();
     }
 

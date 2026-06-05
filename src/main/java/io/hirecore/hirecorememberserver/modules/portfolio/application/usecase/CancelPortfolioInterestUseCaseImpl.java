@@ -5,8 +5,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CancelPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CancelPortfolioInterestUseCaseImpl implements CancelPortfolioInterestUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final PublishDomainEventsPort publishDomainEventsPort;
 
     @Override
     @Transactional
@@ -25,6 +25,6 @@ public class CancelPortfolioInterestUseCaseImpl implements CancelPortfolioIntere
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND
                 ));
         portfolio.cancelInterestBy(memberAccountId);
-        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
+        publishDomainEventsPort.publishAll(portfolio);
     }
 }

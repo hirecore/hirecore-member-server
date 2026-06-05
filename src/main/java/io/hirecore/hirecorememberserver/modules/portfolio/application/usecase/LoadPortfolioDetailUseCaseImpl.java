@@ -12,11 +12,11 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCat
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfilePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +35,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
     private final LoadJobCategoryPort loadJobCategoryPort;
     private final ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
     private final ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final PublishDomainEventsPort publishDomainEventsPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -80,7 +80,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         if (!recorded) {
             return cachedViewCount;
         }
-        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
+        publishDomainEventsPort.publishAll(portfolio);
         return cachedViewCount + 1;
     }
 

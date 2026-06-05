@@ -4,23 +4,21 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioInterestCancelledEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -38,7 +36,7 @@ class CancelPortfolioInterestUseCaseImplTest {
     private LoadPortfolioPort loadPortfolioPort;
 
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private PublishDomainEventsPort publishDomainEventsPort;
 
     private static final Long OWNER_ID = 1L;
     private static final Long MEMBER_ACCOUNT_ID = 2L;
@@ -73,7 +71,7 @@ class CancelPortfolioInterestUseCaseImplTest {
     class SuccessTest {
 
         @Test
-        @DisplayName("관심 해제 호출 시 PortfolioInterestCancelledEvent 가 발행된다")
+        @DisplayName("관심 해제 호출 시 PortfolioInterestCancelledEvent 가 발행 위임된다")
         void should_publish_event_on_cancel() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PUBLIC);
@@ -83,10 +81,7 @@ class CancelPortfolioInterestUseCaseImplTest {
             sut.execute(PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // then
-            ArgumentCaptor<PortfolioInterestCancelledEvent> captor = ArgumentCaptor.forClass(PortfolioInterestCancelledEvent.class);
-            then(applicationEventPublisher).should().publishEvent(captor.capture());
-            assertThat(captor.getValue().portfolioId()).isEqualTo(loaded.getId());
-            assertThat(captor.getValue().memberAccountId()).isEqualTo(MEMBER_ACCOUNT_ID);
+            then(publishDomainEventsPort).should().publishAll(loaded);
         }
     }
 
@@ -106,7 +101,7 @@ class CancelPortfolioInterestUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
 
-            then(applicationEventPublisher).should(never()).publishEvent(any());
+            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
     }
 }

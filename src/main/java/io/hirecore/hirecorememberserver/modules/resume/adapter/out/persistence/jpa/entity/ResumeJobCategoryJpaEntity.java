@@ -17,7 +17,7 @@ public class ResumeJobCategoryJpaEntity extends AbstractPersistableEntity<Long> 
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)
     private ResumeJpaEntity resume;
 
@@ -32,4 +32,8 @@ public class ResumeJobCategoryJpaEntity extends AbstractPersistableEntity<Long> 
     @Comment("연결 시각")
     @Column(name = "connected_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant connectedAt;
+
+    void setResume(ResumeJpaEntity resume) {
+        this.resume = resume;
+    }
 }

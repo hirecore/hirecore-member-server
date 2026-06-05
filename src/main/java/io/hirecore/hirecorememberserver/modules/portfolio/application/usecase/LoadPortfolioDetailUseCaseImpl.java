@@ -49,7 +49,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NICKNAME_NOT_FOUND
                 ));
 
-        long displayedViewCount = resolveDisplayedViewCount(portfolio, viewerId, isOwner);
+        long displayedViewCount = resolveDisplayedViewCount(portfolio, viewerId);
         Boolean isInterested = resolveIsInterested(portfolio, viewerId, isOwner);
 
         return buildResponse(
@@ -70,16 +70,16 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         return existsPortfolioMemberInterestPort.exists(portfolio.getId(), viewerId);
     }
 
-    private long resolveDisplayedViewCount(Portfolio portfolio, Long viewerId, boolean isOwner) {
+    private long resolveDisplayedViewCount(Portfolio portfolio, Long viewerId) {
         long cachedViewCount = portfolio.getCachedViewCount();
-        if (viewerId == null || isOwner) {
+        if (viewerId == null) {
             return cachedViewCount;
         }
-        boolean isFirstView = !existsPortfolioMemberViewPort.exists(portfolio.getId(), viewerId);
-        if (!isFirstView) {
+        boolean alreadyViewed = existsPortfolioMemberViewPort.exists(portfolio.getId(), viewerId);
+        boolean recorded = portfolio.markViewedBy(viewerId, alreadyViewed);
+        if (!recorded) {
             return cachedViewCount;
         }
-        portfolio.markViewed(viewerId);
         portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
         return cachedViewCount + 1;
     }

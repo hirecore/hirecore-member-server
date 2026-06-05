@@ -45,7 +45,7 @@ public class PortfolioQueryController {
      * SecurityConfig 에서 {@code authenticated} 로 보호되므로 {@code authPrincipal} 은 항상 non-null 입니다.
      */
     @GetMapping("{portfolioId}/edit")
-    public ResponseEntity<PortfolioEditApiResponse> editPortfolio(
+    public ResponseEntity<PortfolioEditApiResponse> loadPortfolioEdit(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @PathVariable("portfolioId") Long portfolioId
     ){

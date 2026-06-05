@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class ImageFileMetaJpaCommandAdapter
-        implements SaveImageFileMetaPort, UpdateImageFileMetaPort
+public class ImageFileMetaJpaCommandAdapter implements
+        SaveImageFileMetaPort,
+        UpdateImageFileMetaPort
 {
 
     private final ImageFileMetaJpaEntityMapper imageFileMetaJpaEntityMapper;

@@ -27,7 +27,10 @@ import java.util.Date;
  */
 @Slf4j
 @Component
-public class TokenProviderAdapter implements ResolveTokenPort, IssueTokenPort {
+public class TokenProviderAdapter implements
+        ResolveTokenPort,
+        IssueTokenPort
+{
 
     private final SecretKey key;
     private final long accessTokenExpirationMills;

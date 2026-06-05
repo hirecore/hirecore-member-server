@@ -20,7 +20,10 @@ import java.util.Collection;
  */
 @Component
 @RequiredArgsConstructor
-public class MemberAccountJpaCommandAdapter implements SaveMemberAccountPort, IncrementTokenVersionPort {
+public class MemberAccountJpaCommandAdapter implements
+        SaveMemberAccountPort,
+        IncrementTokenVersionPort
+{
 
     private final MemberAccountJpaEntityMapper memberAccountJpaEntityMapper;
     private final MemberAccountJpaCommandRepository memberAccountJpaCommandRepository;

@@ -21,7 +21,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementPortfolioViewCountPort, IncrementPortfolioInterestCountPort, DecrementPortfolioInterestCountPort, UpdatePortfolioPort {
+public class PortfolioJpaCommandAdapter implements
+        SavePortfolioPort,
+        IncrementPortfolioViewCountPort,
+        IncrementPortfolioInterestCountPort,
+        DecrementPortfolioInterestCountPort,
+        UpdatePortfolioPort
+{
 
     private final PortfolioJpaEntityMapper portfolioMapper;
     private final PortfolioContentJpaEntityMapper portfolioContentMapper;

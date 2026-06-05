@@ -13,7 +13,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PortfolioMemberInterestJpaCommandAdapter implements SavePortfolioMemberInterestPort, DeletePortfolioMemberInterestPort {
+public class PortfolioMemberInterestJpaCommandAdapter implements
+        SavePortfolioMemberInterestPort,
+        DeletePortfolioMemberInterestPort
+{
 
     private final EntityManager entityManager;
     private final PortfolioMemberInterestJpaCommandRepository repository;

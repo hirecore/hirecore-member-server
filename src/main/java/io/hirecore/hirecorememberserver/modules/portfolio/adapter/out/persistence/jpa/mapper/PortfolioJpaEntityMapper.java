@@ -8,8 +8,10 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -30,6 +32,27 @@ public abstract class PortfolioJpaEntityMapper {
     @Mapping(target = "portfolioJobCategory", ignore = true)
     @Mapping(target = "portfolioTags", ignore = true)
     public abstract PortfolioJpaEntity toJpaEntity(Portfolio domain);
+
+    /**
+     * 부모 엔티티 변환 직후 자식 그래프를 조립하고 양방향 연관관계를 동기화합니다.
+     *
+     * <p>{@link PortfolioJpaEntity#syncPortfolioContent}, {@link PortfolioJpaEntity#syncPortfolioJobCategory},
+     * {@link PortfolioJpaEntity#addPortfolioTag} 헬퍼를 통해 owning side / inverse side 양쪽 참조가
+     * 한 호출 안에서 일관되게 채워지도록 한다.</p>
+     */
+    @AfterMapping
+    protected void assembleChildren(Portfolio domain, @MappingTarget PortfolioJpaEntity entity) {
+        if (domain == null || entity == null) {
+            return;
+        }
+        entity.syncPortfolioContent(portfolioContentMapper.toJpaEntity(domain.getPortfolioContent()));
+        entity.syncPortfolioJobCategory(portfolioJobCategoryMapper.toJpaEntity(domain.getPortfolioJobCategory()));
+        if (domain.getPortfolioTags() != null) {
+            domain.getPortfolioTags().stream()
+                    .map(portfolioTagMapper::toJpaEntity)
+                    .forEach(entity::addPortfolioTag);
+        }
+    }
 
     public Portfolio toDomain(PortfolioJpaEntity entity) {
         if (entity == null) {

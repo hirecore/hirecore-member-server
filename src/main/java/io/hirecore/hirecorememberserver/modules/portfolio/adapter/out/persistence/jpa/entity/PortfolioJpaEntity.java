@@ -67,14 +67,16 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @OneToOne(
             mappedBy = "portfolio",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
     )
     private PortfolioJobCategoryJpaEntity portfolioJobCategory;
 
     @OneToOne(
             mappedBy = "portfolio",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
     )
     private PortfolioContentJpaEntity portfolioContent;
 
@@ -87,7 +89,8 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @OneToMany(
             mappedBy = "portfolio",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
     )
     @OrderBy("sortOrder ASC")
     @Builder.Default

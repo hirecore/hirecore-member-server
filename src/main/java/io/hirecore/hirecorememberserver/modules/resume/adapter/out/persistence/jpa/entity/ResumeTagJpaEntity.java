@@ -28,6 +28,14 @@ public class ResumeTagJpaEntity extends AbstractPersistableEntity<Long> {
     @Column(name = "normalized_tag", nullable = false, columnDefinition = "VARCHAR(50)")
     private String normalizedTag;
 
+    @Comment("사용자 의도 정렬 순서 (0부터 시작)")
+    @Column(name = "sort_order", nullable = false)
+    private Integer sortOrder;
+
     @Embedded
     private AuditingJpaInfo auditingInfo;
+
+    public void attachResume(ResumeJpaEntity resume) {
+        this.resume = resume;
+    }
 }

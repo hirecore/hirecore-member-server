@@ -10,22 +10,27 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.S
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+
+/**
+ * 도메인 POJO 의 이벤트를 JPA 엔티티로 이전(Event Bridge) 한 뒤
+ * {@code repository.save()} 호출 시 Spring Data 가 {@code @DomainEvents} 를 통해
+ * 자동으로 이벤트를 발행하도록 위임한다.
+ */
 @Component
 @RequiredArgsConstructor
 public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementPortfolioViewCountPort, IncrementPortfolioInterestCountPort, DecrementPortfolioInterestCountPort, UpdatePortfolioPort {
 
     private final PortfolioJpaEntityMapper portfolioMapper;
     private final PortfolioJpaCommandRepository portfolioRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Portfolio save(Portfolio portfolio) {
         PortfolioJpaEntity portfolioEntity = portfolioMapper.toJpaEntity(portfolio);
+        bridgeDomainEvents(portfolio, portfolioEntity);
         portfolioRepository.save(portfolioEntity);
-        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
         return portfolio;
     }
 
@@ -51,8 +56,15 @@ public class PortfolioJpaCommandAdapter implements SavePortfolioPort, IncrementP
     @Override
     public void update(Portfolio portfolio) {
         PortfolioJpaEntity portfolioEntity = portfolioMapper.toJpaEntity(portfolio);
+        bridgeDomainEvents(portfolio, portfolioEntity);
         portfolioEntity.markPersisted();
         portfolioRepository.save(portfolioEntity);
-        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
+    }
+
+    private void bridgeDomainEvents(Portfolio domain, PortfolioJpaEntity entity) {
+        Collection<Object> domainEvents = domain.pollAllEvents();
+        if (domainEvents != null && !domainEvents.isEmpty()) {
+            domainEvents.forEach(entity::recordPersistenceEvent);
+        }
     }
 }

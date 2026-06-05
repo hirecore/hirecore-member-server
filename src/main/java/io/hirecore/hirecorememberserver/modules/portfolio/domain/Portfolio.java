@@ -174,14 +174,14 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String jobCategoryUserInput,
             String contentJson,
             String contentHtml,
-            List<Long> newContentImageIds,
-            List<ExternalLink> newExternalLinks,
-            List<PortfolioTag> newPortfolioTags,
+            List<Long> contentImageIds,
+            List<ExternalLink> externalLinks,
+            List<PortfolioTag> portfolioTags,
             CollaborationType collaborationType,
             Visibility visibility
     ) {
         PortfolioJobCategory newJobCategory = PortfolioJobCategory.create(jobCategoryId, jobCategoryUserInput);
-        List<Long> resolvedNewContentImageIds = newContentImageIds != null ? newContentImageIds : List.of();
+        List<Long> resolvedNewContentImageIds = contentImageIds != null ? contentImageIds : List.of();
         PortfolioContent newContent = PortfolioContent.create(
                 this.id,
                 contentJson,
@@ -191,7 +191,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
 
         ensureInvariants(
                 this.id, this.memberAccountId, title, previewSummary, privateMemo,
-                newJobCategory, newContent, newExternalLinks, newPortfolioTags,
+                newJobCategory, newContent, externalLinks, portfolioTags,
                 this.status, collaborationType, visibility, this.auditingInfo
         );
 
@@ -208,8 +208,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.privateMemo = privateMemo;
         this.portfolioJobCategory = newJobCategory;
         this.portfolioContent = newContent;
-        this.externalLinks = newExternalLinks != null ? newExternalLinks : List.of();
-        this.portfolioTags = newPortfolioTags != null ? newPortfolioTags : List.of();
+        this.externalLinks = externalLinks != null ? externalLinks : List.of();
+        this.portfolioTags = portfolioTags != null ? portfolioTags : List.of();
         this.collaborationType = collaborationType;
         this.visibility = visibility;
         this.auditingInfo = this.auditingInfo.update();

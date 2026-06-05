@@ -5,25 +5,23 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.PortfolioInterestRegisteredEvent;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -45,7 +43,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
     private ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
 
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private PublishDomainEventsPort publishDomainEventsPort;
 
     private static final Long OWNER_ID = 1L;
     private static final Long VIEWER_ID = 2L;
@@ -80,7 +78,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
     class SuccessTest {
 
         @Test
-        @DisplayName("비소유자가 공개 포트폴리오에 첫 관심 등록 시 PortfolioInterestRegisteredEvent 가 발행된다")
+        @DisplayName("비소유자가 공개 포트폴리오에 첫 관심 등록 시 PortfolioInterestRegisteredEvent 가 발행 위임된다")
         void should_publish_event_when_first_register() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PUBLIC);
@@ -91,15 +89,12 @@ class RegisterPortfolioInterestUseCaseImplTest {
             sut.execute(PORTFOLIO_ID, VIEWER_ID);
 
             // then
-            ArgumentCaptor<PortfolioInterestRegisteredEvent> captor = ArgumentCaptor.forClass(PortfolioInterestRegisteredEvent.class);
-            then(applicationEventPublisher).should().publishEvent(captor.capture());
-            assertThat(captor.getValue().portfolioId()).isEqualTo(loaded.getId());
-            assertThat(captor.getValue().memberAccountId()).isEqualTo(VIEWER_ID);
+            then(publishDomainEventsPort).should().publishAll(loaded);
         }
 
         @Test
-        @DisplayName("이미 관심 등록된 상태라면 이벤트를 발행하지 않고 멱등 종료한다")
-        void should_skip_when_already_registered() {
+        @DisplayName("이미 관심 등록된 상태라도 publishAll 호출은 일어나며 빈 이벤트 컬렉션이 어댑터에서 처리된다")
+        void should_invoke_publish_even_when_already_registered() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PUBLIC);
             given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
@@ -108,8 +103,8 @@ class RegisterPortfolioInterestUseCaseImplTest {
             // when
             sut.execute(PORTFOLIO_ID, VIEWER_ID);
 
-            // then
-            then(applicationEventPublisher).should(never()).publishEvent(any());
+            // then — 멱등 경로에서도 publishAll 은 호출됨. 도메인 객체의 이벤트 컬렉션이 비어있어 실제 발행은 없음.
+            then(publishDomainEventsPort).should().publishAll(loaded);
         }
     }
 
@@ -130,7 +125,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
 
             then(existsPortfolioMemberInterestPort).should(never()).exists(anyLong(), anyLong());
-            then(applicationEventPublisher).should(never()).publishEvent(any());
+            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
 
         @Test
@@ -147,7 +142,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED.getErrorCode());
 
-            then(applicationEventPublisher).should(never()).publishEvent(any());
+            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
 
         @Test
@@ -164,7 +159,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN.getErrorCode());
 
-            then(applicationEventPublisher).should(never()).publishEvent(any());
+            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
     }
 }

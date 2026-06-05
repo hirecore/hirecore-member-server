@@ -6,8 +6,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.Re
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,7 @@ public class RegisterPortfolioInterestUseCaseImpl implements RegisterPortfolioIn
 
     private final LoadPortfolioPort loadPortfolioPort;
     private final ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final PublishDomainEventsPort publishDomainEventsPort;
 
     @Override
     @Transactional
@@ -28,6 +28,6 @@ public class RegisterPortfolioInterestUseCaseImpl implements RegisterPortfolioIn
                 ));
         boolean alreadyInterested = existsPortfolioMemberInterestPort.exists(portfolioId, memberAccountId);
         portfolio.registerInterestBy(memberAccountId, alreadyInterested);
-        portfolio.pollAllEvents().forEach(applicationEventPublisher::publishEvent);
+        publishDomainEventsPort.publishAll(portfolio);
     }
 }

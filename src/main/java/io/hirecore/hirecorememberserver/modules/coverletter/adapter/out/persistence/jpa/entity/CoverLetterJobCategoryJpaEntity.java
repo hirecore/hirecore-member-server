@@ -17,7 +17,7 @@ public class CoverLetterJobCategoryJpaEntity extends AbstractPersistableEntity<L
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cover_letter_id", nullable = false)
     private CoverLetterJpaEntity coverLetter;
 
@@ -32,4 +32,8 @@ public class CoverLetterJobCategoryJpaEntity extends AbstractPersistableEntity<L
     @Comment("연결 시각")
     @Column(name = "connected_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant connectedAt;
+
+    void setCoverLetter(CoverLetterJpaEntity coverLetter) {
+        this.coverLetter = coverLetter;
+    }
 }

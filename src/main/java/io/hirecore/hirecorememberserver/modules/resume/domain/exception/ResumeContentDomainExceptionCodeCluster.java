@@ -5,38 +5,37 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-public class ResumeTagDomainExceptionCodeCluster {
+public class ResumeContentDomainExceptionCodeCluster {
     @Getter
     @RequiredArgsConstructor
     public enum HiddenDetailResponse implements DomainExceptionCode {
-        // ID
-        ID_MISSING(
+        // RESUME_ID
+        RESUME_ID_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "ResumeTag 도메인 객체 생성에서 id 필드가 누락되었습니다.",
+                "ResumeContent 도메인 객체 생성에서 resumeId 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // USER_INPUT_TAG
-        USER_INPUT_TAG_MISSING(
+        // CONTENT_JSON
+        CONTENT_JSON_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "ResumeTag 도메인 객체 생성에서 userInputTag 필드가 누락되었습니다.",
+                "ResumeContent 도메인 객체 생성에서 contentJson 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // NORMALIZED_TAG
-        NORMALIZED_TAG_MISSING(
+        // CONTENT_HTML
+        CONTENT_HTML_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "ResumeTag 도메인 객체 생성에서 normalizedTag 필드가 누락되었습니다.",
+                "ResumeContent 도메인 객체 생성에서 contentHtml 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-        // SORT_ORDER
-        SORT_ORDER_MISSING(
+        // IMAGE_IDS
+        IMAGE_IDS_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "ResumeTag 도메인 객체 생성에서 sortOrder 필드가 누락되었습니다.",
+                "ResumeContent 도메인 객체 생성에서 imageIds 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
-        SORT_ORDER_NEGATIVE(
+        IMAGE_IDS_CONTAINS_NULL(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "ResumeTag 도메인 객체 생성에서 sortOrder 가 음수입니다.",
-                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
-        ;
+                "ResumeContent 의 imageIds 에 null 요소가 포함되어 있습니다.",
+                "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요.");
 
         private final HttpStatus httpStatus;
         private final String logMessage;

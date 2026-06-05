@@ -224,13 +224,21 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     }
 
     /**
-     * 비소유자가 본 포트폴리오를 처음 조회했음을 표기하고 {@link PortfolioViewedEvent}를 등록합니다.
+     * 조회수 기록 정책(소유자 제외 / 첫 조회만 카운트) 을 검증하고 통과 시 {@link PortfolioViewedEvent}를 발행합니다.
      *
-     * <p>실제 영구 카운트 증가와 {@code PortfolioMemberView} 적재는 이벤트 소비자가 처리합니다.
-     * 본 메서드는 Aggregate 상태를 변경하지 않으며, 도메인이 사건을 발행하는 책임만 갖습니다.</p>
+     * <p>첫 조회 여부는 set-based 제약이므로 호출 측에서 미리 확인한 결과를 {@code alreadyViewed} 로 받아 멱등 처리합니다.
+     * 통과 여부는 boolean 으로 반환하며, 실제 {@code PortfolioMemberView} 적재와 {@code cachedViewCount} 증가는
+     * 이벤트 소비자가 처리합니다.</p>
      */
-    public void markViewed(Long viewerMemberAccountId) {
+    public boolean markViewedBy(Long viewerMemberAccountId, boolean alreadyViewed) {
+        if (this.memberAccountId.equals(viewerMemberAccountId)) {
+            return false;
+        }
+        if (alreadyViewed) {
+            return false;
+        }
         registerEvent(new PortfolioViewedEvent(this.id, viewerMemberAccountId));
+        return true;
     }
 
     /**

@@ -1,8 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.resume.domain;
 
-import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeJobCategoryDomainException;
 import io.hirecore.hirecorememberserver.modules.resume.domain.exception.ResumeJobCategoryDomainExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -31,6 +32,15 @@ public class ResumeJobCategory {
         this.jobCategoryId = jobCategoryId;
         this.userInput = userInput;
         this.connectedAt = connectedAt;
+    }
+
+    public static ResumeJobCategory create(Long jobCategoryId, String userInput) {
+        return ResumeJobCategory.builder()
+                .id(TsidCreator.getTsid().toLong())
+                .jobCategoryId(jobCategoryId)
+                .userInput(userInput)
+                .connectedAt(Instant.now())
+                .build();
     }
 
     private static void ensureInvariants(

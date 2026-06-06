@@ -20,7 +20,7 @@ public abstract class ResumeTagJpaEntityMapper {
         }
         return ResumeTag.builder()
                 .id(entity.getId())
-                .userInputTag(entity.getUserInputTag())
+                .name(entity.getName())
                 .normalizedTag(entity.getNormalizedTag())
                 .sortOrder(entity.getSortOrder())
                 .auditingInfo(toAuditingInfo(entity.getAuditingInfo()))

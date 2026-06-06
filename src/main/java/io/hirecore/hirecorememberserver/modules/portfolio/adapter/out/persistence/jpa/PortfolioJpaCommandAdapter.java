@@ -3,12 +3,16 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persisten
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.entity.PortfolioJpaEntity;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaCommandRepository;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioMemberInterestJpaCommandRepository;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioMemberViewJpaCommandRepository;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.DecrementPortfolioInterestCountPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.DeletePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.IncrementPortfolioInterestCountPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.IncrementPortfolioViewCountPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,11 +30,15 @@ public class PortfolioJpaCommandAdapter implements
         IncrementPortfolioViewCountPort,
         IncrementPortfolioInterestCountPort,
         DecrementPortfolioInterestCountPort,
-        UpdatePortfolioPort
+        UpdatePortfolioPort,
+        DeletePortfolioPort
 {
 
     private final PortfolioJpaEntityMapper portfolioMapper;
     private final PortfolioJpaCommandRepository portfolioRepository;
+    private final PortfolioMemberInterestJpaCommandRepository portfolioMemberInterestRepository;
+    private final PortfolioMemberViewJpaCommandRepository portfolioMemberViewRepository;
+    private final EntityManager entityManager;
 
     @Override
     public Portfolio save(Portfolio portfolio) {
@@ -65,6 +73,26 @@ public class PortfolioJpaCommandAdapter implements
         bridgeDomainEvents(portfolio, portfolioEntity);
         portfolioEntity.markPersisted();
         portfolioRepository.save(portfolioEntity);
+    }
+
+    /**
+     * 포트폴리오 본체 + cascade 자식(contents/job_categories/tags) 영구 삭제 전에,
+     * AR 매핑에서 분리되어 cascade 가 끊긴 두 자식 테이블
+     * ({@code portfolio_member_interests}, {@code portfolio_member_views}) 의
+     * 잔존 행을 명시적으로 cleanup 한다.
+     *
+     * <p>{@code Portfolio.delete()} 가 발행한 도메인 이벤트는 use case 가 {@code PublishDomainEventsPort} 로
+     * 명시 발행하므로, 본 메서드는 영속화 책임에만 집중한다.</p>
+     */
+    @Override
+    public void delete(Portfolio portfolio) {
+        Long portfolioId = portfolio.getId();
+        portfolioMemberInterestRepository.deleteAllByPortfolioId(portfolioId);
+        portfolioMemberViewRepository.deleteAllByPortfolioId(portfolioId);
+        PortfolioJpaEntity managed = entityManager.find(PortfolioJpaEntity.class, portfolioId);
+        if (managed != null) {
+            portfolioRepository.delete(managed);
+        }
     }
 
     private void bridgeDomainEvents(Portfolio domain, PortfolioJpaEntity entity) {

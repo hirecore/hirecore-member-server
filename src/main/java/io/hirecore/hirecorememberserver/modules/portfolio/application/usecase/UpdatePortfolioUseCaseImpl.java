@@ -39,11 +39,13 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
      *   2. 작성자 본인 여부 검증 → 아니면 PORTFOLIO_FORBIDDEN
      *   3. 신규 이미지의 markUploaded (등록 시점과 동일 패턴, 멱등 호출)
      *   4. 카테고리 코드 해석
-     *   5. portfolio.modify(...) 호출 → 도메인 invariant 재검증
+     *   5. portfolio.modify(...) 호출 → 도메인 invariant 재검증 + 본문/썸네일에서 빠진 이미지에 대한 PortfolioImagesUnlinkedEvent 발행
      *   6. UpdatePortfolioPort.update(portfolio) 호출 (merge 경로)
      *
-     *  [범위 외]
-     *   - 이전 썸네일/본문 이미지의 cleanup (별도 이슈)
+     *  [부수효과]
+     *   - 신규 이미지: markUploaded 가 발행한 ImageUploadedEvent 를 storage BC 가 AFTER_COMMIT 으로 받아 사용량을 가산합니다.
+     *   - 빠진 이미지: portfolio.modify 가 발행한 PortfolioImagesUnlinkedEvent 를 file BC 가 BEFORE_COMMIT 으로 받아
+     *     ORPHANED 로 전이시키고, 그 결과 발행되는 ImageOrphanedEvent 를 storage BC 가 AFTER_COMMIT 으로 받아 사용량을 차감합니다.
      */
     @Override
     @Transactional

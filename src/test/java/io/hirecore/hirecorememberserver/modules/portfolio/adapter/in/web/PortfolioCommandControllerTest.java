@@ -132,9 +132,9 @@ class PortfolioCommandControllerTest {
                 Map.entry("thumbnailImageId", "100"),
                 Map.entry("contentImageIds", List.of("101", "102")),
                 Map.entry("tags", List.of(
-                        Map.of("userInputTag", "Spring",    "sortOrder", 0),
-                        Map.of("userInputTag", "DDD",       "sortOrder", 1),
-                        Map.of("userInputTag", "Hexagonal", "sortOrder", 2)
+                        Map.of("name", "Spring",    "sortOrder", 0),
+                        Map.of("name", "DDD",       "sortOrder", 1),
+                        Map.of("name", "Hexagonal", "sortOrder", 2)
                 )),
                 Map.entry("externalLinks", List.of(
                         Map.of("label", "GitHub Repo", "url", "https://github.com/example/repo"),
@@ -240,7 +240,7 @@ class PortfolioCommandControllerTest {
                                                             .type(JsonFieldType.ARRAY)
                                                             .description("사용자 입력 태그 목록")
                                                             .optional(),
-                                                    fieldWithPath("tags[].userInputTag")
+                                                    fieldWithPath("tags[].name")
                                                             .type(JsonFieldType.STRING)
                                                             .description("사용자 입력 태그 문자열")
                                                             .optional(),
@@ -609,7 +609,7 @@ class PortfolioCommandControllerTest {
                                                             .type(JsonFieldType.ARRAY)
                                                             .description("사용자 입력 태그 목록 (전체 교체)")
                                                             .optional(),
-                                                    fieldWithPath("tags[].userInputTag")
+                                                    fieldWithPath("tags[].name")
                                                             .type(JsonFieldType.STRING)
                                                             .description("태그 문자열")
                                                             .optional(),

@@ -13,7 +13,7 @@ import lombok.Getter;
 @Getter
 public class PortfolioTag {
     private final Long id;
-    private final String userInputTag;
+    private final String name;
     private final String normalizedTag;
     private final Integer sortOrder;
     private final AuditingInfo auditingInfo;
@@ -26,40 +26,40 @@ public class PortfolioTag {
     @Builder(access = AccessLevel.PUBLIC)
     private PortfolioTag(
             Long id,
-            String userInputTag,
+            String name,
             String normalizedTag,
             Integer sortOrder,
             AuditingInfo auditingInfo
     ) {
-        ensureInvariants(id, userInputTag, normalizedTag, sortOrder, auditingInfo);
+        ensureInvariants(id, name, normalizedTag, sortOrder, auditingInfo);
 
         this.id = id;
-        this.userInputTag = userInputTag;
+        this.name = name;
         this.normalizedTag = normalizedTag;
         this.sortOrder = sortOrder;
         this.auditingInfo = auditingInfo;
     }
 
-    public static PortfolioTag create(String userInputTag, Integer sortOrder) {
+    public static PortfolioTag create(String name, Integer sortOrder) {
         return PortfolioTag.builder()
                 .id(TsidCreator.getTsid().toLong())
-                .userInputTag(userInputTag)
-                .normalizedTag(normalize(userInputTag))
+                .name(name)
+                .normalizedTag(normalize(name))
                 .sortOrder(sortOrder)
                 .auditingInfo(AuditingInfo.create())
                 .build();
     }
 
-    private static String normalize(String userInputTag) {
-        if (userInputTag == null) {
+    private static String normalize(String name) {
+        if (name == null) {
             return null;
         }
-        return userInputTag.trim().toLowerCase().replaceAll("\\s+", "_");
+        return name.trim().toLowerCase().replaceAll("\\s+", "_");
     }
 
     private static void ensureInvariants(
             Long id,
-            String userInputTag,
+            String name,
             String normalizedTag,
             Integer sortOrder,
             AuditingInfo auditingInfo
@@ -70,8 +70,8 @@ public class PortfolioTag {
                 PortfolioTagDomainException::new
         );
         AssertionUtils.notBlank(
-                userInputTag,
-                PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.USER_INPUT_TAG_MISSING,
+                name,
+                PortfolioTagDomainExceptionCodeCluster.HiddenDetailResponse.NAME_MISSING,
                 PortfolioTagDomainException::new
         );
         AssertionUtils.notBlank(

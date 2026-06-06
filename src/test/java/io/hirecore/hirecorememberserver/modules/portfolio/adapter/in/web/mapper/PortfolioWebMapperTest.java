@@ -79,7 +79,7 @@ class PortfolioWebMapperTest {
             assertThat(command.thumbnailImageId()).isEqualTo(100L);
             assertThat(command.contentImageIds()).containsExactly(101L, 102L);
             assertThat(command.tags())
-                    .extracting(PortfolioTagCommand::userInputTag, PortfolioTagCommand::sortOrder)
+                    .extracting(PortfolioTagCommand::name, PortfolioTagCommand::sortOrder)
                     .containsExactly(
                             org.assertj.core.groups.Tuple.tuple("Spring", 0),
                             org.assertj.core.groups.Tuple.tuple("DDD", 1)

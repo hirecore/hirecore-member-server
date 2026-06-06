@@ -22,7 +22,7 @@ public class PortfolioTagJpaEntity extends AbstractPersistableEntity<Long> {
 
     @Comment("사용자 입력 태그")
     @Column(name = "user_input_tag", nullable = false, columnDefinition = "VARCHAR(50)")
-    private String userInputTag;
+    private String name;
 
     @Comment("정규화된 태그")
     @Column(name = "normalized_tag", nullable = false, columnDefinition = "VARCHAR(50)")

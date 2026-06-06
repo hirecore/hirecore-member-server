@@ -19,4 +19,11 @@ public interface PortfolioMemberInterestJpaCommandRepository extends Repository<
             @Param("portfolioId") Long portfolioId,
             @Param("memberAccountId") Long memberAccountId
     );
+
+    @Modifying
+    @Query("""
+            DELETE FROM PortfolioMemberInterestJpaEntity i
+             WHERE i.portfolio.id = :portfolioId
+            """)
+    int deleteAllByPortfolioId(@Param("portfolioId") Long portfolioId);
 }

@@ -7,6 +7,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.res
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CancelPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.DeletePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.RegisterPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
@@ -34,6 +35,7 @@ public class PortfolioCommandController {
 
     private final CreatePortfolioUseCase createPortfolioUseCase;
     private final UpdatePortfolioUseCase updatePortfolioUseCase;
+    private final DeletePortfolioUseCase deletePortfolioUseCase;
     private final RegisterPortfolioInterestUseCase registerPortfolioInterestUseCase;
     private final CancelPortfolioInterestUseCase cancelPortfolioInterestUseCase;
     private final PortfolioWebMapper portfolioWebMapper;
@@ -63,6 +65,15 @@ public class PortfolioCommandController {
         UpdatePortfolioCommand command = portfolioWebMapper.toUpdatePortfolioCommand(request);
         Long updatedPortfolioId = updatePortfolioUseCase.execute(portfolioId, authPrincipal.id(), command);
         return ResponseEntity.ok(new UpdatePortfolioApiResponse(updatedPortfolioId));
+    }
+
+    @DeleteMapping("{portfolioId}")
+    public ResponseEntity<Void> deletePortfolio(
+            @AuthenticationPrincipal AuthPrincipal authPrincipal,
+            @PathVariable("portfolioId") Long portfolioId
+    ){
+        deletePortfolioUseCase.execute(portfolioId, authPrincipal.id());
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("{portfolioId}/interest")

@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 public interface PortfolioJpaCommandRepository extends Repository<PortfolioJpaEntity, Long> {
     PortfolioJpaEntity save(PortfolioJpaEntity portfolio);
 
+    void delete(PortfolioJpaEntity portfolio);
+
     @Modifying
     @Query("""
             UPDATE PortfolioJpaEntity p

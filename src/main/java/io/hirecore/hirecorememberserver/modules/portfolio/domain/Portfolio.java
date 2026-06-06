@@ -271,6 +271,51 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     }
 
     /**
+     * 작성자 본인의 영구 삭제 의사를 검증하고, 본문/썸네일에서 참조 중이던 이미지들을 ORPHANED 대상으로
+     * {@link PortfolioImagesUnlinkedEvent} 에 실어 발행합니다.
+     *
+     * <p>소유자 검증 위반 시 {@link PortfolioDomainExceptionCodeCluster.DetailResponse#PORTFOLIO_FORBIDDEN}
+     * 도메인 예외를 던집니다. 참조 이미지가 한 건도 없는 경우 {@code PortfolioImagesUnlinkedEvent} 의
+     * invariant(비공집합) 에 부합하지 않으므로 이벤트 발행을 생략합니다.</p>
+     *
+     * <p>실제 영구 행 삭제와 {@code portfolio_member_interests} / {@code portfolio_member_views} 의 cleanup 은
+     * 영속 어댑터가 처리합니다.</p>
+     */
+    public void delete(Long requesterMemberAccountId) {
+        if (!this.memberAccountId.equals(requesterMemberAccountId)) {
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN);
+        }
+        List<Long> unlinkedImageIds = collectReferencedImageIds();
+        if (!unlinkedImageIds.isEmpty()) {
+            registerEvent(new PortfolioImagesUnlinkedEvent(
+                    this.id,
+                    this.memberAccountId,
+                    unlinkedImageIds
+            ));
+        }
+    }
+
+    /**
+     * 썸네일과 본문에서 참조 중인 이미지 식별자 집합을 입력 순서를 보존하며 중복 없이 모읍니다.
+     */
+    private List<Long> collectReferencedImageIds() {
+        List<Long> collected = new ArrayList<>();
+        Set<Long> seen = new HashSet<>();
+        if (this.thumbnailImageId != null && seen.add(this.thumbnailImageId)) {
+            collected.add(this.thumbnailImageId);
+        }
+        List<Long> contentImageIds = this.portfolioContent != null ? this.portfolioContent.getImageIds() : null;
+        if (contentImageIds != null) {
+            for (Long imageId : contentImageIds) {
+                if (imageId != null && seen.add(imageId)) {
+                    collected.add(imageId);
+                }
+            }
+        }
+        return collected;
+    }
+
+    /**
      * 이전 이미지 집합({@code (oldThumbnail ∪ oldContent)}) 에서 새 집합({@code (newThumbnail ∪ newContent)}) 을
      * 뺀 차집합 — 즉 본문/썸네일에서 더 이상 참조되지 않게 된 imageId 들을 반환합니다.
      * 입력 순서를 보존하기 위해 LinkedHashSet 의미론으로 계산합니다.

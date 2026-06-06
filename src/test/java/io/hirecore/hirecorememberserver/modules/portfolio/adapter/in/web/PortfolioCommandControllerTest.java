@@ -943,6 +943,127 @@ class PortfolioCommandControllerTest {
     }
 
     // ──────────────────────────────────────────────
+    //  포트폴리오 영구 삭제: 성공 케이스 (Happy Path)
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 영구 삭제: 성공 케이스 (Happy Path)")
+    class DeletePortfolioSuccessTest {
+
+        private static final Long TARGET_PORTFOLIO_ID = 7234567890123456801L;
+
+        @Test
+        @DisplayName("[204 No Content] 작성자 본인이 DELETE 하면 본문 없이 204 를 반환한다.")
+        void delete_portfolio_success() throws Exception {
+            // given
+            willDoNothing().given(deletePortfolioUseCase).execute(TARGET_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(delete("/api/portfolios/{portfolioId}", TARGET_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isNoContent())
+
+                    // 문서화
+                    .andDo(document("204-portfolio-delete-success",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .summary("\"포트폴리오 영구 삭제\": 작성자 본인이 자신의 포트폴리오를 영구 삭제한다.")
+                                            .description("""
+                                                    작성자 본인이 자신의 포트폴리오를 영구 삭제합니다 (hard delete).
+
+                                                        [접근 정책]
+                                                         - 로그인 필수
+                                                         - 작성자 본인만 호출 가능 (비소유자 시도 시 403 PORTFOLIO_FORBIDDEN)
+                                                         - 존재하지 않는 포트폴리오: 404 PORTFOLIO_NOT_FOUND
+
+                                                        [부수효과]
+                                                         - 본문/썸네일에서 참조 중이던 이미지들은 ORPHANED 로 전이되고 사용자 스토리지 사용량이 차감됩니다.
+                                                         - 관심 등록 / 조회 기록 / 본문 / 직무 / 태그의 자식 데이터도 함께 영구 삭제됩니다.
+
+                                                        [응답]
+                                                         - 204 No Content
+                                                    """)
+                                            .pathParameters(
+                                                    ResourceDocumentation.parameterWithName("portfolioId")
+                                                            .type(SimpleType.STRING)
+                                                            .description("영구 삭제 대상 포트폴리오 ID (TSID, JSON 문자열)")
+                                            )
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  포트폴리오 영구 삭제: 비즈니스 로직 실패 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("포트폴리오 영구 삭제: 비즈니스 로직 실패 케이스")
+    class DeletePortfolioFailureTest {
+
+        private static final Long OTHERS_PORTFOLIO_ID = 7234567890123456802L;
+        private static final Long NONEXISTENT_PORTFOLIO_ID = 9000000000000000003L;
+
+        @Test
+        @DisplayName("[403 Forbidden] 비소유자가 DELETE 하면 PORTFOLIO_FORBIDDEN 에러를 반환한다.")
+        void delete_portfolio_forbidden_non_owner() throws Exception {
+            // given
+            willThrow(new PortfolioDomainException(
+                    PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN
+            )).given(deletePortfolioUseCase).execute(OTHERS_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(delete("/api/portfolios/{portfolioId}", OTHERS_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_FORBIDDEN"))
+
+                    // 문서화
+                    .andDo(document("403-portfolio-delete-forbidden",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[404 Not Found] 존재하지 않는 portfolioId DELETE 요청 시 PORTFOLIO_NOT_FOUND 에러를 반환한다.")
+        void delete_portfolio_not_found() throws Exception {
+            // given
+            willThrow(new PortfolioApplicationException(
+                    PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
+            )).given(deletePortfolioUseCase).execute(NONEXISTENT_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
+
+            // when & then
+            mockMvc.perform(delete("/api/portfolios/{portfolioId}", NONEXISTENT_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_NOT_FOUND"))
+
+                    // 문서화
+                    .andDo(document("404-portfolio-delete-not-found",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
     //  공통 응답 필드 정의
     // ──────────────────────────────────────────────
 

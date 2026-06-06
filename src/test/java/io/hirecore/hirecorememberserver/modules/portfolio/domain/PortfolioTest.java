@@ -238,6 +238,76 @@ class PortfolioTest {
     }
 
     @Nested
+    @DisplayName("delete() 영구 삭제")
+    class DeleteTest {
+
+        private static final Long OWNER_ID = 1L;
+        private static final Long OTHER_USER_ID = 2L;
+
+        @Test
+        @DisplayName("작성자 본인이 호출하고 참조 이미지가 있으면 PortfolioImagesUnlinkedEvent 가 발행된다")
+        void should_emit_event_with_all_referenced_image_ids_when_owner() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L));
+            portfolio.pollAllEvents();
+
+            portfolio.delete(OWNER_ID);
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).hasSize(1);
+            assertThat(events.get(0).imageFileMetaIds()).containsExactlyInAnyOrder(100L, 10L, 20L);
+            assertThat(events.get(0).memberAccountId()).isEqualTo(OWNER_ID);
+        }
+
+        @Test
+        @DisplayName("썸네일/본문 모두 비어 있으면 PortfolioImagesUnlinkedEvent 가 발행되지 않는다 (비공집합 invariant 보호)")
+        void should_not_emit_event_when_no_referenced_images() {
+            Portfolio portfolio = createWithImages(null, List.of());
+            portfolio.pollAllEvents();
+
+            portfolio.delete(OWNER_ID);
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).isEmpty();
+        }
+
+        @Test
+        @DisplayName("썸네일과 본문에 동일 imageId 가 중복으로 등장해도 한 번만 PortfolioImagesUnlinkedEvent 에 포함된다")
+        void should_deduplicate_image_ids_in_event() {
+            Portfolio portfolio = createWithImages(100L, List.of(100L, 200L));
+            portfolio.pollAllEvents();
+
+            portfolio.delete(OWNER_ID);
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).hasSize(1);
+            assertThat(events.get(0).imageFileMetaIds()).containsExactlyInAnyOrder(100L, 200L);
+        }
+
+        @Test
+        @DisplayName("비소유자가 호출하면 PORTFOLIO_FORBIDDEN 도메인 예외를 던지고 이벤트는 발행되지 않는다")
+        void should_throw_when_non_owner() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L));
+            portfolio.pollAllEvents();
+
+            assertThatThrownBy(() -> portfolio.delete(OTHER_USER_ID))
+                    .isInstanceOf(PortfolioDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN.getErrorCode());
+
+            List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
+            assertThat(events).isEmpty();
+        }
+
+        @SuppressWarnings("unchecked")
+        private static List<PortfolioImagesUnlinkedEvent> filterUnlinkedEvents(Collection<Object> events) {
+            return events.stream()
+                    .filter(PortfolioImagesUnlinkedEvent.class::isInstance)
+                    .map(e -> (PortfolioImagesUnlinkedEvent) e)
+                    .toList();
+        }
+    }
+
+    @Nested
     @DisplayName("invariant 검증")
     class InvariantTest {
 

@@ -162,7 +162,7 @@ class PortfolioQueryControllerTest {
                     .andExpect(jsonPath("$.visibility").value("public"))
                     .andExpect(jsonPath("$.title").value("회원 서비스 도메인 모델링 회고"))
                     .andExpect(jsonPath("$.content.html").value("<p>본문 HTML 입니다.</p>"))
-                    .andExpect(jsonPath("$.tags[0].userInputTag").value("Spring"))
+                    .andExpect(jsonPath("$.tags[0].name").value("Spring"))
                     .andExpect(jsonPath("$.tags[0].sortOrder").value(0))
                     .andExpect(jsonPath("$.externalLinks[0].label").value("GitHub Repo"))
                     .andExpect(jsonPath("$.externalLinks[0].url").value("https://github.com/example/repo"))
@@ -255,7 +255,7 @@ class PortfolioQueryControllerTest {
                                                     fieldWithPath("tags")
                                                             .type(JsonFieldType.ARRAY)
                                                             .description("사용자 입력 태그 목록 (sortOrder ASC, 삭제된 태그 제외)"),
-                                                    fieldWithPath("tags[].userInputTag")
+                                                    fieldWithPath("tags[].name")
                                                             .type(JsonFieldType.STRING)
                                                             .description("사용자가 입력한 원본 태그 문자열"),
                                                     fieldWithPath("tags[].sortOrder")
@@ -513,7 +513,7 @@ class PortfolioQueryControllerTest {
                     .andExpect(jsonPath("$.visibility").value("public"))
                     .andExpect(jsonPath("$.title").value("회원 서비스 도메인 모델링 회고"))
                     .andExpect(jsonPath("$.content.html").value("<p>본문 HTML 입니다.</p>"))
-                    .andExpect(jsonPath("$.tags[0].userInputTag").value("Spring"))
+                    .andExpect(jsonPath("$.tags[0].name").value("Spring"))
                     .andExpect(jsonPath("$.externalLinks[0].url").value("https://github.com/example/repo"))
 
                     // 문서화
@@ -605,7 +605,7 @@ class PortfolioQueryControllerTest {
                                                     fieldWithPath("tags")
                                                             .type(JsonFieldType.ARRAY)
                                                             .description("사용자 입력 태그 목록 (sortOrder ASC)"),
-                                                    fieldWithPath("tags[].userInputTag")
+                                                    fieldWithPath("tags[].name")
                                                             .type(JsonFieldType.STRING)
                                                             .description("사용자가 입력한 원본 태그 문자열"),
                                                     fieldWithPath("tags[].sortOrder")

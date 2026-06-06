@@ -257,7 +257,7 @@ class CreatePortfolioUseCaseImplTest {
             ArgumentCaptor<Portfolio> captor = ArgumentCaptor.forClass(Portfolio.class);
             then(savePortfolioPort).should().save(captor.capture());
             assertThat(captor.getValue().getPortfolioTags())
-                    .extracting("userInputTag", "sortOrder")
+                    .extracting("name", "sortOrder")
                     .containsExactly(
                             org.assertj.core.groups.Tuple.tuple("Spring", 0),
                             org.assertj.core.groups.Tuple.tuple("DDD", 1)

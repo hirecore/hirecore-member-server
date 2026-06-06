@@ -89,7 +89,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
             return List.of();
         }
         return tagCommands.stream()
-                .map(tag -> PortfolioTag.create(tag.userInputTag(), tag.sortOrder()))
+                .map(tag -> PortfolioTag.create(tag.name(), tag.sortOrder()))
                 .toList();
     }
 

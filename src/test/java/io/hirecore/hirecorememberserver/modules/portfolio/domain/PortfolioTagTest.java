@@ -21,7 +21,7 @@ class PortfolioTagTest {
         void should_preserve_user_input_and_generate_normalized() {
             PortfolioTag tag = PortfolioTag.create("Full Stack", 0);
 
-            assertThat(tag.getUserInputTag()).isEqualTo("Full Stack");
+            assertThat(tag.getName()).isEqualTo("Full Stack");
             assertThat(tag.getNormalizedTag()).isEqualTo("full_stack");
             assertThat(tag.getSortOrder()).isEqualTo(0);
             assertThat(tag.getId()).isNotNull();

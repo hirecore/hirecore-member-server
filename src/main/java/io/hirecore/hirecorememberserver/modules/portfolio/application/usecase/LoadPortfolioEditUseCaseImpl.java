@@ -123,7 +123,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
             return List.of();
         }
         return tags.stream()
-                .map(tag -> new PortfolioTagResponse(tag.getUserInputTag(), tag.getSortOrder()))
+                .map(tag -> new PortfolioTagResponse(tag.getName(), tag.getSortOrder()))
                 .toList();
     }
 

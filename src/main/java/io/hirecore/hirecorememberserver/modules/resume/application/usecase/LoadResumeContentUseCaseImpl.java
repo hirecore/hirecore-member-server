@@ -1,7 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.resume.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.resume.application.port.in.LoadResumeContentUseCase;
-import io.hirecore.hirecorememberserver.modules.resume.application.port.in.dto.response.ResumeContentLoadResult;
 import io.hirecore.hirecorememberserver.modules.resume.application.port.out.LoadResumeContentPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ public class LoadResumeContentUseCaseImpl implements LoadResumeContentUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ResumeContentLoadResult> execute(Long resumeId) {
+    public Optional<Response> execute(Long resumeId) {
         return loadResumeContentPort.findById(resumeId);
     }
 }

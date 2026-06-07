@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.resume.adapter.out.persistence.jpa;
 
 import io.hirecore.hirecorememberserver.modules.resume.adapter.out.persistence.jpa.repository.ResumeJpaQueryRepository;
-import io.hirecore.hirecorememberserver.modules.resume.application.port.in.dto.response.ResumeContentLoadResult;
+import io.hirecore.hirecorememberserver.modules.resume.application.port.in.LoadResumeContentUseCase;
 import io.hirecore.hirecorememberserver.modules.resume.application.port.out.LoadResumeContentPort;
 import io.hirecore.hirecorememberserver.modules.resume.application.port.out.LoadResumeTitlesPort;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +34,9 @@ public class ResumeJpaQueryAdapter implements
     }
 
     @Override
-    public Optional<ResumeContentLoadResult> findById(Long resumeId) {
+    public Optional<LoadResumeContentUseCase.Response> findById(Long resumeId) {
         return resumeJpaQueryRepository.findContentProjectionById(resumeId)
-                .map(projection -> new ResumeContentLoadResult(
+                .map(projection -> new LoadResumeContentUseCase.Response(
                         projection.getId(),
                         projection.getTitle(),
                         projection.getMemberAccountId(),

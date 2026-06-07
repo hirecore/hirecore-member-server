@@ -19,4 +19,17 @@ public interface PortfolioJpaQueryRepository extends Repository<PortfolioJpaEnti
              ORDER BY p.auditingInfo.updatedAt DESC
             """)
     List<PortfolioJpaEntity> findAllByMemberAccountIdOrderByUpdatedAtDesc(@Param("memberAccountId") Long memberAccountId);
+
+    @Query("""
+            SELECT p
+              FROM PortfolioJpaEntity p
+             WHERE p.memberAccountId = :memberAccountId
+               AND p.visibility = io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility.PUBLIC
+               AND p.id <> :excludedPortfolioId
+             ORDER BY p.auditingInfo.updatedAt DESC
+            """)
+    List<PortfolioJpaEntity> findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(
+            @Param("memberAccountId") Long memberAccountId,
+            @Param("excludedPortfolioId") Long excludedPortfolioId
+    );
 }

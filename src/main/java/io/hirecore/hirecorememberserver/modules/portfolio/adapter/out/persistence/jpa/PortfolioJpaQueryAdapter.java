@@ -33,4 +33,16 @@ public class PortfolioJpaQueryAdapter implements
                 .map(portfolioJpaEntityMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Portfolio> findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(
+            Long memberAccountId,
+            Long excludedPortfolioId
+    ) {
+        return portfolioJpaQueryRepository
+                .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(memberAccountId, excludedPortfolioId)
+                .stream()
+                .map(portfolioJpaEntityMapper::toDomain)
+                .toList();
+    }
 }

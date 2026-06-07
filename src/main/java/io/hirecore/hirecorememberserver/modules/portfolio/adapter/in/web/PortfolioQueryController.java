@@ -1,15 +1,12 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web;
 
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.MyPortfolioSummariesApiResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioDetailApiResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.PortfolioEditApiResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.LoadMyPortfolioSummariesApi;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.LoadPortfolioDetailApi;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.LoadPortfolioEditApi;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummariesResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioEditResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +31,13 @@ public class PortfolioQueryController {
      * {@code authPrincipal} 은 비로그인 호출에서 {@code null} 일 수 있습니다.
      */
     @GetMapping("{portfolioId}")
-    public ResponseEntity<PortfolioDetailApiResponse> loadPortfolioDetail(
+    public ResponseEntity<LoadPortfolioDetailApi.Response> loadPortfolioDetail(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @PathVariable("portfolioId") Long portfolioId
     ){
         Long viewerId = authPrincipal != null ? authPrincipal.id() : null;
-        PortfolioDetailResponse applicationResponse = loadPortfolioDetailUseCase.execute(portfolioId, viewerId);
-        PortfolioDetailApiResponse response = portfolioWebMapper.toPortfolioDetailApiResponse(applicationResponse);
+        LoadPortfolioDetailUseCase.Response applicationResponse = loadPortfolioDetailUseCase.execute(portfolioId, viewerId);
+        LoadPortfolioDetailApi.Response response = portfolioWebMapper.toLoadPortfolioDetailApiResponse(applicationResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -49,12 +46,12 @@ public class PortfolioQueryController {
      * SecurityConfig 에서 {@code authenticated} 로 보호되므로 {@code authPrincipal} 은 항상 non-null 입니다.
      */
     @GetMapping("{portfolioId}/edit")
-    public ResponseEntity<PortfolioEditApiResponse> loadPortfolioEdit(
+    public ResponseEntity<LoadPortfolioEditApi.Response> loadPortfolioEdit(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @PathVariable("portfolioId") Long portfolioId
     ){
-        PortfolioEditResponse applicationResponse = loadPortfolioEditUseCase.execute(portfolioId, authPrincipal.id());
-        PortfolioEditApiResponse response = portfolioWebMapper.toPortfolioEditApiResponse(applicationResponse);
+        LoadPortfolioEditUseCase.Response applicationResponse = loadPortfolioEditUseCase.execute(portfolioId, authPrincipal.id());
+        LoadPortfolioEditApi.Response response = portfolioWebMapper.toLoadPortfolioEditApiResponse(applicationResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -64,11 +61,11 @@ public class PortfolioQueryController {
      * SecurityConfig 에서 {@code authenticated} 로 보호되므로 {@code authPrincipal} 은 항상 non-null 입니다.
      */
     @GetMapping("summaries/mine")
-    public ResponseEntity<MyPortfolioSummariesApiResponse> loadMyPortfolioSummaries(
+    public ResponseEntity<LoadMyPortfolioSummariesApi.Response> loadMyPortfolioSummaries(
             @AuthenticationPrincipal AuthPrincipal authPrincipal
     ){
-        MyPortfolioSummariesResponse applicationResponse = loadMyPortfolioSummariesUseCase.execute(authPrincipal.id());
-        MyPortfolioSummariesApiResponse response = portfolioWebMapper.toMyPortfolioSummariesApiResponse(applicationResponse);
+        LoadMyPortfolioSummariesUseCase.Response applicationResponse = loadMyPortfolioSummariesUseCase.execute(authPrincipal.id());
+        LoadMyPortfolioSummariesApi.Response response = portfolioWebMapper.toLoadMyPortfolioSummariesApiResponse(applicationResponse);
         return ResponseEntity.ok(response);
     }
 }

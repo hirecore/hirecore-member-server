@@ -1,16 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.JobCategoryCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
@@ -62,9 +59,9 @@ class CreatePortfolioUseCaseImplTest {
     private static final Long THUMBNAIL_IMAGE_ID = 100L;
     private static final List<Long> CONTENT_IMAGE_IDS = List.of(101L, 102L);
 
-    private CreatePortfolioCommand createCommand() {
-        return new CreatePortfolioCommand(
-                new JobCategoryCommand("DEV_BACKEND", "백엔드 직무"),
+    private CreatePortfolioUseCase.Command createCommand() {
+        return new CreatePortfolioUseCase.Command(
+                new SharedCommandDto.JobCategory("DEV_BACKEND", "백엔드 직무"),
                 CollaborationType.TEAM,
                 Visibility.PUBLIC,
                 "회원 서비스 도메인 모델링 회고",
@@ -73,11 +70,11 @@ class CreatePortfolioUseCaseImplTest {
                 THUMBNAIL_IMAGE_ID,
                 CONTENT_IMAGE_IDS,
                 List.of(
-                        new PortfolioTagCommand("Spring", 0),
-                        new PortfolioTagCommand("DDD", 1)
+                        new SharedCommandDto.SequentialTag("Spring", 0),
+                        new SharedCommandDto.SequentialTag("DDD", 1)
                 ),
                 List.of(),
-                new PortfolioContentCommand(
+                new SharedCommandDto.RichTextContent(
                         Map.of("type", "doc"),
                         "<p>본문</p>"
                 ),
@@ -94,7 +91,7 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("이미지 상태 전이, 카테고리 코드 해석, 포트폴리오 저장이 모두 호출되고 저장된 포트폴리오의 ID를 반환한다")
         void should_orchestrate_steps_and_return_saved_id() {
             // given
-            CreatePortfolioCommand command = createCommand();
+            CreatePortfolioUseCase.Command command = createCommand();
             given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
@@ -114,7 +111,7 @@ class CreatePortfolioUseCaseImplTest {
         @SuppressWarnings("unchecked")
         void should_pass_thumbnail_and_content_image_ids_to_mark_uploaded() {
             // given
-            CreatePortfolioCommand command = createCommand();
+            CreatePortfolioUseCase.Command command = createCommand();
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
@@ -136,11 +133,11 @@ class CreatePortfolioUseCaseImplTest {
         @SuppressWarnings("unchecked")
         void should_pass_only_content_image_ids_when_thumbnail_is_null() {
             // given
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    new JobCategoryCommand("DEV_BACKEND", null),
+            CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
+                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, CONTENT_IMAGE_IDS, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -163,11 +160,11 @@ class CreatePortfolioUseCaseImplTest {
         @SuppressWarnings("unchecked")
         void should_call_mark_uploaded_with_empty_when_no_images() {
             // given
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    new JobCategoryCommand("DEV_BACKEND", null),
+            CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
+                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -189,7 +186,7 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("저장되는 Portfolio에 회원/카테고리/제목/협업유형/공개범위가 정확히 전달된다")
         void should_build_portfolio_with_correct_fields() {
             // given
-            CreatePortfolioCommand command = createCommand();
+            CreatePortfolioUseCase.Command command = createCommand();
             given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
@@ -221,11 +218,11 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_preview_summary_through_as_is() {
             // given
             String userPreview = "협업 에디터를 직접 구현해본 경험을 정리한 글";
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    new JobCategoryCommand("DEV_BACKEND", null),
+            CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
+                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
                     CollaborationType.TEAM, Visibility.PUBLIC,
                     "title", null, userPreview, null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>본문</p>"),
+                    new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>본문</p>"),
                     null, null
             );
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -245,7 +242,7 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("tags Command 리스트가 PortfolioTag 리스트로 매핑되며 클라이언트가 보낸 sortOrder 가 도메인에 그대로 전달된다")
         void should_map_tag_commands_to_portfolio_tags_with_sort_order() {
             // given
-            CreatePortfolioCommand command = createCommand();
+            CreatePortfolioUseCase.Command command = createCommand();
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
@@ -268,11 +265,11 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("tags가 null이면 도메인에는 빈 PortfolioTag 리스트가 전달된다")
         void should_pass_empty_tags_when_input_is_null() {
             // given
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    new JobCategoryCommand("DEV_BACKEND", null),
+            CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
+                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -292,11 +289,11 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("externalLinks가 null이면 도메인에는 빈 ExternalLink 리스트가 전달된다")
         void should_coerce_null_external_links_to_empty() {
             // given — externalLinks=null
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    new JobCategoryCommand("DEV_BACKEND", null),
+            CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
+                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, null,
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -316,12 +313,12 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("externalLinks가 채워져 있으면 도메인에 그대로 전달된다")
         void should_pass_external_links_as_is() {
             // given
-            PortfolioExternalLinkCommand linkCommand = new PortfolioExternalLinkCommand("Repo", "https://github.com/example");
-            CreatePortfolioCommand command = new CreatePortfolioCommand(
-                    new JobCategoryCommand("DEV_BACKEND", null),
+            SharedCommandDto.ExternalLink linkCommand = new SharedCommandDto.ExternalLink("Repo", "https://github.com/example");
+            CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
+                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, List.of(linkCommand),
-                    new PortfolioContentCommand(Map.of("type", "doc"), "<p>x</p>"),
+                    new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
@@ -347,7 +344,7 @@ class CreatePortfolioUseCaseImplTest {
         @DisplayName("markUploaded에서 예외가 발생하면 카테고리 조회와 저장은 호출되지 않는다")
         void should_short_circuit_when_mark_uploaded_fails() {
             // given
-            CreatePortfolioCommand command = createCommand();
+            CreatePortfolioUseCase.Command command = createCommand();
             doThrow(new RuntimeException("simulated"))
                     .when(markImagesAsUploadedPort)
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), any());

@@ -1,17 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web;
 
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.UpdatePortfolioApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.CreatePortfolioApiResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.response.UpdatePortfolioApiResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.CreatePortfolioApi;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.UpdatePortfolioApi;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CancelPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.DeletePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.RegisterPortfolioInterestUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.UpdatePortfolioCommand;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +37,11 @@ public class PortfolioCommandController {
     private final PortfolioWebMapper portfolioWebMapper;
 
     @PostMapping
-    public ResponseEntity<CreatePortfolioApiResponse> createPortfolio(
+    public ResponseEntity<CreatePortfolioApi.Response> createPortfolio(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
-            @Valid @RequestBody CreatePortfolioApiRequest request
+            @Valid @RequestBody CreatePortfolioApi.Request request
     ){
-        CreatePortfolioCommand command = portfolioWebMapper.toCreatePortfolioCommand(request);
+        CreatePortfolioUseCase.Command command = portfolioWebMapper.toCreatePortfolioCommand(request);
         Long portfolioId = createPortfolioUseCase.execute(authPrincipal.id(), command);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -53,18 +49,18 @@ public class PortfolioCommandController {
                 .buildAndExpand(portfolioId)
                 .toUri();
 
-        return ResponseEntity.created(location).body(new CreatePortfolioApiResponse(portfolioId));
+        return ResponseEntity.created(location).body(new CreatePortfolioApi.Response(portfolioId));
     }
 
     @PutMapping("{portfolioId}")
-    public ResponseEntity<UpdatePortfolioApiResponse> updatePortfolio(
+    public ResponseEntity<UpdatePortfolioApi.Response> updatePortfolio(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @PathVariable("portfolioId") Long portfolioId,
-            @Valid @RequestBody UpdatePortfolioApiRequest request
+            @Valid @RequestBody UpdatePortfolioApi.Request request
     ){
-        UpdatePortfolioCommand command = portfolioWebMapper.toUpdatePortfolioCommand(request);
+        UpdatePortfolioUseCase.Command command = portfolioWebMapper.toUpdatePortfolioCommand(request);
         Long updatedPortfolioId = updatePortfolioUseCase.execute(portfolioId, authPrincipal.id(), command);
-        return ResponseEntity.ok(new UpdatePortfolioApiResponse(updatedPortfolioId));
+        return ResponseEntity.ok(new UpdatePortfolioApi.Response(updatedPortfolioId));
     }
 
     @DeleteMapping("{portfolioId}")

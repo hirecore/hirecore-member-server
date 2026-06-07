@@ -19,25 +19,13 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedCoverLetterContentResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedCoverLetterResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedResumeContentResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedResumeResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummariesResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummaryItemResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioBodyResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentImageResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioEditResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioJobCategoryResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherOtherPortfolioSummaryResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
@@ -125,72 +113,69 @@ class PortfolioQueryControllerTest {
         private static final Long PRIVATE_PORTFOLIO_ID = 1234567890123456789L;
         private static final String PUBLISHER_NICKNAME = "hirecore_user";
 
-        private PortfolioBodyResponse buildPortfolioBody(Visibility visibility) {
-            return new PortfolioBodyResponse(
+        private LoadPortfolioDetailUseCase.Response.Body buildPortfolioBody(Visibility visibility) {
+            return new LoadPortfolioDetailUseCase.Response.Body(
                     "회원 서비스 도메인 모델링 회고",
                     CollaborationType.TEAM,
                     visibility,
                     List.of(
-                            new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드"),
-                            new PortfolioJobCategoryResponse(1003L, 3L, "DEV_BACKEND_JAVA", "Java")
+                            new SharedResponseDto.JobCategory(1001L, 1L, "DEV", "개발"),
+                            new SharedResponseDto.JobCategory(1002L, 2L, "DEV_BACKEND", "백엔드"),
+                            new SharedResponseDto.JobCategory(1003L, 3L, "DEV_BACKEND_JAVA", "Java")
                     ),
                     List.of(
-                            new PortfolioTagResponse("Spring", 0),
-                            new PortfolioTagResponse("DDD", 1),
-                            new PortfolioTagResponse("Hexagonal", 2)
+                            new SharedResponseDto.SequentialTag("Spring", 0),
+                            new SharedResponseDto.SequentialTag("DDD", 1),
+                            new SharedResponseDto.SequentialTag("Hexagonal", 2)
                     ),
                     List.of(
-                            new PortfolioExternalLinkResponse("GitHub Repo", "https://github.com/example/repo"),
-                            new PortfolioExternalLinkResponse("데모", "https://demo.example.com")
+                            new SharedResponseDto.ExternalLink("GitHub Repo", "https://github.com/example/repo"),
+                            new SharedResponseDto.ExternalLink("데모", "https://demo.example.com")
                     ),
-                    PortfolioContentResponse.builder()
-                            .json("{\"type\":\"doc\",\"content\":[]}")
-                            .html("<p>본문 HTML 입니다.</p>")
-                            .build()
+                    new SharedResponseDto.RichTextContent("{\"type\":\"doc\",\"content\":[]}", "<p>본문 HTML 입니다.</p>")
             );
         }
 
-        private PortfolioDetailResponse buildResponse(
+        private LoadPortfolioDetailUseCase.Response buildResponse(
                 boolean isOwner,
                 Visibility visibility,
-                LinkedResumeContentResponse linkedResume,
-                LinkedCoverLetterContentResponse linkedCoverLetter,
-                List<PublisherOtherPortfolioSummaryResponse> otherPortfolios
+                LoadPortfolioDetailUseCase.Response.LinkedResume linkedResume,
+                LoadPortfolioDetailUseCase.Response.LinkedCoverLetter linkedCoverLetter,
+                List<LoadPortfolioDetailUseCase.Response.Publisher.OtherPortfolioSummary> otherPortfolios
         ) {
-            return PortfolioDetailResponse.builder()
+            return LoadPortfolioDetailUseCase.Response.builder()
                     .isOwner(isOwner)
                     .viewCount(0L)
                     .interestCount(0L)
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
                     .portfolio(buildPortfolioBody(visibility))
-                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, otherPortfolios))
+                    .publisher(new LoadPortfolioDetailUseCase.Response.Publisher(PUBLISHER_NICKNAME, otherPortfolios))
                     .linkedResume(linkedResume)
                     .linkedCoverLetter(linkedCoverLetter)
                     .build();
         }
 
-        private List<PublisherOtherPortfolioSummaryResponse> sampleOtherPortfolios() {
+        private List<LoadPortfolioDetailUseCase.Response.Publisher.OtherPortfolioSummary> sampleOtherPortfolios() {
             return List.of(
-                    new PublisherOtherPortfolioSummaryResponse(
+                    new LoadPortfolioDetailUseCase.Response.Publisher.OtherPortfolioSummary(
                             5234567890123456790L,
                             "프론트엔드 사이드 프로젝트",
                             List.of(
-                                    new PortfolioJobCategoryResponse(2001L, 1L, "DEV", "개발"),
-                                    new PortfolioJobCategoryResponse(2002L, 2L, "DEV_FRONTEND", "프론트엔드"),
-                                    new PortfolioJobCategoryResponse(2003L, 3L, "DEV_FRONTEND_REACT", "React")
+                                    new SharedResponseDto.JobCategory(2001L, 1L, "DEV", "개발"),
+                                    new SharedResponseDto.JobCategory(2002L, 2L, "DEV_FRONTEND", "프론트엔드"),
+                                    new SharedResponseDto.JobCategory(2003L, 3L, "DEV_FRONTEND_REACT", "React")
                             ),
                             512L,
                             24L,
                             Instant.parse("2026-05-30T09:00:00Z")
                     ),
-                    new PublisherOtherPortfolioSummaryResponse(
+                    new LoadPortfolioDetailUseCase.Response.Publisher.OtherPortfolioSummary(
                             5234567890123456791L,
                             "DevOps 학습 정리",
                             List.of(
-                                    new PortfolioJobCategoryResponse(3001L, 1L, "DEV", "개발"),
-                                    new PortfolioJobCategoryResponse(3002L, 2L, "DEV_DEVOPS", "DevOps"),
-                                    new PortfolioJobCategoryResponse(3003L, 3L, "DEV_DEVOPS_K8S", "Kubernetes")
+                                    new SharedResponseDto.JobCategory(3001L, 1L, "DEV", "개발"),
+                                    new SharedResponseDto.JobCategory(3002L, 2L, "DEV_DEVOPS", "DevOps"),
+                                    new SharedResponseDto.JobCategory(3003L, 3L, "DEV_DEVOPS_K8S", "Kubernetes")
                             ),
                             128L,
                             6L,
@@ -199,33 +184,27 @@ class PortfolioQueryControllerTest {
             );
         }
 
-        private LinkedResumeContentResponse linkedResumeWithContent() {
-            return new LinkedResumeContentResponse(
+        private LoadPortfolioDetailUseCase.Response.LinkedResume linkedResumeWithContent() {
+            return new LoadPortfolioDetailUseCase.Response.LinkedResume(
                     8100000000000000001L,
                     "백엔드 신입 이력서",
-                    PortfolioContentResponse.builder()
-                            .json("{\"type\":\"doc\",\"content\":[]}")
-                            .html("<p>이력서 본문 HTML</p>")
-                            .build()
+                    new SharedResponseDto.RichTextContent("{\"type\":\"doc\",\"content\":[]}", "<p>이력서 본문 HTML</p>")
             );
         }
 
-        private LinkedCoverLetterContentResponse linkedCoverLetterContentHidden() {
-            return new LinkedCoverLetterContentResponse(
+        private LoadPortfolioDetailUseCase.Response.LinkedCoverLetter linkedCoverLetterContentHidden() {
+            return new LoadPortfolioDetailUseCase.Response.LinkedCoverLetter(
                     8200000000000000001L,
                     "B사 지원용 자소서",
                     null
             );
         }
 
-        private LinkedCoverLetterContentResponse linkedCoverLetterWithContent() {
-            return new LinkedCoverLetterContentResponse(
+        private LoadPortfolioDetailUseCase.Response.LinkedCoverLetter linkedCoverLetterWithContent() {
+            return new LoadPortfolioDetailUseCase.Response.LinkedCoverLetter(
                     8200000000000000001L,
                     "B사 지원용 자소서",
-                    PortfolioContentResponse.builder()
-                            .json("{\"type\":\"doc\",\"content\":[]}")
-                            .html("<p>자소서 본문 HTML</p>")
-                            .build()
+                    new SharedResponseDto.RichTextContent("{\"type\":\"doc\",\"content\":[]}", "<p>자소서 본문 HTML</p>")
             );
         }
 
@@ -519,14 +498,14 @@ class PortfolioQueryControllerTest {
         @DisplayName("[200 OK] PUBLIC 포트폴리오를 비소유 로그인 사용자가 첫 조회 시 응답의 isInterested=false 로 반환한다.")
         void load_portfolio_detail_non_owner_not_interested() throws Exception {
             // given - 비소유 로그인 사용자, 관심 미등록
-            PortfolioDetailResponse response = PortfolioDetailResponse.builder()
+            LoadPortfolioDetailUseCase.Response response = LoadPortfolioDetailUseCase.Response.builder()
                     .isOwner(false)
                     .viewCount(0L)
                     .interestCount(0L)
                     .isInterested(false)
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
                     .portfolio(buildPortfolioBody(Visibility.PUBLIC))
-                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, List.of()))
+                    .publisher(new LoadPortfolioDetailUseCase.Response.Publisher(PUBLISHER_NICKNAME, List.of()))
                     .build();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
                     .willReturn(response);
@@ -543,14 +522,14 @@ class PortfolioQueryControllerTest {
         @DisplayName("[200 OK] PUBLIC 포트폴리오를 비소유 로그인 사용자가 관심 등록한 후 조회 시 응답의 isInterested=true 로 반환한다.")
         void load_portfolio_detail_non_owner_already_interested() throws Exception {
             // given - 비소유 로그인 사용자, 관심 등록됨
-            PortfolioDetailResponse response = PortfolioDetailResponse.builder()
+            LoadPortfolioDetailUseCase.Response response = LoadPortfolioDetailUseCase.Response.builder()
                     .isOwner(false)
                     .viewCount(0L)
                     .interestCount(1L)
                     .isInterested(true)
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
                     .portfolio(buildPortfolioBody(Visibility.PUBLIC))
-                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, List.of()))
+                    .publisher(new LoadPortfolioDetailUseCase.Response.Publisher(PUBLISHER_NICKNAME, List.of()))
                     .build();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
                     .willReturn(response);
@@ -674,40 +653,37 @@ class PortfolioQueryControllerTest {
 
         private static final Long OWNED_PORTFOLIO_ID = 5234567890123456789L;
 
-        private PortfolioEditResponse buildResponse() {
-            return new PortfolioEditResponse(
+        private LoadPortfolioEditUseCase.Response buildResponse() {
+            return new LoadPortfolioEditUseCase.Response(
                     "회고 작성 시 참고용 메모입니다.",
                     "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.",
                     7876543210987654321L,
                     "https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp",
                     List.of(
-                            new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드")
+                            new SharedResponseDto.JobCategory(1001L, 1L, "DEV", "개발"),
+                            new SharedResponseDto.JobCategory(1002L, 2L, "DEV_BACKEND", "백엔드")
                     ),
                     CollaborationType.TEAM,
                     Visibility.PUBLIC,
                     "회원 서비스 도메인 모델링 회고",
                     List.of(
-                            new PortfolioTagResponse("Spring", 0),
-                            new PortfolioTagResponse("DDD", 1)
+                            new SharedResponseDto.SequentialTag("Spring", 0),
+                            new SharedResponseDto.SequentialTag("DDD", 1)
                     ),
                     List.of(
-                            new PortfolioExternalLinkResponse("GitHub Repo", "https://github.com/example/repo")
+                            new SharedResponseDto.ExternalLink("GitHub Repo", "https://github.com/example/repo")
                     ),
                     List.of(
-                            new PortfolioContentImageResponse(
+                            new LoadPortfolioEditUseCase.Response.ContentImage(
                                     1111111111111111111L,
                                     "https://cdn.example.com/portfolio/content/2026/06/1111111111111111111.webp"
                             ),
-                            new PortfolioContentImageResponse(
+                            new LoadPortfolioEditUseCase.Response.ContentImage(
                                     2222222222222222222L,
                                     "https://cdn.example.com/portfolio/content/2026/06/2222222222222222222.webp"
                             )
                     ),
-                    PortfolioContentResponse.builder()
-                            .json("{\"type\":\"doc\",\"content\":[]}")
-                            .html("<p>본문 HTML 입니다.</p>")
-                            .build()
+                    new SharedResponseDto.RichTextContent("{\"type\":\"doc\",\"content\":[]}", "<p>본문 HTML 입니다.</p>")
             );
         }
 
@@ -929,39 +905,40 @@ class PortfolioQueryControllerTest {
     @DisplayName("내 포트폴리오 요약 목록 조회: 성공 케이스 (Happy Path)")
     class LoadMyPortfolioSummariesSuccessTest {
 
-        private MyPortfolioSummariesResponse buildResponse() {
-            MyPortfolioSummaryItemResponse linkedItem = new MyPortfolioSummaryItemResponse(
+        private LoadMyPortfolioSummariesUseCase.Response buildResponse() {
+            LoadMyPortfolioSummariesUseCase.Response.Item linkedItem = new LoadMyPortfolioSummariesUseCase.Response.Item(
                     5234567890123456789L,
                     "회원 서비스 도메인 모델링 회고",
                     "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.",
                     "회고 작성 시 참고용 메모입니다.",
-                    7876543210987654321L,
-                    "https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp",
+                    new SharedResponseDto.Thumbnail(
+                            7876543210987654321L,
+                            "https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp"
+                    ),
                     List.of(
-                            new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드")
+                            new SharedResponseDto.JobCategory(1001L, 1L, "DEV", "개발"),
+                            new SharedResponseDto.JobCategory(1002L, 2L, "DEV_BACKEND", "백엔드")
                     ),
                     CollaborationType.TEAM,
                     Visibility.PUBLIC,
                     List.of(
-                            new PortfolioTagResponse("Spring", 0),
-                            new PortfolioTagResponse("DDD", 1)
+                            new SharedResponseDto.SequentialTag("Spring", 0),
+                            new SharedResponseDto.SequentialTag("DDD", 1)
                     ),
                     42L,
-                    new LinkedResumeResponse(8100000000000000001L, "백엔드 신입 이력서"),
-                    new LinkedCoverLetterResponse(8200000000000000001L, "B사 지원용 자소서"),
+                    new LoadMyPortfolioSummariesUseCase.Response.LinkedResume(8100000000000000001L, "백엔드 신입 이력서"),
+                    new LoadMyPortfolioSummariesUseCase.Response.LinkedCoverLetter(8200000000000000001L, "B사 지원용 자소서"),
                     Instant.parse("2026-06-05T14:00:00Z")
             );
-            MyPortfolioSummaryItemResponse standaloneItem = new MyPortfolioSummaryItemResponse(
+            LoadMyPortfolioSummariesUseCase.Response.Item standaloneItem = new LoadMyPortfolioSummariesUseCase.Response.Item(
                     5234567890123456790L,
                     "프론트엔드 사이드 프로젝트",
                     "Vite + React 로 만든 사이드 프로젝트",
                     null,
                     null,
-                    null,
                     List.of(
-                            new PortfolioJobCategoryResponse(2001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryResponse(2002L, 2L, "DEV_FRONTEND", "프론트엔드")
+                            new SharedResponseDto.JobCategory(2001L, 1L, "DEV", "개발"),
+                            new SharedResponseDto.JobCategory(2002L, 2L, "DEV_FRONTEND", "프론트엔드")
                     ),
                     CollaborationType.PERSONAL,
                     Visibility.PRIVATE,
@@ -971,7 +948,7 @@ class PortfolioQueryControllerTest {
                     null,
                     Instant.parse("2026-05-30T09:00:00Z")
             );
-            return new MyPortfolioSummariesResponse(List.of(linkedItem, standaloneItem));
+            return new LoadMyPortfolioSummariesUseCase.Response(List.of(linkedItem, standaloneItem));
         }
 
         @Test
@@ -993,8 +970,9 @@ class PortfolioQueryControllerTest {
                     .andExpect(jsonPath("$.items[0].linkedResume.title").value("백엔드 신입 이력서"))
                     .andExpect(jsonPath("$.items[0].linkedCoverLetter.title").value("B사 지원용 자소서"))
                     .andExpect(jsonPath("$.items[0].tags[0].name").value("Spring"))
+                    .andExpect(jsonPath("$.items[0].thumbnail.imageUrl").value("https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp"))
                     .andExpect(jsonPath("$.items[1].title").value("프론트엔드 사이드 프로젝트"))
-                    .andExpect(jsonPath("$.items[1].thumbnailImageUrl").doesNotExist())
+                    .andExpect(jsonPath("$.items[1].thumbnail").doesNotExist())
                     .andExpect(jsonPath("$.items[1].linkedResume").doesNotExist())
                     .andExpect(jsonPath("$.items[1].linkedCoverLetter").doesNotExist())
 
@@ -1020,7 +998,7 @@ class PortfolioQueryControllerTest {
                                                         [BC 간 합성]
                                                          - 연결된 이력서/자기소개서의 제목은 sharedkernel out port 로 합성됩니다.
                                                          - 연결이 없거나 합성에 실패한 항목은 linkedResume / linkedCoverLetter 가 null.
-                                                         - 썸네일 URL 은 환경별 CDN base URL + object key 조합. 등록 안 됐거나 ORPHANED/DELETED 인 경우 null.
+                                                         - thumbnail 은 nested 객체. 썸네일 미등록 시 thumbnail 자체가 null. 등록은 됐으나 URL 해소 실패(ORPHANED/DELETED) 시 thumbnail.imageUrl 만 null 로 채워짐.
                                                     """)
                                             .responseFields(
                                                     fieldWithPath("items")
@@ -1039,13 +1017,17 @@ class PortfolioQueryControllerTest {
                                                             .type(JsonFieldType.STRING)
                                                             .description("작성자 비공개 메모. 미작성 시 null.")
                                                             .optional(),
-                                                    fieldWithPath("items[].thumbnailImageId")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("썸네일 이미지의 ImageFileMeta ID (TSID, JSON 문자열). 미등록 시 null.")
+                                                    fieldWithPath("items[].thumbnail")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("썸네일 이미지 wrapper. 썸네일 미등록 시 객체 자체가 null.")
                                                             .optional(),
-                                                    fieldWithPath("items[].thumbnailImageUrl")
+                                                    fieldWithPath("items[].thumbnail.imageId")
                                                             .type(JsonFieldType.STRING)
-                                                            .description("썸네일 이미지 전체 URL. 미등록 / 해소 실패 시 null.")
+                                                            .description("썸네일 이미지의 ImageFileMeta ID (TSID, JSON 문자열).")
+                                                            .optional(),
+                                                    fieldWithPath("items[].thumbnail.imageUrl")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 전체 URL. URL 해소 실패(ORPHANED/DELETED) 시에는 null 로 응답되며 imageId 만 유지됨.")
                                                             .optional(),
                                                     fieldWithPath("items[].jobCategories")
                                                             .type(JsonFieldType.ARRAY)

@@ -3,10 +3,8 @@ package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.JobCategoryCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.UpdatePortfolioCommand;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
@@ -90,9 +88,9 @@ class UpdatePortfolioUseCaseImplTest {
         );
     }
 
-    private static UpdatePortfolioCommand validUpdateCommand() {
-        return new UpdatePortfolioCommand(
-                new JobCategoryCommand("DEV_BACKEND", "백엔드 직무"),
+    private static UpdatePortfolioUseCase.Command validUpdateCommand() {
+        return new UpdatePortfolioUseCase.Command(
+                new SharedCommandDto.JobCategory("DEV_BACKEND", "백엔드 직무"),
                 CollaborationType.TEAM,
                 Visibility.PUBLIC,
                 "수정된 제목",
@@ -100,9 +98,9 @@ class UpdatePortfolioUseCaseImplTest {
                 "수정된 미리보기",
                 THUMBNAIL_IMAGE_ID,
                 CONTENT_IMAGE_IDS,
-                List.of(new PortfolioTagCommand("Spring", 0)),
+                List.of(new SharedCommandDto.SequentialTag("Spring", 0)),
                 List.of(),
-                new PortfolioContentCommand(Map.of("type", "doc"), "<p>수정 본문</p>"),
+                new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>수정 본문</p>"),
                 7001L,
                 8001L
         );

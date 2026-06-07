@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
@@ -116,7 +116,7 @@ class LoadPortfolioDetailUseCaseImplTest {
                     )));
 
             // when
-            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+            LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
 
             // then
             assertThat(response.linkedResume()).isNotNull();
@@ -146,7 +146,7 @@ class LoadPortfolioDetailUseCaseImplTest {
                     )));
 
             // when
-            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+            LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
 
             // then
             assertThat(response.linkedResume()).isNotNull();
@@ -175,7 +175,7 @@ class LoadPortfolioDetailUseCaseImplTest {
                     )));
 
             // when
-            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OWNER_ID);
+            LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OWNER_ID);
 
             // then
             assertThat(response.linkedResume().content()).isNotNull();
@@ -195,7 +195,7 @@ class LoadPortfolioDetailUseCaseImplTest {
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
 
             // when
-            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+            LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
 
             // then
             assertThat(response.linkedResume()).isNull();
@@ -217,7 +217,7 @@ class LoadPortfolioDetailUseCaseImplTest {
             given(loadCoverLetterContentPort.findById(COVER_LETTER_ID)).willReturn(Optional.empty());
 
             // when
-            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+            LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
 
             // then
             assertThat(response.linkedResume()).isNull();
@@ -245,7 +245,7 @@ class LoadPortfolioDetailUseCaseImplTest {
                     .willReturn(List.of(other1, other2));
 
             // when
-            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+            LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
 
             // then
             assertThat(response.publisher().otherPortfolios()).hasSize(2);
@@ -270,7 +270,7 @@ class LoadPortfolioDetailUseCaseImplTest {
                     .willReturn(List.of());
 
             // when
-            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+            LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
 
             // then
             assertThat(response.publisher()).isNotNull();

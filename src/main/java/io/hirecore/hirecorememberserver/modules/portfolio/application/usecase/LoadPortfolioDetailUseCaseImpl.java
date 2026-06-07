@@ -3,16 +3,6 @@ package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedCoverLetterContentResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedResumeContentResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioBodyResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioJobCategoryResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherOtherPortfolioSummaryResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
@@ -20,6 +10,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.L
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfilePort;
@@ -56,7 +47,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
 
     @Override
     @Transactional(readOnly = true)
-    public PortfolioDetailResponse execute(Long portfolioId, Long viewerId) {
+    public Response execute(Long portfolioId, Long viewerId) {
         Portfolio portfolio = loadPortfolio(portfolioId);
         boolean isOwner = portfolio.getMemberAccountId().equals(viewerId);
         ensureAccessible(portfolio, isOwner);
@@ -69,7 +60,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         long displayedViewCount = resolveDisplayedViewCount(portfolio, viewerId);
         Boolean isInterested = resolveIsInterested(portfolio, viewerId, isOwner);
 
-        return PortfolioDetailResponse.builder()
+        return Response.builder()
                 .isOwner(isOwner)
                 .viewCount(displayedViewCount)
                 .interestCount(portfolio.getCachedInterestCount())
@@ -86,20 +77,20 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
      * publisher 섹션을 합성한다. otherPortfolios 는 작성자의 PUBLIC 작품 중 본 포트폴리오를 제외한 전체를
      * 마지막 수정 시각 내림차순으로 노출한다. 작품이 없으면 빈 배열로 응답한다.
      */
-    private PublisherResponse buildPublisher(Portfolio portfolio, String publisherNickname) {
+    private Response.Publisher buildPublisher(Portfolio portfolio, String publisherNickname) {
         List<Portfolio> otherPublicPortfolios = loadPortfoliosByMemberPort
                 .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(
                         portfolio.getMemberAccountId(),
                         portfolio.getId()
                 );
-        List<PublisherOtherPortfolioSummaryResponse> otherPortfolios = otherPublicPortfolios.stream()
-                .map(this::toPublisherOtherPortfolioSummary)
+        List<Response.Publisher.OtherPortfolioSummary> otherPortfolios = otherPublicPortfolios.stream()
+                .map(this::toOtherPortfolioSummary)
                 .toList();
-        return new PublisherResponse(publisherNickname, otherPortfolios);
+        return new Response.Publisher(publisherNickname, otherPortfolios);
     }
 
-    private PublisherOtherPortfolioSummaryResponse toPublisherOtherPortfolioSummary(Portfolio other) {
-        return new PublisherOtherPortfolioSummaryResponse(
+    private Response.Publisher.OtherPortfolioSummary toOtherPortfolioSummary(Portfolio other) {
+        return new Response.Publisher.OtherPortfolioSummary(
                 other.getId(),
                 other.getTitle(),
                 toJobCategoriesResponse(other.getPortfolioJobCategory()),
@@ -109,18 +100,18 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         );
     }
 
-    private PortfolioBodyResponse buildPortfolioBody(Portfolio portfolio) {
-        return new PortfolioBodyResponse(
+    private Response.Body buildPortfolioBody(Portfolio portfolio) {
+        return new Response.Body(
                 portfolio.getTitle(),
                 portfolio.getCollaborationType(),
                 portfolio.getVisibility(),
                 toJobCategoriesResponse(portfolio.getPortfolioJobCategory()),
                 toTagResponses(portfolio.getPortfolioTags()),
                 toExternalLinkResponses(portfolio.getExternalLinks()),
-                PortfolioContentResponse.builder()
-                        .json(portfolio.getPortfolioContent().getContentJson())
-                        .html(portfolio.getPortfolioContent().getContentHtml())
-                        .build()
+                new SharedResponseDto.RichTextContent(
+                        portfolio.getPortfolioContent().getContentJson(),
+                        portfolio.getPortfolioContent().getContentHtml()
+                )
         );
     }
 
@@ -131,7 +122,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
      * 자원이 PUBLIC 이거나 viewer 가 자원 소유자와 일치하면 본문을 채우고,
      * 그 외에는 {@code content} 를 {@code null} 로 두어 메타만 노출한다.</p>
      */
-    private LinkedResumeContentResponse buildLinkedResume(Long resumeId, Long viewerId) {
+    private Response.LinkedResume buildLinkedResume(Long resumeId, Long viewerId) {
         if (resumeId == null) {
             return null;
         }
@@ -139,16 +130,13 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         if (result == null) {
             return null;
         }
-        PortfolioContentResponse content = canViewContent(result.visibility(), result.memberAccountId(), viewerId)
-                ? PortfolioContentResponse.builder()
-                        .json(result.contentJson())
-                        .html(result.contentHtml())
-                        .build()
+        SharedResponseDto.RichTextContent content = canViewContent(result.visibility(), result.memberAccountId(), viewerId)
+                ? new SharedResponseDto.RichTextContent(result.contentJson(), result.contentHtml())
                 : null;
-        return new LinkedResumeContentResponse(result.id(), result.title(), content);
+        return new Response.LinkedResume(result.id(), result.title(), content);
     }
 
-    private LinkedCoverLetterContentResponse buildLinkedCoverLetter(Long coverLetterId, Long viewerId) {
+    private Response.LinkedCoverLetter buildLinkedCoverLetter(Long coverLetterId, Long viewerId) {
         if (coverLetterId == null) {
             return null;
         }
@@ -156,13 +144,10 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         if (result == null) {
             return null;
         }
-        PortfolioContentResponse content = canViewContent(result.visibility(), result.memberAccountId(), viewerId)
-                ? PortfolioContentResponse.builder()
-                        .json(result.contentJson())
-                        .html(result.contentHtml())
-                        .build()
+        SharedResponseDto.RichTextContent content = canViewContent(result.visibility(), result.memberAccountId(), viewerId)
+                ? new SharedResponseDto.RichTextContent(result.contentJson(), result.contentHtml())
                 : null;
-        return new LinkedCoverLetterContentResponse(result.id(), result.title(), content);
+        return new Response.LinkedCoverLetter(result.id(), result.title(), content);
     }
 
     private static boolean canViewContent(Visibility resourceVisibility, Long resourceOwnerId, Long viewerId) {
@@ -223,25 +208,25 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 .orElse(null);
     }
 
-    private List<PortfolioExternalLinkResponse> toExternalLinkResponses(List<ExternalLink> links) {
+    private List<SharedResponseDto.ExternalLink> toExternalLinkResponses(List<ExternalLink> links) {
         if (links == null || links.isEmpty()) {
             return List.of();
         }
         return links.stream()
-                .map(link -> new PortfolioExternalLinkResponse(link.label(), link.url()))
+                .map(link -> new SharedResponseDto.ExternalLink(link.label(), link.url()))
                 .toList();
     }
 
-    private List<PortfolioTagResponse> toTagResponses(List<PortfolioTag> tags) {
+    private List<SharedResponseDto.SequentialTag> toTagResponses(List<PortfolioTag> tags) {
         if (tags == null || tags.isEmpty()) {
             return List.of();
         }
         return tags.stream()
-                .map(tag -> new PortfolioTagResponse(tag.getName(), tag.getSortOrder()))
+                .map(tag -> new SharedResponseDto.SequentialTag(tag.getName(), tag.getSortOrder()))
                 .toList();
     }
 
-    private List<PortfolioJobCategoryResponse> toJobCategoriesResponse(PortfolioJobCategory portfolioJobCategory) {
+    private List<SharedResponseDto.JobCategory> toJobCategoriesResponse(PortfolioJobCategory portfolioJobCategory) {
         AssertionUtils.notNull(
                 portfolioJobCategory,
                 PortfolioApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_NOT_FOUND,
@@ -250,7 +235,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
 
         return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryId())
                 .stream()
-                .map(hierarchy -> new PortfolioJobCategoryResponse(
+                .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),
                         hierarchy.depth(),
                         hierarchy.categoryCode(),

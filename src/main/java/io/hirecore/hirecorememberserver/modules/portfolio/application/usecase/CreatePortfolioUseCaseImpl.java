@@ -5,13 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioContentCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
@@ -48,7 +45,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
      * */
     @Override
     @Transactional
-    public Long execute(Long memberId, CreatePortfolioCommand command) {
+    public Long execute(Long memberId, Command command) {
         List<Long> imageIds = aggregateImageIds(command.thumbnailImageId(), command.contentImageIds());
 
         markImagesAsUploadedPort.markUploaded(memberId, imageIds);
@@ -59,8 +56,8 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
         return savePortfolioPort.save(portfolio).getId();
     }
 
-    private Portfolio buildPortfolio(Long memberId, CreatePortfolioCommand command, Long jobCategoryId) {
-        PortfolioContentCommand content = command.content();
+    private Portfolio buildPortfolio(Long memberId, Command command, Long jobCategoryId) {
+        SharedCommandDto.RichTextContent content = command.content();
         List<PortfolioTag> portfolioTags = toPortfolioTags(command.tags());
         List<ExternalLink> externalLinks = toExternalLinks(command.externalLinks());
 
@@ -84,7 +81,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
         );
     }
 
-    private static List<PortfolioTag> toPortfolioTags(List<PortfolioTagCommand> tagCommands) {
+    private static List<PortfolioTag> toPortfolioTags(List<SharedCommandDto.SequentialTag> tagCommands) {
         if (tagCommands == null || tagCommands.isEmpty()) {
             return List.of();
         }
@@ -93,7 +90,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
                 .toList();
     }
 
-    private static List<ExternalLink> toExternalLinks(List<PortfolioExternalLinkCommand> linkCommands) {
+    private static List<ExternalLink> toExternalLinks(List<SharedCommandDto.ExternalLink> linkCommands) {
         if (linkCommands == null || linkCommands.isEmpty()) {
             return List.of();
         }
@@ -102,7 +99,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
                 .toList();
     }
 
-    private String serializeContentJson(PortfolioContentCommand content) {
+    private String serializeContentJson(SharedCommandDto.RichTextContent content) {
         try {
             return objectMapper.writeValueAsString(content.json());
         } catch (JsonProcessingException e) {

@@ -1,13 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper;
 
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.JobCategoryApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.CreatePortfolioApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioContentApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioExternalLinkApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.request.PortfolioTagApiRequest;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.CreatePortfolioCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioExternalLinkCommand;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.request.PortfolioTagCommand;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.CreatePortfolioApi;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.SharedRequestApiDto;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.CollaborationTypeApiValue;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.VisibilityApiValue;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
@@ -42,8 +38,8 @@ class PortfolioWebMapperTest {
         @DisplayName("모든 필드가 채워진 요청은 동일 값으로 매핑된다")
         void should_map_all_fields() {
             // given
-            CreatePortfolioApiRequest request = new CreatePortfolioApiRequest(
-                    new JobCategoryApiRequest("DEV_BACKEND", "백엔드 직무"),
+            CreatePortfolioApi.Request request = new CreatePortfolioApi.Request(
+                    new SharedRequestApiDto.JobCategory("DEV_BACKEND", "백엔드 직무"),
                     CollaborationTypeApiValue.TEAM,
                     VisibilityApiValue.PUBLIC,
                     "회원 서비스 도메인 모델링 회고",
@@ -52,11 +48,11 @@ class PortfolioWebMapperTest {
                     100L,
                     List.of(101L, 102L),
                     List.of(
-                            new PortfolioTagApiRequest("Spring", 0),
-                            new PortfolioTagApiRequest("DDD", 1)
+                            new SharedRequestApiDto.SequentialTag("Spring", 0),
+                            new SharedRequestApiDto.SequentialTag("DDD", 1)
                     ),
-                    List.of(new PortfolioExternalLinkApiRequest("GitHub", "https://github.com/example/repo")),
-                    new PortfolioContentApiRequest(
+                    List.of(new SharedRequestApiDto.ExternalLink("GitHub", "https://github.com/example/repo")),
+                    new SharedRequestApiDto.RichTextContent(
                             Map.of("type", "doc"),
                             "<p>본문</p>"
                     ),
@@ -65,7 +61,7 @@ class PortfolioWebMapperTest {
             );
 
             // when
-            CreatePortfolioCommand command = mapper.toCreatePortfolioCommand(request);
+            CreatePortfolioUseCase.Command command = mapper.toCreatePortfolioCommand(request);
 
             // then
             assertThat(command.jobCategory()).isNotNull();
@@ -79,13 +75,13 @@ class PortfolioWebMapperTest {
             assertThat(command.thumbnailImageId()).isEqualTo(100L);
             assertThat(command.contentImageIds()).containsExactly(101L, 102L);
             assertThat(command.tags())
-                    .extracting(PortfolioTagCommand::name, PortfolioTagCommand::sortOrder)
+                    .extracting(SharedCommandDto.SequentialTag::name, SharedCommandDto.SequentialTag::sortOrder)
                     .containsExactly(
                             org.assertj.core.groups.Tuple.tuple("Spring", 0),
                             org.assertj.core.groups.Tuple.tuple("DDD", 1)
                     );
             assertThat(command.externalLinks())
-                    .extracting(PortfolioExternalLinkCommand::url)
+                    .extracting(SharedCommandDto.ExternalLink::url)
                     .containsExactly("https://github.com/example/repo");
             assertThat(command.linkedResumeId()).isEqualTo(7001L);
             assertThat(command.linkedCoverLetterId()).isEqualTo(8001L);
@@ -97,8 +93,8 @@ class PortfolioWebMapperTest {
         @DisplayName("선택 필드(userInput, privateMemo, thumbnailImageId 등)가 null이어도 정상 매핑된다")
         void should_map_request_with_nullable_fields_omitted() {
             // given — 필수 필드만 채움
-            CreatePortfolioApiRequest request = new CreatePortfolioApiRequest(
-                    new JobCategoryApiRequest("DEV_BACKEND", null),
+            CreatePortfolioApi.Request request = new CreatePortfolioApi.Request(
+                    new SharedRequestApiDto.JobCategory("DEV_BACKEND", null),
                     CollaborationTypeApiValue.PERSONAL,
                     VisibilityApiValue.PRIVATE,
                     "title",
@@ -108,13 +104,13 @@ class PortfolioWebMapperTest {
                     null,
                     null,
                     null,
-                    new PortfolioContentApiRequest(Map.of("type", "doc"), "<p>본문</p>"),
+                    new SharedRequestApiDto.RichTextContent(Map.of("type", "doc"), "<p>본문</p>"),
                     null,
                     null
             );
 
             // when
-            CreatePortfolioCommand command = mapper.toCreatePortfolioCommand(request);
+            CreatePortfolioUseCase.Command command = mapper.toCreatePortfolioCommand(request);
 
             // then
             assertThat(command.jobCategory().code()).isEqualTo("DEV_BACKEND");

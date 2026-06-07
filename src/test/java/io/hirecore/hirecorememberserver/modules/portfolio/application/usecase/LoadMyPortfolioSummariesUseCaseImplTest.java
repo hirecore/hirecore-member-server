@@ -1,7 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummariesResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummaryItemResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlesPort;
@@ -93,7 +92,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     .willReturn(List.of());
 
             // when
-            MyPortfolioSummariesResponse response = sut.execute(VIEWER_ID);
+            LoadMyPortfolioSummariesUseCase.Response response = sut.execute(VIEWER_ID);
 
             // then
             assertThat(response.items()).isEmpty();
@@ -127,17 +126,19 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     .willReturn(Optional.of("https://cdn.example.com/portfolio/thumbnail/abc.webp"));
 
             // when
-            MyPortfolioSummariesResponse response = sut.execute(VIEWER_ID);
+            LoadMyPortfolioSummariesUseCase.Response response = sut.execute(VIEWER_ID);
 
             // then
             assertThat(response.items()).hasSize(1);
-            MyPortfolioSummaryItemResponse item = response.items().getFirst();
+            LoadMyPortfolioSummariesUseCase.Response.Item item = response.items().getFirst();
             assertThat(item.portfolioId()).isEqualTo(loaded.getId());
             assertThat(item.linkedResume()).isNotNull();
             assertThat(item.linkedResume().title()).isEqualTo("백엔드 신입 이력서");
             assertThat(item.linkedCoverLetter()).isNotNull();
             assertThat(item.linkedCoverLetter().title()).isEqualTo("B사 지원용 자소서");
-            assertThat(item.thumbnailImageUrl()).isEqualTo("https://cdn.example.com/portfolio/thumbnail/abc.webp");
+            assertThat(item.thumbnail()).isNotNull();
+            assertThat(item.thumbnail().imageId()).isEqualTo(thumbnailImageId);
+            assertThat(item.thumbnail().imageUrl()).isEqualTo("https://cdn.example.com/portfolio/thumbnail/abc.webp");
             assertThat(item.jobCategories()).extracting("categoryCode").containsExactly("DEV", "DEV_BACKEND");
         }
 
@@ -157,13 +158,13 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     ));
 
             // when
-            MyPortfolioSummariesResponse response = sut.execute(VIEWER_ID);
+            LoadMyPortfolioSummariesUseCase.Response response = sut.execute(VIEWER_ID);
 
             // then
-            MyPortfolioSummaryItemResponse item = response.items().getFirst();
+            LoadMyPortfolioSummariesUseCase.Response.Item item = response.items().getFirst();
             assertThat(item.linkedResume()).isNull();
             assertThat(item.linkedCoverLetter()).isNull();
-            assertThat(item.thumbnailImageUrl()).isNull();
+            assertThat(item.thumbnail()).isNull();
             then(loadImageUrlPort).should(never()).findUrlById(anyLong());
         }
 
@@ -184,7 +185,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     ));
 
             // when
-            MyPortfolioSummariesResponse response = sut.execute(VIEWER_ID);
+            LoadMyPortfolioSummariesUseCase.Response response = sut.execute(VIEWER_ID);
 
             // then
             assertThat(response.items().getFirst().linkedResume()).isNull();
@@ -214,7 +215,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
 
             // when
-            MyPortfolioSummariesResponse response = sut.execute(VIEWER_ID);
+            LoadMyPortfolioSummariesUseCase.Response response = sut.execute(VIEWER_ID);
 
             // then
             assertThat(response.items()).hasSize(3);

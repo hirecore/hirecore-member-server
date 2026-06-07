@@ -1,16 +1,11 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedCoverLetterResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedResumeResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummariesResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummaryItemResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioJobCategoryResponse;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlesPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
@@ -43,11 +38,11 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
      */
     @Override
     @Transactional(readOnly = true)
-    public MyPortfolioSummariesResponse execute(Long viewerId) {
+    public Response execute(Long viewerId) {
         List<Portfolio> portfolios = loadPortfoliosByMemberPort
                 .findAllByMemberAccountIdOrderByUpdatedAtDesc(viewerId);
         if (portfolios.isEmpty()) {
-            return new MyPortfolioSummariesResponse(List.of());
+            return new Response(List.of());
         }
 
         Map<Long, String> resumeTitles = loadResumeTitlesPort
@@ -55,28 +50,23 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
         Map<Long, String> coverLetterTitles = loadCoverLetterTitlesPort
                 .findAllTitlesByIds(collectIds(portfolios, Portfolio::getCoverLetterId));
 
-        List<MyPortfolioSummaryItemResponse> items = portfolios.stream()
+        List<Response.Item> items = portfolios.stream()
                 .map(p -> toItem(p, resumeTitles, coverLetterTitles))
                 .toList();
-        return new MyPortfolioSummariesResponse(items);
+        return new Response(items);
     }
 
-    private MyPortfolioSummaryItemResponse toItem(
+    private Response.Item toItem(
             Portfolio portfolio,
             Map<Long, String> resumeTitles,
             Map<Long, String> coverLetterTitles
     ) {
-        String thumbnailImageUrl = portfolio.getThumbnailImageId() == null
-                ? null
-                : loadImageUrlPort.findUrlById(portfolio.getThumbnailImageId()).orElse(null);
-
-        return new MyPortfolioSummaryItemResponse(
+        return new Response.Item(
                 portfolio.getId(),
                 portfolio.getTitle(),
                 portfolio.getPreviewSummary(),
                 portfolio.getPrivateMemo(),
-                portfolio.getThumbnailImageId(),
-                thumbnailImageUrl,
+                buildThumbnail(portfolio.getThumbnailImageId()),
                 toJobCategoriesResponse(portfolio.getPortfolioJobCategory()),
                 portfolio.getCollaborationType(),
                 portfolio.getVisibility(),
@@ -86,6 +76,18 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
                 toLinkedCoverLetter(portfolio.getCoverLetterId(), coverLetterTitles),
                 portfolio.getAuditingInfo().updatedAt()
         );
+    }
+
+    /**
+     * 썸네일이 등록되지 않은 포트폴리오는 {@code null} 반환.
+     * 썸네일은 있으나 URL 해소에 실패한 경우 imageId 만 채우고 imageUrl 은 {@code null}.
+     */
+    private SharedResponseDto.Thumbnail buildThumbnail(Long thumbnailImageId) {
+        if (thumbnailImageId == null) {
+            return null;
+        }
+        String imageUrl = loadImageUrlPort.findUrlById(thumbnailImageId).orElse(null);
+        return new SharedResponseDto.Thumbnail(thumbnailImageId, imageUrl);
     }
 
     private static Set<Long> collectIds(List<Portfolio> portfolios, java.util.function.Function<Portfolio, Long> idGetter) {
@@ -99,7 +101,7 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
         return ids;
     }
 
-    private static LinkedResumeResponse toLinkedResume(Long resumeId, Map<Long, String> resumeTitles) {
+    private static Response.LinkedResume toLinkedResume(Long resumeId, Map<Long, String> resumeTitles) {
         if (resumeId == null) {
             return null;
         }
@@ -107,10 +109,10 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
         if (title == null) {
             return null;
         }
-        return new LinkedResumeResponse(resumeId, title);
+        return new Response.LinkedResume(resumeId, title);
     }
 
-    private static LinkedCoverLetterResponse toLinkedCoverLetter(Long coverLetterId, Map<Long, String> coverLetterTitles) {
+    private static Response.LinkedCoverLetter toLinkedCoverLetter(Long coverLetterId, Map<Long, String> coverLetterTitles) {
         if (coverLetterId == null) {
             return null;
         }
@@ -118,26 +120,26 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
         if (title == null) {
             return null;
         }
-        return new LinkedCoverLetterResponse(coverLetterId, title);
+        return new Response.LinkedCoverLetter(coverLetterId, title);
     }
 
-    private static List<PortfolioTagResponse> toTagResponses(List<PortfolioTag> tags) {
+    private static List<SharedResponseDto.SequentialTag> toTagResponses(List<PortfolioTag> tags) {
         if (tags == null || tags.isEmpty()) {
             return List.of();
         }
         return tags.stream()
-                .map(tag -> new PortfolioTagResponse(tag.getName(), tag.getSortOrder()))
+                .map(tag -> new SharedResponseDto.SequentialTag(tag.getName(), tag.getSortOrder()))
                 .toList();
     }
 
-    private List<PortfolioJobCategoryResponse> toJobCategoriesResponse(PortfolioJobCategory portfolioJobCategory) {
+    private List<SharedResponseDto.JobCategory> toJobCategoriesResponse(PortfolioJobCategory portfolioJobCategory) {
         if (portfolioJobCategory == null) {
             return List.of();
         }
         return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryId())
                 .stream()
                 .filter(Objects::nonNull)
-                .map(hierarchy -> new PortfolioJobCategoryResponse(
+                .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),
                         hierarchy.depth(),
                         hierarchy.categoryCode(),

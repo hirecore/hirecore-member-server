@@ -19,16 +19,21 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedCoverLetterContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedCoverLetterResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedResumeContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedResumeResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummariesResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummaryItemResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioBodyResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentImageResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioEditResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioJobCategoryResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherOtherPortfolioSummaryResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
@@ -120,60 +125,149 @@ class PortfolioQueryControllerTest {
         private static final Long PRIVATE_PORTFOLIO_ID = 1234567890123456789L;
         private static final String PUBLISHER_NICKNAME = "hirecore_user";
 
-        private PortfolioDetailResponse buildResponse(boolean isOwner, Visibility visibility) {
-            return PortfolioDetailResponse.builder()
-                    .isOwner(isOwner)
-                    .publisher(PUBLISHER_NICKNAME)
-                    .jobCategories(List.of(
+        private PortfolioBodyResponse buildPortfolioBody(Visibility visibility) {
+            return new PortfolioBodyResponse(
+                    "회원 서비스 도메인 모델링 회고",
+                    CollaborationType.TEAM,
+                    visibility,
+                    List.of(
                             new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드")
-                    ))
-                    .collaborationType(CollaborationType.TEAM)
-                    .visibility(visibility)
-                    .viewCount(0L)
-                    .interestCount(0L)
-                    .title("회원 서비스 도메인 모델링 회고")
-                    .content(PortfolioContentResponse.builder()
-                            .json("{\"type\":\"doc\",\"content\":[]}")
-                            .html("<p>본문 HTML 입니다.</p>")
-                            .build())
-                    .tags(List.of(
+                            new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드"),
+                            new PortfolioJobCategoryResponse(1003L, 3L, "DEV_BACKEND_JAVA", "Java")
+                    ),
+                    List.of(
                             new PortfolioTagResponse("Spring", 0),
                             new PortfolioTagResponse("DDD", 1),
                             new PortfolioTagResponse("Hexagonal", 2)
-                    ))
-                    .externalLinks(List.of(
+                    ),
+                    List.of(
                             new PortfolioExternalLinkResponse("GitHub Repo", "https://github.com/example/repo"),
                             new PortfolioExternalLinkResponse("데모", "https://demo.example.com")
-                    ))
+                    ),
+                    PortfolioContentResponse.builder()
+                            .json("{\"type\":\"doc\",\"content\":[]}")
+                            .html("<p>본문 HTML 입니다.</p>")
+                            .build()
+            );
+        }
+
+        private PortfolioDetailResponse buildResponse(
+                boolean isOwner,
+                Visibility visibility,
+                LinkedResumeContentResponse linkedResume,
+                LinkedCoverLetterContentResponse linkedCoverLetter,
+                List<PublisherOtherPortfolioSummaryResponse> otherPortfolios
+        ) {
+            return PortfolioDetailResponse.builder()
+                    .isOwner(isOwner)
+                    .viewCount(0L)
+                    .interestCount(0L)
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
+                    .portfolio(buildPortfolioBody(visibility))
+                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, otherPortfolios))
+                    .linkedResume(linkedResume)
+                    .linkedCoverLetter(linkedCoverLetter)
                     .build();
         }
 
+        private List<PublisherOtherPortfolioSummaryResponse> sampleOtherPortfolios() {
+            return List.of(
+                    new PublisherOtherPortfolioSummaryResponse(
+                            5234567890123456790L,
+                            "프론트엔드 사이드 프로젝트",
+                            List.of(
+                                    new PortfolioJobCategoryResponse(2001L, 1L, "DEV", "개발"),
+                                    new PortfolioJobCategoryResponse(2002L, 2L, "DEV_FRONTEND", "프론트엔드"),
+                                    new PortfolioJobCategoryResponse(2003L, 3L, "DEV_FRONTEND_REACT", "React")
+                            ),
+                            512L,
+                            24L,
+                            Instant.parse("2026-05-30T09:00:00Z")
+                    ),
+                    new PublisherOtherPortfolioSummaryResponse(
+                            5234567890123456791L,
+                            "DevOps 학습 정리",
+                            List.of(
+                                    new PortfolioJobCategoryResponse(3001L, 1L, "DEV", "개발"),
+                                    new PortfolioJobCategoryResponse(3002L, 2L, "DEV_DEVOPS", "DevOps"),
+                                    new PortfolioJobCategoryResponse(3003L, 3L, "DEV_DEVOPS_K8S", "Kubernetes")
+                            ),
+                            128L,
+                            6L,
+                            Instant.parse("2026-04-15T11:00:00Z")
+                    )
+            );
+        }
+
+        private LinkedResumeContentResponse linkedResumeWithContent() {
+            return new LinkedResumeContentResponse(
+                    8100000000000000001L,
+                    "백엔드 신입 이력서",
+                    PortfolioContentResponse.builder()
+                            .json("{\"type\":\"doc\",\"content\":[]}")
+                            .html("<p>이력서 본문 HTML</p>")
+                            .build()
+            );
+        }
+
+        private LinkedCoverLetterContentResponse linkedCoverLetterContentHidden() {
+            return new LinkedCoverLetterContentResponse(
+                    8200000000000000001L,
+                    "B사 지원용 자소서",
+                    null
+            );
+        }
+
+        private LinkedCoverLetterContentResponse linkedCoverLetterWithContent() {
+            return new LinkedCoverLetterContentResponse(
+                    8200000000000000001L,
+                    "B사 지원용 자소서",
+                    PortfolioContentResponse.builder()
+                            .json("{\"type\":\"doc\",\"content\":[]}")
+                            .html("<p>자소서 본문 HTML</p>")
+                            .build()
+            );
+        }
+
         @Test
-        @DisplayName("[200 OK] PUBLIC 포트폴리오는 비로그인 사용자도 조회할 수 있다.")
+        @DisplayName("[200 OK] PUBLIC 포트폴리오는 비로그인 사용자도 조회할 수 있으며 연결 자원은 각 자원 자체의 가시성 정책을 따른다.")
         void load_portfolio_detail_public_anonymous() throws Exception {
-            // given - 비로그인 viewer
+            // given - 비로그인 viewer + linkedResume PUBLIC(본문 노출) + linkedCoverLetter PRIVATE(본문 가림) + 작성자의 다른 PUBLIC 작품 2건
             SecurityContextHolder.clearContext();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), nullable(Long.class)))
-                    .willReturn(buildResponse(false, Visibility.PUBLIC));
+                    .willReturn(buildResponse(
+                            false,
+                            Visibility.PUBLIC,
+                            linkedResumeWithContent(),
+                            linkedCoverLetterContentHidden(),
+                            sampleOtherPortfolios()
+                    ));
 
             // when & then
             mockMvc.perform(get("/api/portfolios/{portfolioId}", PUBLIC_PORTFOLIO_ID))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.isOwner").value(false))
-                    .andExpect(jsonPath("$.publisher").value(PUBLISHER_NICKNAME))
-                    .andExpect(jsonPath("$.jobCategories[0].categoryCode").value("DEV"))
-                    .andExpect(jsonPath("$.jobCategories[0].name").value("개발"))
-                    .andExpect(jsonPath("$.collaborationType").value("team"))
-                    .andExpect(jsonPath("$.visibility").value("public"))
-                    .andExpect(jsonPath("$.title").value("회원 서비스 도메인 모델링 회고"))
-                    .andExpect(jsonPath("$.content.html").value("<p>본문 HTML 입니다.</p>"))
-                    .andExpect(jsonPath("$.tags[0].name").value("Spring"))
-                    .andExpect(jsonPath("$.tags[0].sortOrder").value(0))
-                    .andExpect(jsonPath("$.externalLinks[0].label").value("GitHub Repo"))
-                    .andExpect(jsonPath("$.externalLinks[0].url").value("https://github.com/example/repo"))
+                    .andExpect(jsonPath("$.publisher.nickname").value(PUBLISHER_NICKNAME))
+                    .andExpect(jsonPath("$.portfolio.jobCategories[0].categoryCode").value("DEV"))
+                    .andExpect(jsonPath("$.portfolio.jobCategories[0].name").value("개발"))
+                    .andExpect(jsonPath("$.portfolio.collaborationType").value("team"))
+                    .andExpect(jsonPath("$.portfolio.visibility").value("public"))
+                    .andExpect(jsonPath("$.portfolio.title").value("회원 서비스 도메인 모델링 회고"))
+                    .andExpect(jsonPath("$.portfolio.content.html").value("<p>본문 HTML 입니다.</p>"))
+                    .andExpect(jsonPath("$.portfolio.tags[0].name").value("Spring"))
+                    .andExpect(jsonPath("$.portfolio.tags[0].sortOrder").value(0))
+                    .andExpect(jsonPath("$.portfolio.externalLinks[0].label").value("GitHub Repo"))
+                    .andExpect(jsonPath("$.portfolio.externalLinks[0].url").value("https://github.com/example/repo"))
+                    .andExpect(jsonPath("$.linkedResume.title").value("백엔드 신입 이력서"))
+                    .andExpect(jsonPath("$.linkedResume.content.html").value("<p>이력서 본문 HTML</p>"))
+                    .andExpect(jsonPath("$.linkedCoverLetter.title").value("B사 지원용 자소서"))
+                    .andExpect(jsonPath("$.linkedCoverLetter.content").doesNotExist())
+                    .andExpect(jsonPath("$.publisher.otherPortfolios.length()").value(2))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].title").value("프론트엔드 사이드 프로젝트"))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].jobCategories[2].categoryCode").value("DEV_FRONTEND_REACT"))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].viewCount").value(512))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].interestCount").value(24))
 
                     // 문서화
                     .andDo(document("200-portfolio-load-detail-success",
@@ -182,23 +276,36 @@ class PortfolioQueryControllerTest {
                             resource(
                                     ResourceSnippetParameters.builder()
                                             .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
-                                            .summary("\"포트폴리오 상세 조회\": 단일 포트폴리오의 본문/메타데이터를 반환한다.")
+                                            .summary("\"포트폴리오 상세 조회\": 단일 포트폴리오의 본문/메타데이터와 연결 자원을 반환한다.")
                                             .description("""
                                                     상세 페이지에서 단일 포트폴리오를 조회합니다.
 
-                                                        [공개 정책]
+                                                        [응답 구조 (nested)]
+                                                         - 최상위: viewer 의존 통계 / 분기 (isOwner, viewCount, interestCount, isInterested, updatedAt)
+                                                         - portfolio: 본 포트폴리오 본체 (title, collaborationType, visibility, jobCategories, tags, externalLinks, content)
+                                                         - publisher: 작성자 정보 (nickname)
+                                                         - linkedResume / linkedCoverLetter: 연결 자원 (id, title, content). 연결 없거나 자원 삭제 시 null
+
+                                                        [공개 정책 — 포트폴리오 본체]
                                                          - PUBLIC 포트폴리오: 누구나 조회 가능 (비로그인 포함)
                                                          - PRIVATE 포트폴리오: 작성자 본인만 조회 가능
                                                          - 그 외: 403 PORTFOLIO_FORBIDDEN
+
+                                                        [본문 노출 정책 — 연결 자원 (linkedResume / linkedCoverLetter)]
+                                                         - 연결된 이력서/자기소개서의 본문은 자원 자체의 visibility 와 viewer 일치 여부로 결정됩니다.
+                                                         - 자원 PUBLIC: 누구에게나 content 노출
+                                                         - 자원 PRIVATE: 자원 소유자 본인에게만 content 노출, 그 외에는 content=null (객체는 유지)
+                                                         - 연결 없음 / 자원 삭제 / 자원 미존재: linkedResume = null (객체 자체가 null)
+                                                         - 자원의 visibility 정책은 포트폴리오의 visibility 와 독립적입니다.
 
                                                         [인증 방식]
                                                          - 선택. Authorization 헤더의 Bearer 토큰이 있으면 소유자 판별에 사용됩니다.
                                                          - 비로그인 호출 시 viewer ID 가 없으므로 소유자로 인정되지 않으며 isOwner=false 로 반환됩니다.
 
                                                         [응답 동작]
-                                                         - tags 는 sortOrder 오름차순으로 정렬되어 옵니다 (삭제된 태그 제외).
-                                                         - updatedAt 은 현 단계에서 항상 null 입니다 (후속 작업 예정).
-                                                         - 작성자 식별자(memberAccountId 등) 와 썸네일 URL, previewSummary 는 응답에 포함되지 않습니다.
+                                                         - portfolio.tags 는 sortOrder 오름차순으로 정렬되어 옵니다.
+                                                         - portfolio.jobCategories 는 루트 → 리프 순서로 정렬되어 옵니다.
+                                                         - publisher.otherPortfolios 는 작성자의 PUBLIC 작품 중 본 포트폴리오를 제외한 전체를 updatedAt 내림차순으로 반환합니다. 없으면 빈 배열.
 
                                                         [에러 응답]
                                                          - 403 PORTFOLIO_FORBIDDEN: PRIVATE 포트폴리오 + 비소유자/비로그인
@@ -211,33 +318,10 @@ class PortfolioQueryControllerTest {
                                                             .description("조회 대상 포트폴리오 ID (TSID, JSON 문자열). path 에서도 문자열로 그대로 사용")
                                             )
                                             .responseFields(
+                                                    // 최상위
                                                     fieldWithPath("isOwner")
                                                             .type(JsonFieldType.BOOLEAN)
                                                             .description("호출자가 작성자 본인인지 여부. 비로그인 시 항상 false. 수정/삭제 버튼 노출 등 UX 분기에 사용"),
-                                                    fieldWithPath("publisher")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("작성자 닉네임"),
-                                                    fieldWithPath("jobCategories")
-                                                            .type(JsonFieldType.ARRAY)
-                                                            .description("작성자가 선택한 직무 카테고리 목록"),
-                                                    fieldWithPath("jobCategories[].id")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("직무 카테고리 ID (TSID, JSON 문자열)"),
-                                                    fieldWithPath("jobCategories[].depth")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("카테고리 계층 깊이"),
-                                                    fieldWithPath("jobCategories[].categoryCode")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("카테고리 코드"),
-                                                    fieldWithPath("jobCategories[].name")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("카테고리 표시 이름"),
-                                                    fieldWithPath("collaborationType")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("협업 유형 (team, personal)"),
-                                                    fieldWithPath("visibility")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("공개 범위 (public, private)"),
                                                     fieldWithPath("viewCount")
                                                             .type(JsonFieldType.NUMBER)
                                                             .description("포트폴리오 조회수"),
@@ -248,39 +332,158 @@ class PortfolioQueryControllerTest {
                                                             .type(JsonFieldType.BOOLEAN)
                                                             .description("현재 요청자의 관심 등록 여부. 비로그인 또는 본인(isOwner=true) 호출 시 null")
                                                             .optional(),
-                                                    fieldWithPath("title")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("포트폴리오 제목"),
-                                                    fieldWithPath("content")
-                                                            .type(JsonFieldType.OBJECT)
-                                                            .description("포트폴리오 본문 wrapper"),
-                                                    fieldWithPath("content.json")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("에디터 직렬화 JSON 문자열 (FE 에서 다시 JSON.parse 하여 구조 복원). 등록 시 보낸 구조 그대로"),
-                                                    fieldWithPath("content.html")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("렌더된 HTML 본문 (표시 용도)"),
-                                                    fieldWithPath("tags")
-                                                            .type(JsonFieldType.ARRAY)
-                                                            .description("사용자 입력 태그 목록 (sortOrder ASC, 삭제된 태그 제외)"),
-                                                    fieldWithPath("tags[].name")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("사용자가 입력한 원본 태그 문자열"),
-                                                    fieldWithPath("tags[].sortOrder")
-                                                            .type(JsonFieldType.NUMBER)
-                                                            .description("사용자가 의도한 표시 순서 (0부터 시작)"),
-                                                    fieldWithPath("externalLinks")
-                                                            .type(JsonFieldType.ARRAY)
-                                                            .description("외부 링크 목록 (없으면 빈 배열)"),
-                                                    fieldWithPath("externalLinks[].label")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("링크 표시 라벨"),
-                                                    fieldWithPath("externalLinks[].url")
-                                                            .type(JsonFieldType.STRING)
-                                                            .description("링크 URL (http:// 또는 https://)"),
                                                     fieldWithPath("updatedAt")
                                                             .type(JsonFieldType.STRING)
-                                                            .description("최종 수정 시각 (ISO-8601). 현 단계에서는 항상 null")
+                                                            .description("최종 수정 시각 (ISO-8601)")
+                                                            .optional(),
+
+                                                    // portfolio
+                                                    fieldWithPath("portfolio")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("본 포트폴리오 본체"),
+                                                    fieldWithPath("portfolio.title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("포트폴리오 제목"),
+                                                    fieldWithPath("portfolio.collaborationType")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("협업 유형 (team, personal)"),
+                                                    fieldWithPath("portfolio.visibility")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("공개 범위 (public, private)"),
+                                                    fieldWithPath("portfolio.jobCategories")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("작성자가 선택한 직무 카테고리 계층 (루트 → 리프)"),
+                                                    fieldWithPath("portfolio.jobCategories[].id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("직무 카테고리 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("portfolio.jobCategories[].depth")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("카테고리 계층 깊이"),
+                                                    fieldWithPath("portfolio.jobCategories[].categoryCode")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 코드"),
+                                                    fieldWithPath("portfolio.jobCategories[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 표시 이름"),
+                                                    fieldWithPath("portfolio.tags")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("사용자 입력 태그 목록 (sortOrder ASC)"),
+                                                    fieldWithPath("portfolio.tags[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("사용자가 입력한 원본 태그 문자열"),
+                                                    fieldWithPath("portfolio.tags[].sortOrder")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("사용자가 의도한 표시 순서 (0부터 시작)"),
+                                                    fieldWithPath("portfolio.externalLinks")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("외부 링크 목록 (없으면 빈 배열)"),
+                                                    fieldWithPath("portfolio.externalLinks[].label")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 표시 라벨"),
+                                                    fieldWithPath("portfolio.externalLinks[].url")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 URL (http:// 또는 https://)"),
+                                                    fieldWithPath("portfolio.content")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("포트폴리오 본문 wrapper"),
+                                                    fieldWithPath("portfolio.content.json")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("에디터 직렬화 JSON 문자열 (FE 에서 다시 JSON.parse 하여 구조 복원)"),
+                                                    fieldWithPath("portfolio.content.html")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("렌더된 HTML 본문 (표시 용도)"),
+
+                                                    // publisher
+                                                    fieldWithPath("publisher")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("작성자 정보 wrapper"),
+                                                    fieldWithPath("publisher.nickname")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("작성자 닉네임"),
+                                                    fieldWithPath("publisher.otherPortfolios")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("작성자의 다른 PUBLIC 포트폴리오 요약 목록 (본 포트폴리오 제외, updatedAt DESC). 작품이 없으면 빈 배열"),
+                                                    fieldWithPath("publisher.otherPortfolios[].portfolioId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("다른 포트폴리오 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("publisher.otherPortfolios[].title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("다른 포트폴리오 제목"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("해당 작품의 직군 카테고리 계층 (루트 → 리프)"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].depth")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("카테고리 계층 깊이"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].categoryCode")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 코드"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 표시 이름"),
+                                                    fieldWithPath("publisher.otherPortfolios[].viewCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("해당 작품의 캐시된 조회수"),
+                                                    fieldWithPath("publisher.otherPortfolios[].interestCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("해당 작품의 캐시된 관심등록수"),
+                                                    fieldWithPath("publisher.otherPortfolios[].updatedAt")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("해당 작품의 마지막 수정 시각 (ISO-8601)"),
+
+                                                    // linkedResume
+                                                    fieldWithPath("linkedResume")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("연결된 이력서. 연결 없거나 자원 삭제 시 null")
+                                                            .optional(),
+                                                    fieldWithPath("linkedResume.id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 이력서 ID (TSID, JSON 문자열)")
+                                                            .optional(),
+                                                    fieldWithPath("linkedResume.title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 이력서 제목")
+                                                            .optional(),
+                                                    fieldWithPath("linkedResume.content")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("이력서 본문. 자원이 PUBLIC 이거나 viewer 가 자원 소유자일 때만 채워지며, 그 외에는 null")
+                                                            .optional(),
+                                                    fieldWithPath("linkedResume.content.json")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("에디터 직렬화 JSON 문자열")
+                                                            .optional(),
+                                                    fieldWithPath("linkedResume.content.html")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("렌더된 HTML 본문")
+                                                            .optional(),
+
+                                                    // linkedCoverLetter
+                                                    fieldWithPath("linkedCoverLetter")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("연결된 자기소개서. 연결 없거나 자원 삭제 시 null")
+                                                            .optional(),
+                                                    fieldWithPath("linkedCoverLetter.id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 자기소개서 ID (TSID, JSON 문자열)")
+                                                            .optional(),
+                                                    fieldWithPath("linkedCoverLetter.title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 자기소개서 제목")
+                                                            .optional(),
+                                                    fieldWithPath("linkedCoverLetter.content")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("자기소개서 본문. 자원이 PUBLIC 이거나 viewer 가 자원 소유자일 때만 채워지며, 그 외에는 null")
+                                                            .optional(),
+                                                    fieldWithPath("linkedCoverLetter.content.json")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("에디터 직렬화 JSON 문자열")
+                                                            .optional(),
+                                                    fieldWithPath("linkedCoverLetter.content.html")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("렌더된 HTML 본문")
                                                             .optional()
                                             )
                                             .build()
@@ -289,19 +492,27 @@ class PortfolioQueryControllerTest {
         }
 
         @Test
-        @DisplayName("[200 OK] PRIVATE 포트폴리오를 소유자 본인이 조회하면 isOwner=true 로 반환한다.")
+        @DisplayName("[200 OK] PRIVATE 포트폴리오를 소유자 본인이 조회하면 isOwner=true 로 반환하고 자신이 소유한 PRIVATE 자원의 본문도 노출된다.")
         void load_portfolio_detail_private_owner() throws Exception {
-            // given - 소유자 본인 (setUpAuthentication 으로 MEMBER_ACCOUNT_ID 인증)
+            // given - 소유자 본인 (setUpAuthentication 으로 MEMBER_ACCOUNT_ID 인증). 본인이 소유한 자원의 본문은 visibility 와 무관하게 노출
             given(loadPortfolioDetailUseCase.execute(eq(PRIVATE_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
-                    .willReturn(buildResponse(true, Visibility.PRIVATE));
+                    .willReturn(buildResponse(
+                            true,
+                            Visibility.PRIVATE,
+                            linkedResumeWithContent(),
+                            linkedCoverLetterWithContent(),
+                            List.of()
+                    ));
 
             // when & then
             mockMvc.perform(get("/api/portfolios/{portfolioId}", PRIVATE_PORTFOLIO_ID))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.isOwner").value(true))
-                    .andExpect(jsonPath("$.visibility").value("private"))
-                    .andExpect(jsonPath("$.isInterested").doesNotExist());
+                    .andExpect(jsonPath("$.portfolio.visibility").value("private"))
+                    .andExpect(jsonPath("$.isInterested").doesNotExist())
+                    .andExpect(jsonPath("$.linkedResume.content.html").value("<p>이력서 본문 HTML</p>"))
+                    .andExpect(jsonPath("$.linkedCoverLetter.content.html").value("<p>자소서 본문 HTML</p>"));
         }
 
         @Test
@@ -310,21 +521,12 @@ class PortfolioQueryControllerTest {
             // given - 비소유 로그인 사용자, 관심 미등록
             PortfolioDetailResponse response = PortfolioDetailResponse.builder()
                     .isOwner(false)
-                    .publisher(PUBLISHER_NICKNAME)
-                    .jobCategories(List.of(new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발")))
-                    .collaborationType(CollaborationType.TEAM)
-                    .visibility(Visibility.PUBLIC)
                     .viewCount(0L)
                     .interestCount(0L)
                     .isInterested(false)
-                    .title("회원 서비스 도메인 모델링 회고")
-                    .content(PortfolioContentResponse.builder()
-                            .json("{\"type\":\"doc\",\"content\":[]}")
-                            .html("<p>본문 HTML 입니다.</p>")
-                            .build())
-                    .tags(List.of())
-                    .externalLinks(List.of())
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
+                    .portfolio(buildPortfolioBody(Visibility.PUBLIC))
+                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, List.of()))
                     .build();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
                     .willReturn(response);
@@ -343,21 +545,12 @@ class PortfolioQueryControllerTest {
             // given - 비소유 로그인 사용자, 관심 등록됨
             PortfolioDetailResponse response = PortfolioDetailResponse.builder()
                     .isOwner(false)
-                    .publisher(PUBLISHER_NICKNAME)
-                    .jobCategories(List.of(new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발")))
-                    .collaborationType(CollaborationType.TEAM)
-                    .visibility(Visibility.PUBLIC)
                     .viewCount(0L)
                     .interestCount(1L)
                     .isInterested(true)
-                    .title("회원 서비스 도메인 모델링 회고")
-                    .content(PortfolioContentResponse.builder()
-                            .json("{\"type\":\"doc\",\"content\":[]}")
-                            .html("<p>본문 HTML 입니다.</p>")
-                            .build())
-                    .tags(List.of())
-                    .externalLinks(List.of())
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
+                    .portfolio(buildPortfolioBody(Visibility.PUBLIC))
+                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, List.of()))
                     .build();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
                     .willReturn(response);
@@ -368,6 +561,22 @@ class PortfolioQueryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.isOwner").value(false))
                     .andExpect(jsonPath("$.isInterested").value(true));
+        }
+
+        @Test
+        @DisplayName("[200 OK] 연결된 이력서/자기소개서가 없으면 linkedResume 와 linkedCoverLetter 가 null 로 반환된다.")
+        void load_portfolio_detail_without_linked_resources() throws Exception {
+            // given - 연결 자원이 전혀 없는 포트폴리오
+            given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), nullable(Long.class)))
+                    .willReturn(buildResponse(false, Visibility.PUBLIC, null, null, List.of()));
+
+            // when & then
+            SecurityContextHolder.clearContext();
+            mockMvc.perform(get("/api/portfolios/{portfolioId}", PUBLIC_PORTFOLIO_ID))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.linkedResume").doesNotExist())
+                    .andExpect(jsonPath("$.linkedCoverLetter").doesNotExist());
         }
     }
 

@@ -47,6 +47,7 @@ public abstract class PortfolioWebMapper {
 
     public abstract PortfolioBodyApiResponse toPortfolioBodyApiResponse(PortfolioBodyResponse response);
     public abstract PublisherApiResponse toPublisherApiResponse(PublisherResponse response);
+    public abstract PublisherOtherPortfolioSummaryApiResponse toPublisherOtherPortfolioSummaryApiResponse(PublisherOtherPortfolioSummaryResponse response);
     public abstract LinkedResumeContentApiResponse toLinkedResumeContentApiResponse(LinkedResumeContentResponse response);
     public abstract LinkedCoverLetterContentApiResponse toLinkedCoverLetterContentApiResponse(LinkedCoverLetterContentResponse response);
 }

@@ -11,10 +11,12 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioExternalLinkResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioJobCategoryResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherOtherPortfolioSummaryResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
@@ -43,6 +45,7 @@ import java.util.stream.Stream;
 public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
+    private final LoadPortfoliosByMemberPort loadPortfoliosByMemberPort;
     private final LoadProfilePort loadProfilePort;
     private final LoadJobCategoryPort loadJobCategoryPort;
     private final LoadResumeContentPort loadResumeContentPort;
@@ -73,10 +76,37 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 .isInterested(isInterested)
                 .updatedAt(resolveLatestUpdatedAt(portfolio))
                 .portfolio(buildPortfolioBody(portfolio))
-                .publisher(new PublisherResponse(publisherNickname))
+                .publisher(buildPublisher(portfolio, publisherNickname))
                 .linkedResume(buildLinkedResume(portfolio.getResumeId(), viewerId))
                 .linkedCoverLetter(buildLinkedCoverLetter(portfolio.getCoverLetterId(), viewerId))
                 .build();
+    }
+
+    /**
+     * publisher 섹션을 합성한다. otherPortfolios 는 작성자의 PUBLIC 작품 중 본 포트폴리오를 제외한 전체를
+     * 마지막 수정 시각 내림차순으로 노출한다. 작품이 없으면 빈 배열로 응답한다.
+     */
+    private PublisherResponse buildPublisher(Portfolio portfolio, String publisherNickname) {
+        List<Portfolio> otherPublicPortfolios = loadPortfoliosByMemberPort
+                .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(
+                        portfolio.getMemberAccountId(),
+                        portfolio.getId()
+                );
+        List<PublisherOtherPortfolioSummaryResponse> otherPortfolios = otherPublicPortfolios.stream()
+                .map(this::toPublisherOtherPortfolioSummary)
+                .toList();
+        return new PublisherResponse(publisherNickname, otherPortfolios);
+    }
+
+    private PublisherOtherPortfolioSummaryResponse toPublisherOtherPortfolioSummary(Portfolio other) {
+        return new PublisherOtherPortfolioSummaryResponse(
+                other.getId(),
+                other.getTitle(),
+                toJobCategoriesResponse(other.getPortfolioJobCategory()),
+                other.getCachedViewCount(),
+                other.getCachedInterestCount(),
+                other.getAuditingInfo().updatedAt()
+        );
     }
 
     private PortfolioBodyResponse buildPortfolioBody(Portfolio portfolio) {

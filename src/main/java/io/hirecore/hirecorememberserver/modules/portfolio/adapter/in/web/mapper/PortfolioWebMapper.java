@@ -39,4 +39,9 @@ public abstract class PortfolioWebMapper {
     public abstract PortfolioTagApiResponse toPortfolioTagApiResponse(PortfolioTagResponse response);
     public abstract PortfolioExternalLinkApiResponse toPortfolioExternalLinkApiResponse(PortfolioExternalLinkResponse response);
     public abstract PortfolioJobCategoryApiResponse toPortfolioJobCategoryApiResponse(PortfolioJobCategoryResponse response);
+
+    public abstract MyPortfolioSummariesApiResponse toMyPortfolioSummariesApiResponse(MyPortfolioSummariesResponse response);
+    public abstract MyPortfolioSummaryItemApiResponse toMyPortfolioSummaryItemApiResponse(MyPortfolioSummaryItemResponse response);
+    public abstract LinkedResumeApiResponse toLinkedResumeApiResponse(LinkedResumeResponse response);
+    public abstract LinkedCoverLetterApiResponse toLinkedCoverLetterApiResponse(LinkedCoverLetterResponse response);
 }

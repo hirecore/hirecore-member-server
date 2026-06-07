@@ -6,6 +6,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
@@ -43,6 +44,7 @@ class LoadPortfolioDetailUseCaseImplTest {
     private LoadPortfolioDetailUseCaseImpl sut;
 
     @Mock private LoadPortfolioPort loadPortfolioPort;
+    @Mock private LoadPortfoliosByMemberPort loadPortfoliosByMemberPort;
     @Mock private LoadProfilePort loadProfilePort;
     @Mock private LoadJobCategoryPort loadJobCategoryPort;
     @Mock private LoadResumeContentPort loadResumeContentPort;
@@ -220,6 +222,59 @@ class LoadPortfolioDetailUseCaseImplTest {
             // then
             assertThat(response.linkedResume()).isNull();
             assertThat(response.linkedCoverLetter()).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("publisher.otherPortfolios 합성")
+    class PublisherOtherPortfoliosTest {
+
+        @Test
+        @DisplayName("작성자의 PUBLIC 작품 중 본 포트폴리오를 제외한 전체가 updatedAt 내림차순으로 합성된다")
+        void should_compose_other_public_portfolios() {
+            // given - 본 포트폴리오 1건 + 다른 PUBLIC 작품 2건
+            Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
+            Portfolio other1 = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
+            Portfolio other2 = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
+            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            stubCommonPorts();
+            given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
+            given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
+            given(loadPortfoliosByMemberPort
+                    .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(OWNER_ID, portfolio.getId()))
+                    .willReturn(List.of(other1, other2));
+
+            // when
+            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+
+            // then
+            assertThat(response.publisher().otherPortfolios()).hasSize(2);
+            assertThat(response.publisher().otherPortfolios())
+                    .extracting("portfolioId")
+                    .containsExactly(other1.getId(), other2.getId());
+            assertThat(response.publisher().otherPortfolios().getFirst().jobCategories())
+                    .extracting("categoryCode").containsExactly("DEV");
+        }
+
+        @Test
+        @DisplayName("다른 PUBLIC 작품이 없으면 빈 배열로 응답된다 (객체는 유지)")
+        void should_return_empty_array_when_no_other_public_portfolios() {
+            // given - loadPortfoliosByMember 가 빈 리스트 반환 (Mockito 기본값)
+            Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
+            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            stubCommonPorts();
+            given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
+            given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
+            given(loadPortfoliosByMemberPort
+                    .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(OWNER_ID, portfolio.getId()))
+                    .willReturn(List.of());
+
+            // when
+            PortfolioDetailResponse response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
+
+            // then
+            assertThat(response.publisher()).isNotNull();
+            assertThat(response.publisher().otherPortfolios()).isEmpty();
         }
     }
 

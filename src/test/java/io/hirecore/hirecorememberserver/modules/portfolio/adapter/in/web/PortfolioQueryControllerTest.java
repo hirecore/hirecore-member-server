@@ -32,6 +32,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dt
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioEditResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioJobCategoryResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioTagResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherOtherPortfolioSummaryResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PublisherResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
@@ -154,7 +155,8 @@ class PortfolioQueryControllerTest {
                 boolean isOwner,
                 Visibility visibility,
                 LinkedResumeContentResponse linkedResume,
-                LinkedCoverLetterContentResponse linkedCoverLetter
+                LinkedCoverLetterContentResponse linkedCoverLetter,
+                List<PublisherOtherPortfolioSummaryResponse> otherPortfolios
         ) {
             return PortfolioDetailResponse.builder()
                     .isOwner(isOwner)
@@ -162,10 +164,39 @@ class PortfolioQueryControllerTest {
                     .interestCount(0L)
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
                     .portfolio(buildPortfolioBody(visibility))
-                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME))
+                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, otherPortfolios))
                     .linkedResume(linkedResume)
                     .linkedCoverLetter(linkedCoverLetter)
                     .build();
+        }
+
+        private List<PublisherOtherPortfolioSummaryResponse> sampleOtherPortfolios() {
+            return List.of(
+                    new PublisherOtherPortfolioSummaryResponse(
+                            5234567890123456790L,
+                            "프론트엔드 사이드 프로젝트",
+                            List.of(
+                                    new PortfolioJobCategoryResponse(2001L, 1L, "DEV", "개발"),
+                                    new PortfolioJobCategoryResponse(2002L, 2L, "DEV_FRONTEND", "프론트엔드"),
+                                    new PortfolioJobCategoryResponse(2003L, 3L, "DEV_FRONTEND_REACT", "React")
+                            ),
+                            512L,
+                            24L,
+                            Instant.parse("2026-05-30T09:00:00Z")
+                    ),
+                    new PublisherOtherPortfolioSummaryResponse(
+                            5234567890123456791L,
+                            "DevOps 학습 정리",
+                            List.of(
+                                    new PortfolioJobCategoryResponse(3001L, 1L, "DEV", "개발"),
+                                    new PortfolioJobCategoryResponse(3002L, 2L, "DEV_DEVOPS", "DevOps"),
+                                    new PortfolioJobCategoryResponse(3003L, 3L, "DEV_DEVOPS_K8S", "Kubernetes")
+                            ),
+                            128L,
+                            6L,
+                            Instant.parse("2026-04-15T11:00:00Z")
+                    )
+            );
         }
 
         private LinkedResumeContentResponse linkedResumeWithContent() {
@@ -201,14 +232,15 @@ class PortfolioQueryControllerTest {
         @Test
         @DisplayName("[200 OK] PUBLIC 포트폴리오는 비로그인 사용자도 조회할 수 있으며 연결 자원은 각 자원 자체의 가시성 정책을 따른다.")
         void load_portfolio_detail_public_anonymous() throws Exception {
-            // given - 비로그인 viewer + linkedResume PUBLIC(본문 노출) + linkedCoverLetter PRIVATE(본문 가림)
+            // given - 비로그인 viewer + linkedResume PUBLIC(본문 노출) + linkedCoverLetter PRIVATE(본문 가림) + 작성자의 다른 PUBLIC 작품 2건
             SecurityContextHolder.clearContext();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), nullable(Long.class)))
                     .willReturn(buildResponse(
                             false,
                             Visibility.PUBLIC,
                             linkedResumeWithContent(),
-                            linkedCoverLetterContentHidden()
+                            linkedCoverLetterContentHidden(),
+                            sampleOtherPortfolios()
                     ));
 
             // when & then
@@ -231,6 +263,11 @@ class PortfolioQueryControllerTest {
                     .andExpect(jsonPath("$.linkedResume.content.html").value("<p>이력서 본문 HTML</p>"))
                     .andExpect(jsonPath("$.linkedCoverLetter.title").value("B사 지원용 자소서"))
                     .andExpect(jsonPath("$.linkedCoverLetter.content").doesNotExist())
+                    .andExpect(jsonPath("$.publisher.otherPortfolios.length()").value(2))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].title").value("프론트엔드 사이드 프로젝트"))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].jobCategories[2].categoryCode").value("DEV_FRONTEND_REACT"))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].viewCount").value(512))
+                    .andExpect(jsonPath("$.publisher.otherPortfolios[0].interestCount").value(24))
 
                     // 문서화
                     .andDo(document("200-portfolio-load-detail-success",
@@ -268,6 +305,7 @@ class PortfolioQueryControllerTest {
                                                         [응답 동작]
                                                          - portfolio.tags 는 sortOrder 오름차순으로 정렬되어 옵니다.
                                                          - portfolio.jobCategories 는 루트 → 리프 순서로 정렬되어 옵니다.
+                                                         - publisher.otherPortfolios 는 작성자의 PUBLIC 작품 중 본 포트폴리오를 제외한 전체를 updatedAt 내림차순으로 반환합니다. 없으면 빈 배열.
 
                                                         [에러 응답]
                                                          - 403 PORTFOLIO_FORBIDDEN: PRIVATE 포트폴리오 + 비소유자/비로그인
@@ -362,6 +400,39 @@ class PortfolioQueryControllerTest {
                                                     fieldWithPath("publisher.nickname")
                                                             .type(JsonFieldType.STRING)
                                                             .description("작성자 닉네임"),
+                                                    fieldWithPath("publisher.otherPortfolios")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("작성자의 다른 PUBLIC 포트폴리오 요약 목록 (본 포트폴리오 제외, updatedAt DESC). 작품이 없으면 빈 배열"),
+                                                    fieldWithPath("publisher.otherPortfolios[].portfolioId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("다른 포트폴리오 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("publisher.otherPortfolios[].title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("다른 포트폴리오 제목"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("해당 작품의 직군 카테고리 계층 (루트 → 리프)"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].depth")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("카테고리 계층 깊이"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].categoryCode")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 코드"),
+                                                    fieldWithPath("publisher.otherPortfolios[].jobCategories[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 표시 이름"),
+                                                    fieldWithPath("publisher.otherPortfolios[].viewCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("해당 작품의 캐시된 조회수"),
+                                                    fieldWithPath("publisher.otherPortfolios[].interestCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("해당 작품의 캐시된 관심등록수"),
+                                                    fieldWithPath("publisher.otherPortfolios[].updatedAt")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("해당 작품의 마지막 수정 시각 (ISO-8601)"),
 
                                                     // linkedResume
                                                     fieldWithPath("linkedResume")
@@ -429,7 +500,8 @@ class PortfolioQueryControllerTest {
                             true,
                             Visibility.PRIVATE,
                             linkedResumeWithContent(),
-                            linkedCoverLetterWithContent()
+                            linkedCoverLetterWithContent(),
+                            List.of()
                     ));
 
             // when & then
@@ -454,7 +526,7 @@ class PortfolioQueryControllerTest {
                     .isInterested(false)
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
                     .portfolio(buildPortfolioBody(Visibility.PUBLIC))
-                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME))
+                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, List.of()))
                     .build();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
                     .willReturn(response);
@@ -478,7 +550,7 @@ class PortfolioQueryControllerTest {
                     .isInterested(true)
                     .updatedAt(Instant.parse("2026-06-01T08:21:34.123456Z"))
                     .portfolio(buildPortfolioBody(Visibility.PUBLIC))
-                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME))
+                    .publisher(new PublisherResponse(PUBLISHER_NICKNAME, List.of()))
                     .build();
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), eq(MEMBER_ACCOUNT_ID)))
                     .willReturn(response);
@@ -496,7 +568,7 @@ class PortfolioQueryControllerTest {
         void load_portfolio_detail_without_linked_resources() throws Exception {
             // given - 연결 자원이 전혀 없는 포트폴리오
             given(loadPortfolioDetailUseCase.execute(eq(PUBLIC_PORTFOLIO_ID), nullable(Long.class)))
-                    .willReturn(buildResponse(false, Visibility.PUBLIC, null, null));
+                    .willReturn(buildResponse(false, Visibility.PUBLIC, null, null, List.of()));
 
             // when & then
             SecurityContextHolder.clearContext();

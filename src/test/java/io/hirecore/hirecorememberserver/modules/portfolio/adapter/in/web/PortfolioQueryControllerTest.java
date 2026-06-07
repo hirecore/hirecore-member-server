@@ -16,8 +16,13 @@ import io.hirecore.hirecorememberserver.modules.file.domain.exception.ImageFileM
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.mapper.PortfolioWebMapperImpl;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedCoverLetterResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.LinkedResumeResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummariesResponse;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.MyPortfolioSummaryItemResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentImageResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioContentResponse;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.dto.response.PortfolioDetailResponse;
@@ -90,6 +95,9 @@ class PortfolioQueryControllerTest {
 
     @MockitoBean
     private LoadPortfolioEditUseCase loadPortfolioEditUseCase;
+
+    @MockitoBean
+    private LoadMyPortfolioSummariesUseCase loadMyPortfolioSummariesUseCase;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
 
@@ -698,6 +706,199 @@ class PortfolioQueryControllerTest {
                                     ResourceSnippetParameters.builder()
                                             .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
                                             .responseFields(errorResponseFields())
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  내 포트폴리오 요약 목록 조회: 성공 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("내 포트폴리오 요약 목록 조회: 성공 케이스 (Happy Path)")
+    class LoadMyPortfolioSummariesSuccessTest {
+
+        private MyPortfolioSummariesResponse buildResponse() {
+            MyPortfolioSummaryItemResponse linkedItem = new MyPortfolioSummaryItemResponse(
+                    5234567890123456789L,
+                    "회원 서비스 도메인 모델링 회고",
+                    "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.",
+                    "회고 작성 시 참고용 메모입니다.",
+                    7876543210987654321L,
+                    "https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp",
+                    List.of(
+                            new PortfolioJobCategoryResponse(1001L, 1L, "DEV", "개발"),
+                            new PortfolioJobCategoryResponse(1002L, 2L, "DEV_BACKEND", "백엔드")
+                    ),
+                    CollaborationType.TEAM,
+                    Visibility.PUBLIC,
+                    List.of(
+                            new PortfolioTagResponse("Spring", 0),
+                            new PortfolioTagResponse("DDD", 1)
+                    ),
+                    42L,
+                    new LinkedResumeResponse(8100000000000000001L, "백엔드 신입 이력서"),
+                    new LinkedCoverLetterResponse(8200000000000000001L, "B사 지원용 자소서"),
+                    Instant.parse("2026-06-05T14:00:00Z")
+            );
+            MyPortfolioSummaryItemResponse standaloneItem = new MyPortfolioSummaryItemResponse(
+                    5234567890123456790L,
+                    "프론트엔드 사이드 프로젝트",
+                    "Vite + React 로 만든 사이드 프로젝트",
+                    null,
+                    null,
+                    null,
+                    List.of(
+                            new PortfolioJobCategoryResponse(2001L, 1L, "DEV", "개발"),
+                            new PortfolioJobCategoryResponse(2002L, 2L, "DEV_FRONTEND", "프론트엔드")
+                    ),
+                    CollaborationType.PERSONAL,
+                    Visibility.PRIVATE,
+                    List.of(),
+                    0L,
+                    null,
+                    null,
+                    Instant.parse("2026-05-30T09:00:00Z")
+            );
+            return new MyPortfolioSummariesResponse(List.of(linkedItem, standaloneItem));
+        }
+
+        @Test
+        @DisplayName("[200 OK] 작성자 본인이 호출하면 updatedAt 내림차순으로 요약 목록을 반환한다.")
+        void load_my_portfolio_summaries_success() throws Exception {
+            // given
+            given(loadMyPortfolioSummariesUseCase.execute(eq(MEMBER_ACCOUNT_ID)))
+                    .willReturn(buildResponse());
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/summaries/mine"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.items.length()").value(2))
+                    .andExpect(jsonPath("$.items[0].title").value("회원 서비스 도메인 모델링 회고"))
+                    .andExpect(jsonPath("$.items[0].collaborationType").value("team"))
+                    .andExpect(jsonPath("$.items[0].visibility").value("public"))
+                    .andExpect(jsonPath("$.items[0].interestCount").value(42))
+                    .andExpect(jsonPath("$.items[0].linkedResume.title").value("백엔드 신입 이력서"))
+                    .andExpect(jsonPath("$.items[0].linkedCoverLetter.title").value("B사 지원용 자소서"))
+                    .andExpect(jsonPath("$.items[0].tags[0].name").value("Spring"))
+                    .andExpect(jsonPath("$.items[1].title").value("프론트엔드 사이드 프로젝트"))
+                    .andExpect(jsonPath("$.items[1].thumbnailImageUrl").doesNotExist())
+                    .andExpect(jsonPath("$.items[1].linkedResume").doesNotExist())
+                    .andExpect(jsonPath("$.items[1].linkedCoverLetter").doesNotExist())
+
+                    // 문서화
+                    .andDo(document("200-portfolio-load-my-summaries-success",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .summary("\"내 포트폴리오 요약 목록 조회\": 작성자 본인의 포트폴리오 목록을 한 번에 반환한다.")
+                                            .description("""
+                                                    작성자 본인이 자신의 포트폴리오 목록 화면을 그릴 때 사용하는 요약 조회 API 입니다.
+
+                                                        [접근 정책]
+                                                         - 로그인 필수 (작성자 본인 호출)
+                                                         - 다른 사용자의 포트폴리오는 절대 노출되지 않음
+
+                                                        [정렬 / 페이징]
+                                                         - 정렬: updatedAt 내림차순 (최근 수정 우선)
+                                                         - 페이징 없음. 본인 보유 포트폴리오 전체를 한 번에 반환.
+
+                                                        [BC 간 합성]
+                                                         - 연결된 이력서/자기소개서의 제목은 sharedkernel out port 로 합성됩니다.
+                                                         - 연결이 없거나 합성에 실패한 항목은 linkedResume / linkedCoverLetter 가 null.
+                                                         - 썸네일 URL 은 환경별 CDN base URL + object key 조합. 등록 안 됐거나 ORPHANED/DELETED 인 경우 null.
+                                                    """)
+                                            .responseFields(
+                                                    fieldWithPath("items")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("내 포트폴리오 요약 목록 (updatedAt 내림차순). 없으면 빈 배열."),
+                                                    fieldWithPath("items[].portfolioId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("포트폴리오 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("items[].title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("포트폴리오 제목"),
+                                                    fieldWithPath("items[].previewSummary")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("미리보기 요약 텍스트"),
+                                                    fieldWithPath("items[].privateMemo")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("작성자 비공개 메모. 미작성 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].thumbnailImageId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 이미지의 ImageFileMeta ID (TSID, JSON 문자열). 미등록 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].thumbnailImageUrl")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 이미지 전체 URL. 미등록 / 해소 실패 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].jobCategories")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("작성자가 선택한 직무 카테고리 계층 (루트 → 리프)"),
+                                                    fieldWithPath("items[].jobCategories[].id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("직무 카테고리 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("items[].jobCategories[].depth")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("카테고리 계층 깊이"),
+                                                    fieldWithPath("items[].jobCategories[].categoryCode")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 코드"),
+                                                    fieldWithPath("items[].jobCategories[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 표시 이름"),
+                                                    fieldWithPath("items[].collaborationType")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("협업 유형 (team, personal)"),
+                                                    fieldWithPath("items[].visibility")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("공개 범위 (public, private)"),
+                                                    fieldWithPath("items[].tags")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("사용자 입력 태그 목록 (sortOrder ASC). 없으면 빈 배열."),
+                                                    fieldWithPath("items[].tags[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("사용자가 입력한 원본 태그 문자열"),
+                                                    fieldWithPath("items[].tags[].sortOrder")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("사용자가 의도한 표시 순서 (0부터 시작)"),
+                                                    fieldWithPath("items[].interestCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("캐시된 관심 등록 수"),
+                                                    fieldWithPath("items[].linkedResume")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("연결된 이력서. 연결 없거나 합성 실패 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].linkedResume.id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 이력서 ID (TSID, JSON 문자열)")
+                                                            .optional(),
+                                                    fieldWithPath("items[].linkedResume.title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 이력서 제목")
+                                                            .optional(),
+                                                    fieldWithPath("items[].linkedCoverLetter")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("연결된 자기소개서. 연결 없거나 합성 실패 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].linkedCoverLetter.id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 자기소개서 ID (TSID, JSON 문자열)")
+                                                            .optional(),
+                                                    fieldWithPath("items[].linkedCoverLetter.title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("연결된 자기소개서 제목")
+                                                            .optional(),
+                                                    fieldWithPath("items[].updatedAt")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("마지막 수정 시각 (ISO-8601, UTC)")
+                                            )
                                             .build()
                             )
                     ));

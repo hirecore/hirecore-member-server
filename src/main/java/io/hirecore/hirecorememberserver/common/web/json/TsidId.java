@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
  * 마치 직접 부착된 것처럼 펼쳐서 적용합니다.</p>
  *
  * <pre>{@code
- * public record CreatePortfolioApiResponse(
+ * public record Response(
  *         @TsidId Long portfolioId
  * ) {}
  *

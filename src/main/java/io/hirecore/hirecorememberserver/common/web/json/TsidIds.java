@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * {@code contentUsing} / {@code contentSerializer} 를 사용합니다.</p>
  *
  * <pre>{@code
- * public record CreatePortfolioApiRequest(
+ * public record Request(
  *         @TsidIds List<Long> contentImageIds
  * ) {}
  *

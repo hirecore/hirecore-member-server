@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.coverletter.adapter.out.persistence.jpa;
 
 import io.hirecore.hirecorememberserver.modules.coverletter.adapter.out.persistence.jpa.repository.CoverLetterJpaQueryRepository;
-import io.hirecore.hirecorememberserver.modules.coverletter.application.port.in.dto.response.CoverLetterContentLoadResult;
+import io.hirecore.hirecorememberserver.modules.coverletter.application.port.in.LoadCoverLetterContentUseCase;
 import io.hirecore.hirecorememberserver.modules.coverletter.application.port.out.LoadCoverLetterContentPort;
 import io.hirecore.hirecorememberserver.modules.coverletter.application.port.out.LoadCoverLetterTitlesPort;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +34,9 @@ public class CoverLetterJpaQueryAdapter implements
     }
 
     @Override
-    public Optional<CoverLetterContentLoadResult> findById(Long coverLetterId) {
+    public Optional<LoadCoverLetterContentUseCase.Response> findById(Long coverLetterId) {
         return coverLetterJpaQueryRepository.findContentProjectionById(coverLetterId)
-                .map(projection -> new CoverLetterContentLoadResult(
+                .map(projection -> new LoadCoverLetterContentUseCase.Response(
                         projection.getId(),
                         projection.getTitle(),
                         projection.getMemberAccountId(),

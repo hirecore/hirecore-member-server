@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -228,6 +229,92 @@ class JobCategoryJpaQueryAdapterTest {
             // then
             assertThat(result).extracting(JobCategory::getId).containsExactly(1L);
             assertThat(statistics.getPrepareStatementCount()).isEqualTo(1L);
+        }
+    }
+
+    @Nested
+    @DisplayName("loadHierarchiesByLeafIds — 다중 leaf Recursive CTE")
+    class LoadHierarchiesByLeafIdsTest {
+
+        private Statistics statistics;
+
+        @BeforeEach
+        void resetStatistics() {
+            statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+            statistics.clear();
+        }
+
+        @Test
+        @DisplayName("여러 leaf 의 root → leaf 경로를 단일 SQL 로 일괄 반환한다 (Map key = leaf id)")
+        void should_return_all_paths_in_single_sql() {
+            // given: 두 트리 — root(1)←mid(11)←leaf(111), root(2)←leaf(22)
+            insert(1L, null, 1, 1, true);
+            insert(11L, 1L, 2, 1, true);
+            insert(111L, 11L, 3, 1, true);
+            insert(2L, null, 1, 1, true);
+            insert(22L, 2L, 2, 1, true);
+            flushAndClear();
+            statistics.clear();
+
+            // when
+            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of(111L, 22L));
+
+            // then
+            assertThat(result).containsOnlyKeys(111L, 22L);
+            assertThat(result.get(111L)).extracting(JobCategory::getId).containsExactly(1L, 11L, 111L);
+            assertThat(result.get(22L)).extracting(JobCategory::getId).containsExactly(2L, 22L);
+            assertThat(statistics.getPrepareStatementCount())
+                    .as("다중 leaf 일괄 CTE → 단일 SQL")
+                    .isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("입력 leaf 개수와 무관하게 단일 SQL 만 발행한다 (K 비례 차단)")
+        void should_emit_single_sql_regardless_of_k() {
+            // given: 5개의 독립 트리, 각 depth 2
+            for (int i = 1; i <= 5; i++) {
+                long rootId = i;
+                long leafId = i * 10L;
+                insert(rootId, null, 1, 1, true);
+                insert(leafId, rootId, 2, 1, true);
+            }
+            flushAndClear();
+            statistics.clear();
+
+            // when - K=5
+            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of(10L, 20L, 30L, 40L, 50L));
+
+            // then
+            assertThat(result).hasSize(5);
+            assertThat(statistics.getPrepareStatementCount()).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 leaf 는 결과 Map 에서 제외된다")
+        void should_skip_missing_leaves() {
+            // given
+            insert(1L, null, 1, 1, true);
+            insert(11L, 1L, 2, 1, true);
+            flushAndClear();
+            statistics.clear();
+
+            // when - 11L 은 존재, 9999L 은 없음
+            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of(11L, 9999L));
+
+            // then
+            assertThat(result).containsOnlyKeys(11L);
+            assertThat(result.get(11L)).extracting(JobCategory::getId).containsExactly(1L, 11L);
+        }
+
+        @Test
+        @DisplayName("입력이 비어 있으면 SQL 을 발행하지 않고 빈 Map 을 반환한다")
+        void should_not_emit_sql_when_input_is_empty() {
+            // when
+            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of());
+
+            // then
+            assertThat(result).isEmpty();
+            assertThat(statistics.getPrepareStatementCount()).isZero();
         }
     }
 }

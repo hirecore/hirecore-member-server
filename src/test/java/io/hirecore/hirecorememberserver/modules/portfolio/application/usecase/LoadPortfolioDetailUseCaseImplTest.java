@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -243,6 +244,11 @@ class LoadPortfolioDetailUseCaseImplTest {
             given(loadPortfoliosByMemberPort
                     .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(OWNER_ID, portfolio.getId()))
                     .willReturn(List.of(other1, other2));
+            // 다른 K개 포트폴리오의 직무 계층은 단일 일괄 호출로 가져온다
+            given(loadJobCategoryPort.loadJobCategoryHierarchies(List.of(JOB_CATEGORY_ID, JOB_CATEGORY_ID)))
+                    .willReturn(Map.of(JOB_CATEGORY_ID, List.of(
+                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+                    )));
 
             // when
             LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);

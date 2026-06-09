@@ -134,7 +134,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
                 PortfolioApplicationException::new
         );
 
-        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryId())
+        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryLeafId())
                 .stream()
                 .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),

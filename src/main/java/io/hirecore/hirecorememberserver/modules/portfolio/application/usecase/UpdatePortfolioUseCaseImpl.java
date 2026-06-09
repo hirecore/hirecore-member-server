@@ -53,7 +53,7 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
         List<Long> imageIds = aggregateImageIds(command.thumbnailImageId(), command.contentImageIds());
         markImagesAsUploadedPort.markUploaded(viewerId, imageIds);
 
-        Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
+        Long jobCategoryLeafId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
 
         SharedCommandDto.RichTextContent content = command.content();
         portfolio.modify(
@@ -63,7 +63,7 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
                 command.title(),
                 command.previewSummary(),
                 command.privateMemo(),
-                jobCategoryId,
+                jobCategoryLeafId,
                 command.jobCategory().userInput(),
                 serializeContentJson(content),
                 content.html(),

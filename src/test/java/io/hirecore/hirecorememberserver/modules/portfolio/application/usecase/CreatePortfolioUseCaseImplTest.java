@@ -55,7 +55,7 @@ class CreatePortfolioUseCaseImplTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
-    private static final Long JOB_CATEGORY_ID = 9L;
+    private static final Long JOB_CATEGORY_LEAF_ID = 9L;
     private static final Long THUMBNAIL_IMAGE_ID = 100L;
     private static final List<Long> CONTENT_IMAGE_IDS = List.of(101L, 102L);
 
@@ -92,7 +92,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_orchestrate_steps_and_return_saved_id() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -112,7 +112,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_thumbnail_and_content_image_ids_to_mark_uploaded() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -140,7 +140,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -167,7 +167,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -187,7 +187,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_build_portfolio_with_correct_fields() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -200,7 +200,7 @@ class CreatePortfolioUseCaseImplTest {
 
             Portfolio captured = captor.getValue();
             assertThat(captured.getMemberAccountId()).isEqualTo(MEMBER_ACCOUNT_ID);
-            assertThat(captured.getPortfolioJobCategory().getJobCategoryId()).isEqualTo(JOB_CATEGORY_ID);
+            assertThat(captured.getPortfolioJobCategory().getJobCategoryLeafId()).isEqualTo(JOB_CATEGORY_LEAF_ID);
             assertThat(captured.getPortfolioJobCategory().getUserInput()).isEqualTo("백엔드 직무");
             assertThat(captured.getTitle()).isEqualTo("회원 서비스 도메인 모델링 회고");
             assertThat(captured.getCollaborationType()).isEqualTo(CollaborationType.TEAM);
@@ -225,7 +225,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>본문</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -243,7 +243,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_map_tag_commands_to_portfolio_tags_with_sort_order() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -272,7 +272,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -296,7 +296,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -321,7 +321,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 

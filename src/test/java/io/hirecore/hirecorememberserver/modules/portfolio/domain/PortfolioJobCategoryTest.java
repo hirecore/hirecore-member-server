@@ -19,12 +19,12 @@ class PortfolioJobCategoryTest {
     class CreateTest {
 
         @Test
-        @DisplayName("id/jobCategoryId/connectedAt 가 채워진 상태로 생성된다")
+        @DisplayName("id/jobCategoryLeafId/connectedAt 가 채워진 상태로 생성된다")
         void should_create_with_required_fields() {
             PortfolioJobCategory category = PortfolioJobCategory.create(10L, null);
 
             assertThat(category.getId()).isNotNull();
-            assertThat(category.getJobCategoryId()).isEqualTo(10L);
+            assertThat(category.getJobCategoryLeafId()).isEqualTo(10L);
             assertThat(category.getConnectedAt()).isNotNull();
         }
 
@@ -46,7 +46,7 @@ class PortfolioJobCategoryTest {
         void should_throw_when_id_is_null() {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .id(null)
-                    .jobCategoryId(10L)
+                    .jobCategoryLeafId(10L)
                     .connectedAt(Instant.now())
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)
@@ -55,11 +55,11 @@ class PortfolioJobCategoryTest {
         }
 
         @Test
-        @DisplayName("jobCategoryId가 null이면 JOB_CATEGORY_ID_MISSING 예외가 발생한다")
+        @DisplayName("jobCategoryLeafId가 null이면 JOB_CATEGORY_ID_MISSING 예외가 발생한다")
         void should_throw_when_job_category_id_is_null() {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .id(1L)
-                    .jobCategoryId(null)
+                    .jobCategoryLeafId(null)
                     .connectedAt(Instant.now())
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)
@@ -72,7 +72,7 @@ class PortfolioJobCategoryTest {
         void should_throw_when_connected_at_is_null() {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .id(1L)
-                    .jobCategoryId(10L)
+                    .jobCategoryLeafId(10L)
                     .connectedAt(null)
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)

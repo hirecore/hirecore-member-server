@@ -96,7 +96,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                             PortfolioApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_NOT_FOUND,
                             PortfolioApplicationException::new
                     );
-                    return pjc.getJobCategoryId();
+                    return pjc.getJobCategoryLeafId();
                 })
                 .toList();
         Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
@@ -112,7 +112,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
             Portfolio other,
             Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId
     ) {
-        Long leafId = other.getPortfolioJobCategory().getJobCategoryId();
+        Long leafId = other.getPortfolioJobCategory().getJobCategoryLeafId();
         List<SharedResponseDto.JobCategory> jobCategories = hierarchiesByLeafId
                 .getOrDefault(leafId, List.of()).stream()
                 .map(h -> new SharedResponseDto.JobCategory(h.id(), h.depth(), h.categoryCode(), h.name()))
@@ -260,7 +260,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 PortfolioApplicationException::new
         );
 
-        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryId())
+        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryLeafId())
                 .stream()
                 .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),

@@ -53,7 +53,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
     private LoadImageUrlPort loadImageUrlPort;
 
     private static final Long VIEWER_ID = 1L;
-    private static final Long JOB_CATEGORY_ID = 9001L;
+    private static final Long JOB_CATEGORY_LEAF_ID = 9001L;
 
     private static Portfolio portfolioOf(
             Long thumbnailImageId,
@@ -68,7 +68,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                 "포트폴리오 제목",
                 "미리보기",
                 null,
-                JOB_CATEGORY_ID,
+                JOB_CATEGORY_LEAF_ID,
                 null,
                 "{\"type\":\"doc\"}",
                 "<p>본문</p>",
@@ -117,10 +117,10 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     .willReturn(Map.of(resumeId, "백엔드 신입 이력서"));
             given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of(coverLetterId)))
                     .willReturn(Map.of(coverLetterId, "B사 지원용 자소서"));
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_LEAF_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(1001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
+                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_LEAF_ID, 2L, "DEV_BACKEND", "백엔드")
                     ));
             given(loadImageUrlPort.findUrlById(thumbnailImageId))
                     .willReturn(Optional.of("https://cdn.example.com/portfolio/thumbnail/abc.webp"));
@@ -152,9 +152,9 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     .willReturn(List.of(loaded));
             given(loadResumeTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
             given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_LEAF_ID))
                     .willReturn(List.of(
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_LEAF_ID, 1L, "DEV", "개발")
                     ));
 
             // when
@@ -179,9 +179,9 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     .willReturn(List.of(loaded));
             given(loadResumeTitlesPort.findAllTitlesByIds(Set.of(resumeId))).willReturn(Map.of());
             given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_LEAF_ID))
                     .willReturn(List.of(
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_LEAF_ID, 1L, "DEV", "개발")
                     ));
 
             // when
@@ -203,9 +203,9 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
             given(loadPortfoliosByMemberPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(first, second, third));
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_LEAF_ID))
                     .willReturn(List.of(
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_LEAF_ID, 1L, "DEV", "개발")
                     ));
             given(loadResumeTitlesPort.findAllTitlesByIds(Set.of(sharedResumeId, otherResumeId)))
                     .willReturn(Map.of(

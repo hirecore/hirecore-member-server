@@ -57,7 +57,7 @@ class LoadPortfolioDetailUseCaseImplTest {
     private static final Long OWNER_ID = 1L;
     private static final Long OTHER_VIEWER_ID = 2L;
     private static final Long PORTFOLIO_ID = 9001L;
-    private static final Long JOB_CATEGORY_ID = 9L;
+    private static final Long JOB_CATEGORY_LEAF_ID = 9L;
     private static final Long RESUME_ID = 7100L;
     private static final Long COVER_LETTER_ID = 7200L;
     private static final String NICKNAME = "hirecore_user";
@@ -76,7 +76,7 @@ class LoadPortfolioDetailUseCaseImplTest {
                 "포트폴리오 제목",
                 "미리보기",
                 null,
-                JOB_CATEGORY_ID,
+                JOB_CATEGORY_LEAF_ID,
                 null,
                 "{\"type\":\"doc\"}",
                 "<p>본문</p>",
@@ -90,8 +90,8 @@ class LoadPortfolioDetailUseCaseImplTest {
 
     private void stubCommonPorts() {
         given(loadProfilePort.findNickname(OWNER_ID)).willReturn(Optional.of(NICKNAME));
-        given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
-                .willReturn(List.of(new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")));
+        given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_LEAF_ID))
+                .willReturn(List.of(new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_LEAF_ID, 1L, "DEV", "개발")));
     }
 
     @Nested
@@ -245,9 +245,9 @@ class LoadPortfolioDetailUseCaseImplTest {
                     .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(OWNER_ID, portfolio.getId()))
                     .willReturn(List.of(other1, other2));
             // 다른 K개 포트폴리오의 직무 계층은 단일 일괄 호출로 가져온다
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(List.of(JOB_CATEGORY_ID, JOB_CATEGORY_ID)))
-                    .willReturn(Map.of(JOB_CATEGORY_ID, List.of(
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+            given(loadJobCategoryPort.loadJobCategoryHierarchies(List.of(JOB_CATEGORY_LEAF_ID, JOB_CATEGORY_LEAF_ID)))
+                    .willReturn(Map.of(JOB_CATEGORY_LEAF_ID, List.of(
+                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_LEAF_ID, 1L, "DEV", "개발")
                     )));
 
             // when

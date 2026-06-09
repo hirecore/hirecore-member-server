@@ -22,8 +22,8 @@ public class PortfolioJobCategoryJpaEntity extends AbstractPersistableEntity<Lon
     private PortfolioJpaEntity portfolio;
 
     @Comment("직무 카테고리 ID")
-    @Column(name = "job_category_id", nullable = false)
-    private Long jobCategoryId;
+    @Column(name = "job_category_leaf_id", nullable = false)
+    private Long jobCategoryLeafId;
 
     @Comment("사용자가 입력한 포트폴리오 카테고리 라벨")
     @Column(name = "user_input", columnDefinition = "VARCHAR(10)")

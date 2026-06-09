@@ -117,7 +117,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String title,
             String previewSummary,
             String privateMemo,
-            Long jobCategoryId,
+            Long jobCategoryLeafId,
             String userInput,
             String contentJson,
             String contentHtml,
@@ -140,7 +140,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 .privateMemo(privateMemo)
                 .cachedViewCount(0L)
                 .cachedInterestCount(0L)
-                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
+                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryLeafId, userInput))
                 .portfolioContent(PortfolioContent.create(
                         portfolioId,
                         contentJson,
@@ -170,7 +170,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             String title,
             String previewSummary,
             String privateMemo,
-            Long jobCategoryId,
+            Long jobCategoryLeafId,
             String jobCategoryUserInput,
             String contentJson,
             String contentHtml,
@@ -180,7 +180,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             CollaborationType collaborationType,
             Visibility visibility
     ) {
-        PortfolioJobCategory newJobCategory = PortfolioJobCategory.create(jobCategoryId, jobCategoryUserInput);
+        PortfolioJobCategory newJobCategory = PortfolioJobCategory.create(jobCategoryLeafId, jobCategoryUserInput);
         List<Long> resolvedNewContentImageIds = contentImageIds != null ? contentImageIds : List.of();
         PortfolioContent newContent = PortfolioContent.create(
                 this.id,

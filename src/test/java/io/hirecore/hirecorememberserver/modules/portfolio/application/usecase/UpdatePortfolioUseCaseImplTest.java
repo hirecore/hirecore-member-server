@@ -63,7 +63,7 @@ class UpdatePortfolioUseCaseImplTest {
     private static final Long OWNER_ID = 1L;
     private static final Long OTHER_USER_ID = 2L;
     private static final Long PORTFOLIO_ID = 9001L;
-    private static final Long JOB_CATEGORY_ID = 9L;
+    private static final Long JOB_CATEGORY_LEAF_ID = 9L;
     private static final Long THUMBNAIL_IMAGE_ID = 100L;
     private static final List<Long> CONTENT_IMAGE_IDS = List.of(101L, 102L);
 
@@ -76,7 +76,7 @@ class UpdatePortfolioUseCaseImplTest {
                 "기존 제목",
                 "기존 미리보기",
                 null,
-                JOB_CATEGORY_ID,
+                JOB_CATEGORY_LEAF_ID,
                 null,
                 "{\"type\":\"doc\"}",
                 "<p>기존 본문</p>",
@@ -116,7 +116,7 @@ class UpdatePortfolioUseCaseImplTest {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
-            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_LEAF_ID);
 
             // when
             Long result = sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand());
@@ -135,7 +135,7 @@ class UpdatePortfolioUseCaseImplTest {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
 
             // when
             sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand());
@@ -153,7 +153,7 @@ class UpdatePortfolioUseCaseImplTest {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_LEAF_ID);
 
             // when
             sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand());

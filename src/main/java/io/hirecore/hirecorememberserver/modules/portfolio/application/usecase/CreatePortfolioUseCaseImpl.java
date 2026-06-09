@@ -50,13 +50,13 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
         markImagesAsUploadedPort.markUploaded(memberId, imageIds);
 
-        Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
-        Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryId);
+        Long jobCategoryLeafId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
+        Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryLeafId);
 
         return savePortfolioPort.save(portfolio).getId();
     }
 
-    private Portfolio buildPortfolio(Long memberId, Command command, Long jobCategoryId) {
+    private Portfolio buildPortfolio(Long memberId, Command command, Long jobCategoryLeafId) {
         SharedCommandDto.RichTextContent content = command.content();
         List<PortfolioTag> portfolioTags = toPortfolioTags(command.tags());
         List<ExternalLink> externalLinks = toExternalLinks(command.externalLinks());
@@ -69,7 +69,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
                 command.title(),
                 command.previewSummary(),
                 command.privateMemo(),
-                jobCategoryId,
+                jobCategoryLeafId,
                 command.jobCategory().userInput(),
                 serializeContentJson(content),
                 content.html(),

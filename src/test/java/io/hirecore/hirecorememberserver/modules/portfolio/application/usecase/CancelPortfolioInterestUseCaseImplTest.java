@@ -41,7 +41,7 @@ class CancelPortfolioInterestUseCaseImplTest {
     private static final Long OWNER_ID = 1L;
     private static final Long MEMBER_ACCOUNT_ID = 2L;
     private static final Long PORTFOLIO_ID = 9001L;
-    private static final Long JOB_CATEGORY_ID = 9L;
+    private static final Long JOB_CATEGORY_LEAF_ID = 9L;
     private static final Long THUMBNAIL_IMAGE_ID = 100L;
     private static final List<Long> CONTENT_IMAGE_IDS = List.of(101L, 102L);
 
@@ -54,7 +54,7 @@ class CancelPortfolioInterestUseCaseImplTest {
                 "포트폴리오 제목",
                 "미리보기",
                 null,
-                JOB_CATEGORY_ID,
+                JOB_CATEGORY_LEAF_ID,
                 null,
                 "{\"type\":\"doc\"}",
                 "<p>본문</p>",

@@ -18,7 +18,7 @@ public abstract class PortfolioJobCategoryJpaEntityMapper {
         }
         return PortfolioJobCategory.builder()
                 .id(entity.getId())
-                .jobCategoryId(entity.getJobCategoryId())
+                .jobCategoryLeafId(entity.getJobCategoryLeafId())
                 .userInput(entity.getUserInput())
                 .connectedAt(entity.getConnectedAt())
                 .build();

@@ -15,29 +15,29 @@ public class PortfolioJobCategory  {
     public static final int USER_INPUT_MAX_LENGTH = 10;
 
     private final Long id;
-    private final Long jobCategoryId;
+    private final Long jobCategoryLeafId;
     private final String userInput;
     private final Instant connectedAt;
 
     @Builder(access = lombok.AccessLevel.PUBLIC)
     private PortfolioJobCategory(
             Long id,
-            Long jobCategoryId,
+            Long jobCategoryLeafId,
             String userInput,
             Instant connectedAt
     ) {
-        ensureInvariants(id, jobCategoryId, userInput, connectedAt);
+        ensureInvariants(id, jobCategoryLeafId, userInput, connectedAt);
 
         this.id = id;
-        this.jobCategoryId = jobCategoryId;
+        this.jobCategoryLeafId = jobCategoryLeafId;
         this.userInput = userInput;
         this.connectedAt = connectedAt;
     }
 
-    public static PortfolioJobCategory create(Long jobCategoryId, String userInput) {
+    public static PortfolioJobCategory create(Long jobCategoryLeafId, String userInput) {
         return PortfolioJobCategory.builder()
                 .id(TsidCreator.getTsid().toLong())
-                .jobCategoryId(jobCategoryId)
+                .jobCategoryLeafId(jobCategoryLeafId)
                 .userInput(userInput)
                 .connectedAt(Instant.now())
                 .build();
@@ -45,7 +45,7 @@ public class PortfolioJobCategory  {
 
     private static void ensureInvariants(
             Long id,
-            Long jobCategoryId,
+            Long jobCategoryLeafId,
             String userInput,
             Instant connectedAt
     ) {
@@ -55,7 +55,7 @@ public class PortfolioJobCategory  {
                 PortfolioJobCategoryDomainException::new
         );
         AssertionUtils.notNull(
-                jobCategoryId,
+                jobCategoryLeafId,
                 PortfolioJobCategoryDomainExceptionCodeCluster.HiddenDetailResponse.JOB_CATEGORY_ID_MISSING,
                 PortfolioJobCategoryDomainException::new
         );

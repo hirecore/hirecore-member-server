@@ -4,8 +4,8 @@ import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.common.security.properties.JwtProperties;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.ParseTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -20,15 +20,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
- * JJWT 기반의 JWT 토큰 발급·검증 어댑터.
+ * JJWT 기반의 JWT 토큰 발급·파싱 어댑터.
  *
- * <p>{@link IssueTokenPort}(토큰 발급), {@link ResolveTokenPort}(토큰 검증) 포트를 구현합니다.
+ * <p>account BC 내부의 {@link IssueTokenPort}(토큰 발급), {@link ParseTokenPort}(토큰 파싱) 포트를 구현합니다.
  * HMAC-SHA 알고리즘으로 서명된 액세스 토큰과 리프레시 토큰을 생성하고 파싱합니다.</p>
  */
 @Slf4j
 @Component
 public class TokenProviderAdapter implements
-        ResolveTokenPort,
+        ParseTokenPort,
         IssueTokenPort
 {
 
@@ -58,7 +58,7 @@ public class TokenProviderAdapter implements
     }
 
     @Override
-    public AuthPrincipal resolveToken(String token) {
+    public AuthPrincipal parseToken(String token) {
         Claims claims = parseClaims(token);
 
         try {

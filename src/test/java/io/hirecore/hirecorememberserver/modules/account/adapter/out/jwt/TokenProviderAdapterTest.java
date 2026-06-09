@@ -64,7 +64,7 @@ class TokenProviderAdapterTest {
     }
 
     @Nested
-    @DisplayName("resolveToken()")
+    @DisplayName("parseToken()")
     class ResolveTokenTest {
 
         @Test
@@ -72,7 +72,7 @@ class TokenProviderAdapterTest {
         void should_parse_claims_from_access_token() {
             PairTokenResponse pair = adapter.issueTokenPair(validClaims);
 
-            AuthPrincipal principal = adapter.resolveToken(pair.accessToken());
+            AuthPrincipal principal = adapter.parseToken(pair.accessToken());
 
             assertThat(principal.id()).isEqualTo(42L);
             assertThat(principal.email()).isEqualTo("user@test.com");
@@ -85,7 +85,7 @@ class TokenProviderAdapterTest {
         void should_parse_claims_from_refresh_token() {
             PairTokenResponse pair = adapter.issueTokenPair(validClaims);
 
-            AuthPrincipal principal = adapter.resolveToken(pair.refreshToken());
+            AuthPrincipal principal = adapter.parseToken(pair.refreshToken());
 
             assertThat(principal.id()).isEqualTo(42L);
             assertThat(principal.email()).isEqualTo("user@test.com");
@@ -101,14 +101,14 @@ class TokenProviderAdapterTest {
             PairTokenResponse pair = shortLivedAdapter.issueTokenPair(validClaims);
 
             // when & then
-            assertThatThrownBy(() -> adapter.resolveToken(pair.accessToken()))
+            assertThatThrownBy(() -> adapter.parseToken(pair.accessToken()))
                     .isInstanceOf(ExpiredJwtException.class);
         }
 
         @Test
         @DisplayName("완전히 잘못된 형식의 토큰은 JwtException을 발생시킨다")
         void should_throw_jwt_exception_when_token_is_malformed() {
-            assertThatThrownBy(() -> adapter.resolveToken("not.a.valid.jwt.token"))
+            assertThatThrownBy(() -> adapter.parseToken("not.a.valid.jwt.token"))
                     .isInstanceOf(JwtException.class);
         }
 
@@ -122,7 +122,7 @@ class TokenProviderAdapterTest {
             PairTokenResponse pair = otherAdapter.issueTokenPair(validClaims);
 
             // when & then — 현재 어댑터(다른 키)로 검증하면 실패
-            assertThatThrownBy(() -> adapter.resolveToken(pair.accessToken()))
+            assertThatThrownBy(() -> adapter.parseToken(pair.accessToken()))
                     .isInstanceOf(JwtException.class);
         }
     }

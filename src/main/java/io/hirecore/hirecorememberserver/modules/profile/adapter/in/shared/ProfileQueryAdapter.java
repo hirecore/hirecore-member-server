@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class PortfolioQueryAdapter implements LoadProfilePort {
+public class ProfileQueryAdapter implements LoadProfilePort {
 
     private final LoadProfileNicknameUseCase loadProfileNicknameUseCase;
 

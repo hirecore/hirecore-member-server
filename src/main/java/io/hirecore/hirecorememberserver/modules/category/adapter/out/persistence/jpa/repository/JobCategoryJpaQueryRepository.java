@@ -1,10 +1,12 @@
 package io.hirecore.hirecorememberserver.modules.category.adapter.out.persistence.jpa.repository;
 
 import io.hirecore.hirecorememberserver.modules.category.adapter.out.persistence.jpa.entity.JobCategoryJpaEntity;
+import io.hirecore.hirecorememberserver.modules.category.adapter.out.persistence.jpa.repository.projection.JobCategoryHierarchyRow;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,4 +56,38 @@ public interface JobCategoryJpaQueryRepository extends Repository<JobCategoryJpa
             SELECT * FROM category_path ORDER BY depth ASC
             """, nativeQuery = true)
     List<JobCategoryJpaEntity> findHierarchyPathByLeafId(@Param("leafId") Long leafId);
+
+    /**
+     * 주어진 여러 leaf id 들 각각의 카테고리부터 root 까지의 계층 경로를 단일 SQL 로 일괄 조회한다.
+     *
+     * <p>각 행에는 시작 leaf 를 가리키는 {@code start_leaf_id} 컬럼이 동봉되어, 어댑터가 이를
+     * 키로 그룹핑하면 {@code Map<Long, List<...>>} 형태로 변환할 수 있다. 결과는
+     * {@code start_leaf_id, depth ASC} 로 정렬되어 그룹 내 순서가 root → leaf 로 보장된다.</p>
+     */
+    @Query(value = """
+            WITH RECURSIVE category_path (
+                start_leaf_id, id, parent_id, category_code, category_name, depth,
+                is_active, is_assignable, allows_custom_input, sort_order,
+                created_at, updated_at
+            ) AS (
+                SELECT id AS start_leaf_id, id, parent_id, category_code, category_name, depth,
+                       is_active, is_assignable, allows_custom_input, sort_order,
+                       created_at, updated_at
+                  FROM job_category
+                 WHERE id IN (:leafIds)
+                UNION ALL
+                SELECT cp.start_leaf_id, jc.id, jc.parent_id, jc.category_code, jc.category_name, jc.depth,
+                       jc.is_active, jc.is_assignable, jc.allows_custom_input, jc.sort_order,
+                       jc.created_at, jc.updated_at
+                  FROM job_category jc
+                  JOIN category_path cp ON cp.parent_id = jc.id
+            )
+            SELECT start_leaf_id AS startLeafId,
+                   id, parent_id AS parentId, category_code AS categoryCode, category_name AS categoryName, depth,
+                   is_active AS isActive, is_assignable AS isAssignable, allows_custom_input AS allowsCustomInput, sort_order AS sortOrder,
+                   created_at AS createdAt, updated_at AS updatedAt
+              FROM category_path
+             ORDER BY start_leaf_id, depth ASC
+            """, nativeQuery = true)
+    List<JobCategoryHierarchyRow> findHierarchyPathsByLeafIds(@Param("leafIds") Collection<Long> leafIds);
 }

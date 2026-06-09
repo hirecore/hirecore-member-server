@@ -36,4 +36,11 @@ public class JobCategoryJpaQueryAdapter implements LoadJobCategoryPort {
         return jobCategoryJpaQueryRepository.findById(id)
                 .map(jobCategoryJpaEntityMapper::toDomain);
     }
+
+    @Override
+    public List<JobCategory> loadHierarchyByLeafId(Long leafJobCategoryId) {
+        return jobCategoryJpaQueryRepository.findHierarchyPathByLeafId(leafJobCategoryId).stream()
+                .map(jobCategoryJpaEntityMapper::toDomain)
+                .toList();
+    }
 }

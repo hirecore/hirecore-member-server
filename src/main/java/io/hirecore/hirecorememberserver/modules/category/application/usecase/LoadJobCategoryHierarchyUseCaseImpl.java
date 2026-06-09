@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -21,15 +20,11 @@ public class LoadJobCategoryHierarchyUseCaseImpl implements LoadJobCategoryHiera
     @Override
     @Transactional(readOnly = true)
     public List<JobCategory> execute(Long leafJobCategoryId) {
-        LinkedList<JobCategory> hierarchy = new LinkedList<>();
-        Long currentId = leafJobCategoryId;
-        while (currentId != null) {
-            JobCategory current = loadJobCategoryPort.loadById(currentId)
-                    .orElseThrow(() -> new CategoryApplicationException(
-                            CategoryApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_NOT_FOUND
-                    ));
-            hierarchy.addFirst(current);
-            currentId = current.getParentId();
+        List<JobCategory> hierarchy = loadJobCategoryPort.loadHierarchyByLeafId(leafJobCategoryId);
+        if (hierarchy.isEmpty()) {
+            throw new CategoryApplicationException(
+                    CategoryApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_NOT_FOUND
+            );
         }
         return hierarchy;
     }

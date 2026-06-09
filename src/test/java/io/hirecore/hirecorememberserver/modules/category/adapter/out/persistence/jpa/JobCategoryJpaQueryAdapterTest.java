@@ -6,6 +6,10 @@ import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.JpaAuditingConfig;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * </p>
  */
 @DisplayName("JobCategoryJpaQueryAdapter 통합 테스트")
-@DataJpaTest
+@DataJpaTest(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
 @Import({
         JpaAuditingConfig.class,
         JobCategoryJpaQueryAdapter.class,
@@ -43,6 +47,9 @@ class JobCategoryJpaQueryAdapterTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     private JobCategoryJpaEntity insert(
             Long id,
@@ -145,6 +152,82 @@ class JobCategoryJpaQueryAdapterTest {
 
             // then
             assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("loadHierarchyByLeafId — Recursive CTE")
+    class LoadHierarchyByLeafIdTest {
+
+        private Statistics statistics;
+
+        @BeforeEach
+        void resetStatistics() {
+            statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+            statistics.clear();
+        }
+
+        @Test
+        @DisplayName("leaf 부터 root 까지의 경로를 root → leaf 순서로 반환한다")
+        void should_return_path_from_root_to_leaf() {
+            // given: root(1) ← mid(11) ← leaf(111)
+            insert(1L, null, 1, 1, true);
+            insert(11L, 1L, 2, 1, true);
+            insert(111L, 11L, 3, 1, true);
+            flushAndClear();
+
+            // when
+            List<JobCategory> result = adapter.loadHierarchyByLeafId(111L);
+
+            // then
+            assertThat(result).extracting(JobCategory::getId).containsExactly(1L, 11L, 111L);
+        }
+
+        @Test
+        @DisplayName("leaf 가 존재하지 않으면 빈 리스트를 반환한다")
+        void should_return_empty_when_leaf_missing() {
+            // when
+            List<JobCategory> result = adapter.loadHierarchyByLeafId(9999L);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("계층 깊이와 무관하게 단일 SQL 만 발행한다 (Recursive CTE)")
+        void should_emit_single_sql_regardless_of_depth() {
+            // given: depth 4 짜리 트리
+            insert(1L, null, 1, 1, true);
+            insert(11L, 1L, 2, 1, true);
+            insert(111L, 11L, 3, 1, true);
+            insert(1111L, 111L, 4, 1, true);
+            flushAndClear();
+            statistics.clear(); // setup INSERT 카운트 제외
+
+            // when
+            List<JobCategory> result = adapter.loadHierarchyByLeafId(1111L);
+
+            // then
+            assertThat(result).hasSize(4);
+            assertThat(statistics.getPrepareStatementCount())
+                    .as("Recursive CTE 단일 쿼리로 leaf → root 전체 경로 로딩")
+                    .isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("루트 노드 한 건만 있는 트리에서도 단일 쿼리로 1건 반환한다")
+        void should_return_single_root_when_leaf_is_root() {
+            // given
+            insert(1L, null, 1, 1, true);
+            flushAndClear();
+            statistics.clear();
+
+            // when
+            List<JobCategory> result = adapter.loadHierarchyByLeafId(1L);
+
+            // then
+            assertThat(result).extracting(JobCategory::getId).containsExactly(1L);
+            assertThat(statistics.getPrepareStatementCount()).isEqualTo(1L);
         }
     }
 }

@@ -17,6 +17,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadPr
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.ResumeContentResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -76,6 +78,9 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
     /**
      * publisher 섹션을 합성한다. otherPortfolios 는 작성자의 PUBLIC 작품 중 본 포트폴리오를 제외한 전체를
      * 마지막 수정 시각 내림차순으로 노출한다. 작품이 없으면 빈 배열로 응답한다.
+     *
+     * <p>각 작품의 직무 카테고리 계층은 leaf id 들을 모아 단일 쿼리 (Recursive CTE) 로 일괄 로딩하므로
+     * 작품 개수 K 와 무관하게 SQL 한 번만 발행된다.</p>
      */
     private Response.Publisher buildPublisher(Portfolio portfolio, String publisherNickname) {
         List<Portfolio> otherPublicPortfolios = loadPortfoliosByMemberPort
@@ -83,17 +88,39 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                         portfolio.getMemberAccountId(),
                         portfolio.getId()
                 );
+        List<Long> otherLeafIds = otherPublicPortfolios.stream()
+                .map(other -> {
+                    PortfolioJobCategory pjc = other.getPortfolioJobCategory();
+                    AssertionUtils.notNull(
+                            pjc,
+                            PortfolioApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_NOT_FOUND,
+                            PortfolioApplicationException::new
+                    );
+                    return pjc.getJobCategoryId();
+                })
+                .toList();
+        Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
+                loadJobCategoryPort.loadJobCategoryHierarchies(otherLeafIds);
+
         List<Response.Publisher.OtherPortfolioSummary> otherPortfolios = otherPublicPortfolios.stream()
-                .map(this::toOtherPortfolioSummary)
+                .map(other -> toOtherPortfolioSummary(other, hierarchiesByLeafId))
                 .toList();
         return new Response.Publisher(publisherNickname, otherPortfolios);
     }
 
-    private Response.Publisher.OtherPortfolioSummary toOtherPortfolioSummary(Portfolio other) {
+    private Response.Publisher.OtherPortfolioSummary toOtherPortfolioSummary(
+            Portfolio other,
+            Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId
+    ) {
+        Long leafId = other.getPortfolioJobCategory().getJobCategoryId();
+        List<SharedResponseDto.JobCategory> jobCategories = hierarchiesByLeafId
+                .getOrDefault(leafId, List.of()).stream()
+                .map(h -> new SharedResponseDto.JobCategory(h.id(), h.depth(), h.categoryCode(), h.name()))
+                .toList();
         return new Response.Publisher.OtherPortfolioSummary(
                 other.getId(),
                 other.getTitle(),
-                toJobCategoriesResponse(other.getPortfolioJobCategory()),
+                jobCategories,
                 other.getCachedViewCount(),
                 other.getCachedInterestCount(),
                 other.getAuditingInfo().updatedAt()

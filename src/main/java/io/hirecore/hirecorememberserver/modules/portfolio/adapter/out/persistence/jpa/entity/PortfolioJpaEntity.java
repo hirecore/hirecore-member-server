@@ -8,6 +8,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -93,6 +94,7 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
             fetch = FetchType.LAZY
     )
     @OrderBy("sortOrder ASC")
+    @BatchSize(size = 100)
     @Builder.Default
     private List<PortfolioTagJpaEntity> portfolioTags = new ArrayList<>();
 

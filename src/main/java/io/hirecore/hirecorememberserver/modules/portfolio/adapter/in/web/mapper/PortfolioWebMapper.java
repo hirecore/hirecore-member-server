@@ -5,11 +5,13 @@ import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.Cre
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.LoadMyPortfolioSummariesApi;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.LoadPortfolioDetailApi;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.LoadPortfolioEditApi;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.LoadPublicPortfolioSummariesApi;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.in.web.dto.UpdatePortfolioApi;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPublicPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.SharedRequestApiDto;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.SharedResponseApiDto;
@@ -58,6 +60,11 @@ public abstract class PortfolioWebMapper {
     public abstract LoadMyPortfolioSummariesApi.Item toLoadMyPortfolioSummariesApiItem(LoadMyPortfolioSummariesUseCase.Response.Item response);
     public abstract LoadMyPortfolioSummariesApi.LinkedResume toLoadMyPortfolioSummariesApiLinkedResume(LoadMyPortfolioSummariesUseCase.Response.LinkedResume response);
     public abstract LoadMyPortfolioSummariesApi.LinkedCoverLetter toLoadMyPortfolioSummariesApiLinkedCoverLetter(LoadMyPortfolioSummariesUseCase.Response.LinkedCoverLetter response);
+
+    // GET /api/portfolios/summaries/public
+    public abstract LoadPublicPortfolioSummariesApi.Response toLoadPublicPortfolioSummariesApiResponse(LoadPublicPortfolioSummariesUseCase.Response response);
+    public abstract LoadPublicPortfolioSummariesApi.Item toLoadPublicPortfolioSummariesApiItem(LoadPublicPortfolioSummariesUseCase.Response.Item response);
+    public abstract LoadPublicPortfolioSummariesApi.Pagination toLoadPublicPortfolioSummariesApiPagination(LoadPublicPortfolioSummariesUseCase.Response.Pagination response);
 
     // ────────────────────────────────────────────
     //  application SharedResponseDto → web SharedResponseApiDto

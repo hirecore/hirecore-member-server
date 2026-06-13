@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/login/**").permitAll()
                                 .requestMatchers("/api/categories/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/portfolios/summaries/mine").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/portfolios/summaries/public").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/portfolios/{portfolioId}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/portfolios/{portfolioId}/edit").authenticated()
                                 .anyRequest().authenticated()

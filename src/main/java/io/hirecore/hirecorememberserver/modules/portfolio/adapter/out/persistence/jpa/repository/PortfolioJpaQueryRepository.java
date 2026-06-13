@@ -9,7 +9,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface PortfolioJpaQueryRepository extends Repository<PortfolioJpaEntity, Long> {
+public interface PortfolioJpaQueryRepository extends
+        Repository<PortfolioJpaEntity, Long>,
+        PortfolioJpaQueryRepositoryCustom
+{
     boolean existsByIdAndMemberAccountId(Long id, Long memberAccountId);
 
     @EntityGraph(attributePaths = {"portfolioContent", "portfolioJobCategory"})

@@ -2,12 +2,15 @@ package io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persisten
 
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.mapper.PortfolioJpaEntityMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaQueryRepository;
+import io.hirecore.hirecorememberserver.modules.portfolio.adapter.out.persistence.jpa.repository.PortfolioJpaQueryRepositoryCustom.PortfolioWithEffectiveUpdatedAt;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummariesPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +18,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PortfolioJpaQueryAdapter implements
         LoadPortfolioPort,
-        LoadPortfoliosByMemberPort
+        LoadPortfoliosByMemberPort,
+        LoadPublicPortfolioSummariesPort
 {
 
     private final PortfolioJpaQueryRepository portfolioJpaQueryRepository;
@@ -43,6 +47,22 @@ public class PortfolioJpaQueryAdapter implements
                 .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(memberAccountId, excludedPortfolioId)
                 .stream()
                 .map(portfolioJpaEntityMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<PublicPortfolioRow> findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(
+            Instant cursorEffectiveUpdatedAt,
+            Long cursorPortfolioId,
+            int limit
+    ) {
+        List<PortfolioWithEffectiveUpdatedAt> rows = portfolioJpaQueryRepository
+                .findPublicPortfoliosByCursor(cursorEffectiveUpdatedAt, cursorPortfolioId, limit);
+        return rows.stream()
+                .map(row -> new PublicPortfolioRow(
+                        portfolioJpaEntityMapper.toDomain(row.portfolio()),
+                        row.effectiveUpdatedAt()
+                ))
                 .toList();
     }
 }

@@ -19,10 +19,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPublicPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioEditUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
@@ -91,6 +89,9 @@ class PortfolioQueryControllerTest {
 
     @MockitoBean
     private LoadMyPortfolioSummariesUseCase loadMyPortfolioSummariesUseCase;
+
+    @MockitoBean
+    private LoadPublicPortfolioSummariesUseCase loadPublicPortfolioSummariesUseCase;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
 
@@ -1089,6 +1090,236 @@ class PortfolioQueryControllerTest {
                                                     fieldWithPath("items[].updatedAt")
                                                             .type(JsonFieldType.STRING)
                                                             .description("마지막 수정 시각 (ISO-8601, UTC)")
+                                            )
+                                            .build()
+                            )
+                    ));
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  공개 포트폴리오 요약 목록 (무한 스크롤): 성공 케이스
+    // ──────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("공개 포트폴리오 요약 목록 (무한 스크롤): 성공 케이스")
+    class LoadPublicPortfolioSummariesSuccessTest {
+
+        private LoadPublicPortfolioSummariesUseCase.Response buildResponse() {
+            LoadPublicPortfolioSummariesUseCase.Response.Item first = new LoadPublicPortfolioSummariesUseCase.Response.Item(
+                    5234567890123456789L,
+                    new SharedResponseDto.Thumbnail(
+                            7876543210987654321L,
+                            "https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp"
+                    ),
+                    List.of(
+                            new SharedResponseDto.JobCategory(1001L, 1L, "DEV", "개발"),
+                            new SharedResponseDto.JobCategory(1002L, 2L, "DEV_BACKEND", "백엔드")
+                    ),
+                    "회원 서비스 도메인 모델링 회고",
+                    "회원 서비스를 도메인 모델링한 회고를 정리한 글입니다.",
+                    CollaborationType.TEAM,
+                    List.of(
+                            new SharedResponseDto.SequentialTag("Spring", 0),
+                            new SharedResponseDto.SequentialTag("DDD", 1)
+                    ),
+                    List.of(
+                            new SharedResponseDto.ExternalLink("GitHub", "https://github.com/example/repo")
+                    ),
+                    "euncheol",
+                    128L,
+                    42L,
+                    true,
+                    Instant.parse("2026-06-10T15:00:00.123456Z")
+            );
+            LoadPublicPortfolioSummariesUseCase.Response.Item second = new LoadPublicPortfolioSummariesUseCase.Response.Item(
+                    5234567890123456790L,
+                    null,
+                    List.of(
+                            new SharedResponseDto.JobCategory(2001L, 1L, "DEV", "개발"),
+                            new SharedResponseDto.JobCategory(2002L, 2L, "DEV_FRONTEND", "프론트엔드")
+                    ),
+                    "Vite 사이드 프로젝트",
+                    "주말에 만든 프론트엔드 사이드 프로젝트",
+                    CollaborationType.PERSONAL,
+                    List.of(),
+                    List.of(),
+                    "anotheruser",
+                    7L,
+                    0L,
+                    false,
+                    Instant.parse("2026-06-09T09:30:00Z")
+            );
+            return new LoadPublicPortfolioSummariesUseCase.Response(
+                    List.of(first, second),
+                    new LoadPublicPortfolioSummariesUseCase.Response.Pagination(
+                            "MTc4MDg4MTYwMDEyMzQ1Nl81MjM0NTY3ODkwMTIzNDU2Nzkw",
+                            true
+                    )
+            );
+        }
+
+        @Test
+        @DisplayName("[200 OK] 비로그인 사용자도 cursor + size 로 공개 포트폴리오 요약을 페이지네이션 조회한다.")
+        void load_public_portfolio_summaries_success() throws Exception {
+            // given
+            given(loadPublicPortfolioSummariesUseCase.execute(nullable(String.class), eq(20), nullable(Long.class)))
+                    .willReturn(buildResponse());
+
+            // when & then
+            mockMvc.perform(get("/api/portfolios/summaries/public").param("size", "20"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.items.length()").value(2))
+                    .andExpect(jsonPath("$.items[0].title").value("회원 서비스 도메인 모델링 회고"))
+                    .andExpect(jsonPath("$.items[0].nickname").value("euncheol"))
+                    .andExpect(jsonPath("$.items[0].viewCount").value(128))
+                    .andExpect(jsonPath("$.items[0].interestCount").value(42))
+                    .andExpect(jsonPath("$.items[0].tags[0].name").value("Spring"))
+                    .andExpect(jsonPath("$.items[0].externalLinks[0].label").value("GitHub"))
+                    .andExpect(jsonPath("$.items[0].thumbnail.imageUrl").value("https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp"))
+                    .andExpect(jsonPath("$.items[0].isOwner").value(true))
+                    .andExpect(jsonPath("$.items[0].collaborationType").value("team"))
+                    .andExpect(jsonPath("$.items[1].thumbnail").doesNotExist())
+                    .andExpect(jsonPath("$.items[1].isOwner").value(false))
+                    .andExpect(jsonPath("$.items[1].collaborationType").value("personal"))
+                    .andExpect(jsonPath("$.pagination.hasNext").value(true))
+                    .andExpect(jsonPath("$.pagination.nextCursor").value("MTc4MDg4MTYwMDEyMzQ1Nl81MjM0NTY3ODkwMTIzNDU2Nzkw"))
+
+                    // 문서화
+                    .andDo(document("200-portfolio-load-public-summaries-success",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(
+                                    ResourceSnippetParameters.builder()
+                                            .tag(SwaggerDocs.Tags.Portfolio.PORTFOLIO)
+                                            .summary("\"공개 포트폴리오 요약 목록 조회\": 무한 스크롤로 공개 포트폴리오 한 페이지를 반환한다.")
+                                            .description("""
+                                                    공개 포트폴리오 피드 화면에 사용하는 무한 스크롤 요약 조회 API 입니다.
+
+                                                        [접근 정책]
+                                                         - 로그인 불필요 (공개)
+                                                         - visibility = PUBLIC 인 포트폴리오만 노출
+
+                                                        [정렬 / 페이지네이션]
+                                                         - 정렬 키: effective updatedAt 내림차순. 동률 시 portfolioId 내림차순.
+                                                         - effective updatedAt = GREATEST(Portfolio.updatedAt, PortfolioContent.updatedAt, PortfolioJobCategory.connectedAt, COALESCE(MAX(PortfolioTag.updatedAt), Portfolio.updatedAt))
+                                                         - 자식 집계가 갱신되어도 정렬 상단에 반영되는 "방어적" 정렬.
+                                                         - 페이지네이션은 cursor 기반. 클라이언트는 응답의 nextCursor 토큰을 다음 요청에 그대로 echo.
+
+                                                        [쿼리 파라미터]
+                                                         - cursor (optional): 직전 응답의 pagination.nextCursor. 첫 페이지 요청 시 미지정.
+                                                         - size (optional, default=20, min=1, max=50): 한 번에 응답할 항목 수.
+
+                                                        [응답 구조]
+                                                         - items: 포트폴리오 요약 목록 (정렬 키 내림차순)
+                                                         - pagination.nextCursor: 다음 페이지 요청용 opaque 토큰. hasNext=false 시 null.
+                                                         - pagination.hasNext: 다음 페이지 존재 여부.
+
+                                                        [Item 합성]
+                                                         - thumbnail: 썸네일 미등록 시 null. 등록은 됐으나 URL 해소 실패 시 imageUrl 만 null.
+                                                         - nickname: 작성자 닉네임 해소 실패 시 null.
+                                                         - jobCategories: 루트 → 리프 계층. 일괄 조회로 N+1 회피.
+                                                         - isOwner: 호출자가 해당 포트폴리오의 작성자인지 여부. 비로그인 호출이면 항상 false. 본인 포트폴리오에 대한 관심 등록 차단 같은 비즈니스 규칙의 클라이언트 측 분기에 사용.
+                                                         - updatedAt: 위 effective updatedAt 값을 그대로 노출.
+                                                    """)
+                                            .queryParameters(
+                                                    ResourceDocumentation.parameterWithName("cursor")
+                                                            .type(SimpleType.STRING)
+                                                            .description("직전 응답의 pagination.nextCursor. 첫 페이지 요청 시 미지정.")
+                                                            .optional(),
+                                                    ResourceDocumentation.parameterWithName("size")
+                                                            .type(SimpleType.INTEGER)
+                                                            .description("한 페이지당 항목 수. default=20, min=1, max=50.")
+                                                            .optional()
+                                            )
+                                            .responseFields(
+                                                    fieldWithPath("items")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("공개 포트폴리오 요약 목록. 결과 없으면 빈 배열."),
+                                                    fieldWithPath("items[].portfolioId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("포트폴리오 ID (TSID, JSON 문자열)"),
+                                                    fieldWithPath("items[].thumbnail")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("썸네일 wrapper. 미등록 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].thumbnail.imageId")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 ImageFileMeta ID (TSID, JSON 문자열).")
+                                                            .optional(),
+                                                    fieldWithPath("items[].thumbnail.imageUrl")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("썸네일 전체 URL. 해소 실패 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].jobCategories")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("직무 카테고리 계층 (루트 → 리프)"),
+                                                    fieldWithPath("items[].jobCategories[].id")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 ID"),
+                                                    fieldWithPath("items[].jobCategories[].depth")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("계층 깊이"),
+                                                    fieldWithPath("items[].jobCategories[].categoryCode")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 코드"),
+                                                    fieldWithPath("items[].jobCategories[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("카테고리 표시 이름"),
+                                                    fieldWithPath("items[].title")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("포트폴리오 제목"),
+                                                    fieldWithPath("items[].previewSummary")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("미리보기 요약 텍스트"),
+                                                    fieldWithPath("items[].collaborationType")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("협업 유형 (team, personal)"),
+                                                    fieldWithPath("items[].tags")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("사용자 입력 태그 (sortOrder ASC). 없으면 빈 배열."),
+                                                    fieldWithPath("items[].tags[].name")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("태그 원본 문자열"),
+                                                    fieldWithPath("items[].tags[].sortOrder")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("표시 순서 (0부터 시작)"),
+                                                    fieldWithPath("items[].externalLinks")
+                                                            .type(JsonFieldType.ARRAY)
+                                                            .description("외부 링크 목록. 없으면 빈 배열."),
+                                                    fieldWithPath("items[].externalLinks[].label")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 라벨"),
+                                                    fieldWithPath("items[].externalLinks[].url")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("링크 URL"),
+                                                    fieldWithPath("items[].nickname")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("작성자 닉네임. 해소 실패 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("items[].viewCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("캐시된 조회수"),
+                                                    fieldWithPath("items[].interestCount")
+                                                            .type(JsonFieldType.NUMBER)
+                                                            .description("캐시된 관심 등록 수"),
+                                                    fieldWithPath("items[].isOwner")
+                                                            .type(JsonFieldType.BOOLEAN)
+                                                            .description("호출자가 해당 포트폴리오의 작성자인지 여부. 비로그인 호출이면 항상 false."),
+                                                    fieldWithPath("items[].updatedAt")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("effective updatedAt (ISO-8601, UTC)"),
+                                                    fieldWithPath("pagination")
+                                                            .type(JsonFieldType.OBJECT)
+                                                            .description("페이지네이션 메타"),
+                                                    fieldWithPath("pagination.nextCursor")
+                                                            .type(JsonFieldType.STRING)
+                                                            .description("다음 페이지 요청 시 그대로 echo 할 opaque 토큰. hasNext=false 시 null.")
+                                                            .optional(),
+                                                    fieldWithPath("pagination.hasNext")
+                                                            .type(JsonFieldType.BOOLEAN)
+                                                            .description("다음 페이지 존재 여부")
                                             )
                                             .build()
                             )

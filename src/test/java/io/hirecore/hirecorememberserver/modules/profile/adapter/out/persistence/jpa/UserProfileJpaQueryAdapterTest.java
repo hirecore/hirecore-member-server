@@ -1,6 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa;
 
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.JpaAuditingConfig;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.QueryDslConfig;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.ProfileJpaEntity;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.vo.ProfileImageJpaInfo;
@@ -27,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisplayName("UserProfileJpaQueryAdapter 통합 테스트")
 @DataJpaTest
-@Import({JpaAuditingConfig.class, UserProfileJpaQueryAdapter.class})
+@Import({JpaAuditingConfig.class, QueryDslConfig.class, UserProfileJpaQueryAdapter.class})
 class UserProfileJpaQueryAdapterTest {
 
     private static final Long PROFILE_ID = 1L;

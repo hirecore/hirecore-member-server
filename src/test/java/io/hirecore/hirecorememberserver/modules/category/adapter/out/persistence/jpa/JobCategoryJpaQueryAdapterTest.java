@@ -5,6 +5,7 @@ import io.hirecore.hirecorememberserver.modules.category.adapter.out.persistence
 import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.AuditingJpaInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.JpaAuditingConfig;
+import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa.QueryDslConfig;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
 @Import({
         JpaAuditingConfig.class,
+        QueryDslConfig.class,
         JobCategoryJpaQueryAdapter.class,
         JobCategoryJpaEntityMapperImpl.class
 })

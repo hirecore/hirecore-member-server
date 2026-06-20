@@ -67,7 +67,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
     }
 
     private Portfolio loadPortfolio(Long portfolioId) {
-        return loadPortfolioPort.findPortfolio(portfolioId)
+        return loadPortfolioPort.findById(portfolioId)
                 .orElseThrow(() -> new PortfolioApplicationException(
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
                 ));
@@ -134,7 +134,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
                 PortfolioApplicationException::new
         );
 
-        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryId())
+        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
                 .stream()
                 .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),

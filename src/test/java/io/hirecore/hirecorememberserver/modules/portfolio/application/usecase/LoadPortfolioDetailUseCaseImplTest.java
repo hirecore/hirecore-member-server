@@ -103,7 +103,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         void should_expose_content_when_resource_public() {
             // given - viewer 는 자원 소유자가 아님
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, RESUME_ID, COVER_LETTER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
@@ -133,7 +133,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         void should_hide_content_when_resource_private_and_viewer_not_owner() {
             // given
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, RESUME_ID, COVER_LETTER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
@@ -163,7 +163,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         void should_expose_content_when_resource_private_and_viewer_is_owner() {
             // given - viewer == 자원 소유자
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PRIVATE, RESUME_ID, COVER_LETTER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OWNER_ID)).willReturn(true);
             given(loadResumeContentPort.findById(RESUME_ID))
@@ -190,7 +190,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         void should_return_null_when_linkage_absent() {
             // given - resumeId, coverLetterId 모두 null
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
@@ -210,7 +210,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         void should_return_null_when_resource_missing() {
             // given
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, RESUME_ID, COVER_LETTER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
@@ -237,7 +237,7 @@ class LoadPortfolioDetailUseCaseImplTest {
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
             Portfolio other1 = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
             Portfolio other2 = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
@@ -267,7 +267,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         void should_return_empty_array_when_no_other_public_portfolios() {
             // given - loadPortfoliosByMember 가 빈 리스트 반환 (Mockito 기본값)
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PUBLIC, null, null);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
@@ -293,7 +293,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         void should_throw_forbidden_when_private_and_not_owner() {
             // given
             Portfolio portfolio = portfolioOf(OWNER_ID, Visibility.PRIVATE, null, null);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID))
@@ -306,7 +306,7 @@ class LoadPortfolioDetailUseCaseImplTest {
         @DisplayName("존재하지 않는 포트폴리오면 PORTFOLIO_NOT_FOUND")
         void should_throw_not_found_when_portfolio_missing() {
             // given
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.empty());
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OWNER_ID))

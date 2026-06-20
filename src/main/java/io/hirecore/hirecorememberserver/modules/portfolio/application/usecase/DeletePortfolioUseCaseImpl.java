@@ -34,7 +34,7 @@ public class DeletePortfolioUseCaseImpl implements DeletePortfolioUseCase {
     @Override
     @Transactional
     public void execute(Long portfolioId, Long viewerId) {
-        Portfolio portfolio = loadPortfolioPort.findPortfolio(portfolioId)
+        Portfolio portfolio = loadPortfolioPort.findById(portfolioId)
                 .orElseThrow(() -> new PortfolioApplicationException(
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
                 ));

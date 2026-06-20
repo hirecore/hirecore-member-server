@@ -34,7 +34,7 @@ public abstract class PortfolioWebMapper {
     public abstract UpdatePortfolioUseCase.Command toUpdatePortfolioCommand(UpdatePortfolioApi.Request request);
 
     // sharedkernel Request 컨테이너 nested → sharedkernel Command 컨테이너 nested
-    public abstract SharedCommandDto.JobCategory toJobCategoryCommand(SharedRequestApiDto.JobCategory jobCategory);
+    public abstract SharedCommandDto.LeafJobCategory toLeafJobCategoryCommand(SharedRequestApiDto.LeafJobCategory leafJobCategory);
     public abstract SharedCommandDto.RichTextContent toRichTextContentCommand(SharedRequestApiDto.RichTextContent content);
     public abstract SharedCommandDto.SequentialTag toSequentialTagCommand(SharedRequestApiDto.SequentialTag tag);
     public abstract SharedCommandDto.ExternalLink toExternalLinkCommand(SharedRequestApiDto.ExternalLink link);

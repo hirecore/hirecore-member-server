@@ -82,7 +82,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
         void should_publish_event_when_first_register() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PUBLIC);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             given(existsPortfolioMemberInterestPort.exists(PORTFOLIO_ID, VIEWER_ID)).willReturn(false);
 
             // when
@@ -97,7 +97,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
         void should_invoke_publish_even_when_already_registered() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PUBLIC);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             given(existsPortfolioMemberInterestPort.exists(PORTFOLIO_ID, VIEWER_ID)).willReturn(true);
 
             // when
@@ -116,7 +116,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
         @DisplayName("존재하지 않는 포트폴리오면 INTEREST_PORTFOLIO_NOT_FOUND 예외를 던지고 후속 호출은 없다")
         void should_throw_when_portfolio_not_found() {
             // given
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.empty());
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, VIEWER_ID))
@@ -133,7 +133,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
         void should_throw_when_viewer_is_owner() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PUBLIC);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             given(existsPortfolioMemberInterestPort.exists(PORTFOLIO_ID, OWNER_ID)).willReturn(false);
 
             // when & then
@@ -150,7 +150,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
         void should_throw_when_portfolio_is_private() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PRIVATE);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             given(existsPortfolioMemberInterestPort.exists(PORTFOLIO_ID, VIEWER_ID)).willReturn(false);
 
             // when & then

@@ -3,6 +3,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
@@ -90,7 +91,7 @@ class UpdatePortfolioUseCaseImplTest {
 
     private static UpdatePortfolioUseCase.Command validUpdateCommand() {
         return new UpdatePortfolioUseCase.Command(
-                new SharedCommandDto.JobCategory("DEV_BACKEND", "백엔드 직무"),
+                new SharedCommandDto.LeafJobCategory("DEV_BACKEND", "백엔드 직무"),
                 CollaborationType.TEAM,
                 Visibility.PUBLIC,
                 "수정된 제목",
@@ -115,7 +116,7 @@ class UpdatePortfolioUseCaseImplTest {
         void should_orchestrate_and_return_id() {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
 
             // when
@@ -134,7 +135,7 @@ class UpdatePortfolioUseCaseImplTest {
         void should_pass_thumbnail_and_content_image_ids_to_mark_uploaded() {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
 
             // when
@@ -152,7 +153,7 @@ class UpdatePortfolioUseCaseImplTest {
         void should_apply_command_fields_to_portfolio() {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
 
             // when
@@ -174,7 +175,7 @@ class UpdatePortfolioUseCaseImplTest {
         @DisplayName("존재하지 않는 portfolioId 면 PORTFOLIO_NOT_FOUND 예외를 던지고 후속 호출은 없다")
         void should_throw_when_portfolio_not_found() {
             // given
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.empty());
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand()))
@@ -192,7 +193,7 @@ class UpdatePortfolioUseCaseImplTest {
         void should_throw_when_viewer_is_not_owner() {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OTHER_USER_ID, validUpdateCommand()))
@@ -210,7 +211,7 @@ class UpdatePortfolioUseCaseImplTest {
         void should_throw_when_viewer_id_is_null() {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, null, validUpdateCommand()))
@@ -224,7 +225,7 @@ class UpdatePortfolioUseCaseImplTest {
         void should_short_circuit_when_mark_uploaded_fails() {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             doThrow(new RuntimeException("simulated"))
                     .when(markImagesAsUploadedPort)
                     .markUploaded(eq(OWNER_ID), any());

@@ -26,7 +26,7 @@ public class PortfolioJpaQueryAdapter implements
     private final PortfolioJpaEntityMapper portfolioJpaEntityMapper;
 
     @Override
-    public Optional<Portfolio> findPortfolio(Long portfolioId) {
+    public Optional<Portfolio> findById(Long portfolioId) {
         return portfolioJpaQueryRepository.findById(portfolioId)
                 .map(portfolioJpaEntityMapper::toDomain);
     }

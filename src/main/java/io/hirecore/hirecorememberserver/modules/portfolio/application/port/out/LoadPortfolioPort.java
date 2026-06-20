@@ -5,5 +5,5 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import java.util.Optional;
 
 public interface LoadPortfolioPort {
-    Optional<Portfolio> findPortfolio(Long portfolioId);
+    Optional<Portfolio> findById(Long portfolioId);
 }

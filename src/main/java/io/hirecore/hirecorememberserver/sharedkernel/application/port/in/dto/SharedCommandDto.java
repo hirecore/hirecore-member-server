@@ -13,7 +13,7 @@ public class SharedCommandDto {
     private SharedCommandDto() {}
 
     /** 직군 카테고리 입력 (식별 코드 + 선택적 사용자 라벨). */
-    public record JobCategory(
+    public record LeafJobCategory(
             String code,
             String userInput
     ) {}

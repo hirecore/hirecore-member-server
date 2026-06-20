@@ -122,7 +122,7 @@ public class PortfolioDomainExceptionCodeCluster {
                 "비공개 포트폴리오에 대한 관심 등록 시도입니다.",
                 "비공개 포트폴리오에는 관심을 등록할 수 없습니다."),
 
-        PORTFOLIO_FORBIDDEN(
+        PORTFOLIO_DELETE_DENIED(
                 HttpStatus.FORBIDDEN,
                 "본인 소유가 아닌 포트폴리오에 대한 변경/삭제 시도입니다.",
                 "본인이 등록한 포트폴리오에 대해서만 변경 또는 삭제할 수 있습니다."),

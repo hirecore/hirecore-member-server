@@ -136,7 +136,7 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
         if (portfolioJobCategory == null) {
             return List.of();
         }
-        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getJobCategoryId())
+        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
                 .stream()
                 .filter(Objects::nonNull)
                 .map(hierarchy -> new SharedResponseDto.JobCategory(

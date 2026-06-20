@@ -39,7 +39,7 @@ class PortfolioWebMapperTest {
         void should_map_all_fields() {
             // given
             CreatePortfolioApi.Request request = new CreatePortfolioApi.Request(
-                    new SharedRequestApiDto.JobCategory("DEV_BACKEND", "백엔드 직무"),
+                    new SharedRequestApiDto.LeafJobCategory("DEV_BACKEND", "백엔드 직무"),
                     CollaborationTypeApiValue.TEAM,
                     VisibilityApiValue.PUBLIC,
                     "회원 서비스 도메인 모델링 회고",
@@ -64,9 +64,9 @@ class PortfolioWebMapperTest {
             CreatePortfolioUseCase.Command command = mapper.toCreatePortfolioCommand(request);
 
             // then
-            assertThat(command.jobCategory()).isNotNull();
-            assertThat(command.jobCategory().code()).isEqualTo("DEV_BACKEND");
-            assertThat(command.jobCategory().userInput()).isEqualTo("백엔드 직무");
+            assertThat(command.leafJobCategory()).isNotNull();
+            assertThat(command.leafJobCategory().code()).isEqualTo("DEV_BACKEND");
+            assertThat(command.leafJobCategory().userInput()).isEqualTo("백엔드 직무");
             assertThat(command.collaborationType()).isEqualTo(CollaborationType.TEAM);
             assertThat(command.visibility()).isEqualTo(Visibility.PUBLIC);
             assertThat(command.title()).isEqualTo("회원 서비스 도메인 모델링 회고");
@@ -94,7 +94,7 @@ class PortfolioWebMapperTest {
         void should_map_request_with_nullable_fields_omitted() {
             // given — 필수 필드만 채움
             CreatePortfolioApi.Request request = new CreatePortfolioApi.Request(
-                    new SharedRequestApiDto.JobCategory("DEV_BACKEND", null),
+                    new SharedRequestApiDto.LeafJobCategory("DEV_BACKEND", null),
                     CollaborationTypeApiValue.PERSONAL,
                     VisibilityApiValue.PRIVATE,
                     "title",
@@ -113,8 +113,8 @@ class PortfolioWebMapperTest {
             CreatePortfolioUseCase.Command command = mapper.toCreatePortfolioCommand(request);
 
             // then
-            assertThat(command.jobCategory().code()).isEqualTo("DEV_BACKEND");
-            assertThat(command.jobCategory().userInput()).isNull();
+            assertThat(command.leafJobCategory().code()).isEqualTo("DEV_BACKEND");
+            assertThat(command.leafJobCategory().userInput()).isNull();
             assertThat(command.previewSummary()).isEqualTo("한 줄 소개");
             assertThat(command.thumbnailImageId()).isNull();
             assertThat(command.contentImageIds()).isNull();

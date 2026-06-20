@@ -39,7 +39,7 @@ public class SharedRequestApiDto {
     ) {}
 
     /** 직군 카테고리 선택 입력 (식별 코드 + 선택적 라벨). */
-    public record JobCategory(
+    public record LeafJobCategory(
             @NotBlank(message = "직무 카테고리 코드는 필수입니다.")
             String code,
 

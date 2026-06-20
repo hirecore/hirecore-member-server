@@ -75,6 +75,7 @@ class PortfolioTest {
 
     private static void modifyWithImages(Portfolio portfolio, Long thumbnailImageId, List<Long> contentImageIds) {
         portfolio.modify(
+                1L,
                 thumbnailImageId,
                 null,
                 null,
@@ -244,6 +245,7 @@ class PortfolioTest {
 
         private static void modifyJobCategory(Portfolio portfolio, Long jobCategoryId, String userInput) {
             portfolio.modify(
+                    1L,
                     100L,
                     null,
                     null,
@@ -290,7 +292,7 @@ class PortfolioTest {
 
             modifyJobCategory(portfolio, 20L, "프론트엔드");
 
-            assertThat(portfolio.getPortfolioJobCategory().getJobCategoryId()).isEqualTo(20L);
+            assertThat(portfolio.getPortfolioJobCategory().getLeafJobCategoryId()).isEqualTo(20L);
             assertThat(portfolio.getPortfolioJobCategory().getUserInput()).isEqualTo("프론트엔드");
         }
     }
@@ -350,7 +352,7 @@ class PortfolioTest {
             assertThatThrownBy(() -> portfolio.delete(OTHER_USER_ID))
                     .isInstanceOf(PortfolioDomainException.class)
                     .extracting("errorCode")
-                    .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN.getErrorCode());
+                    .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_DELETE_DENIED.getErrorCode());
 
             List<PortfolioImagesUnlinkedEvent> events = filterUnlinkedEvents(portfolio.pollAllEvents());
             assertThat(events).isEmpty();

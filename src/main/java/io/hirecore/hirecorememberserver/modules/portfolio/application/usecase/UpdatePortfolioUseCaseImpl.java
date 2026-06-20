@@ -12,6 +12,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,40 +32,36 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
     private final ObjectMapper objectMapper;
 
     /**
-     *  [로직 플로우]
-     *   1. Portfolio aggregate 로드 → 없으면 PORTFOLIO_NOT_FOUND
-     *   2. 작성자 본인 여부 검증 → 아니면 PORTFOLIO_FORBIDDEN
-     *   3. 신규 이미지의 markUploaded (등록 시점과 동일 패턴, 멱등 호출)
-     *   4. 카테고리 코드 해석
-     *   5. portfolio.modify(...) 호출 → 도메인 invariant 재검증 + 본문/썸네일에서 빠진 이미지에 대한 PortfolioImagesUnlinkedEvent 발행
-     *   6. UpdatePortfolioPort.update(portfolio) 호출 (merge 경로)
-     *
-     *  [부수효과]
-     *   - 신규 이미지: markUploaded 가 발행한 ImageUploadedEvent 를 storage BC 가 AFTER_COMMIT 으로 받아 사용량을 가산합니다.
-     *   - 빠진 이미지: portfolio.modify 가 발행한 PortfolioImagesUnlinkedEvent 를 file BC 가 BEFORE_COMMIT 으로 받아
-     *     ORPHANED 로 전이시키고, 그 결과 발행되는 ImageOrphanedEvent 를 storage BC 가 AFTER_COMMIT 으로 받아 사용량을 차감합니다.
-     */
+     *  회원 본인 소유의 포트폴리오를 수정합니다.
+     * */
     @Override
     @Transactional
     public Long execute(Long portfolioId, Long viewerId, Command command) {
-        Portfolio portfolio = loadPortfolio(portfolioId);
-        ensureOwner(portfolio, viewerId);
+        Portfolio portfolio = loadPortfolioPort.findById(portfolioId)
+                .orElseThrow(() -> new PortfolioApplicationException(
+                        PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
+                ));
+
+        if(!portfolio.getMemberAccountId().equals(viewerId)) {
+            throw new PortfolioApplicationException(PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN);
+        }
 
         List<Long> imageIds = aggregateImageIds(command.thumbnailImageId(), command.contentImageIds());
         markImagesAsUploadedPort.markUploaded(viewerId, imageIds);
 
-        Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
+        Long leafJobCategoryId = loadJobCategoryPort.findIdByCode(command.leafJobCategory().code());
 
         SharedCommandDto.RichTextContent content = command.content();
         portfolio.modify(
+                viewerId,
                 command.thumbnailImageId(),
                 command.linkedCoverLetterId(),
                 command.linkedResumeId(),
                 command.title(),
                 command.previewSummary(),
                 command.privateMemo(),
-                jobCategoryId,
-                command.jobCategory().userInput(),
+                leafJobCategoryId,
+                command.leafJobCategory().userInput(),
                 serializeContentJson(content),
                 content.html(),
                 command.contentImageIds(),
@@ -76,21 +73,6 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
 
         updatePortfolioPort.update(portfolio);
         return portfolio.getId();
-    }
-
-    private Portfolio loadPortfolio(Long portfolioId) {
-        return loadPortfolioPort.findPortfolio(portfolioId)
-                .orElseThrow(() -> new PortfolioApplicationException(
-                        PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
-                ));
-    }
-
-    private void ensureOwner(Portfolio portfolio, Long viewerId) {
-        if (viewerId == null || !portfolio.getMemberAccountId().equals(viewerId)) {
-            throw new PortfolioApplicationException(
-                    PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN
-            );
-        }
     }
 
     private static List<PortfolioTag> toPortfolioTags(List<SharedCommandDto.SequentialTag> tagCommands) {

@@ -78,7 +78,7 @@ public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfo
             Long viewerId
     ) {
         Portfolio portfolio = row.portfolio();
-        Long leafId = portfolio.getPortfolioJobCategory().getJobCategoryId();
+        Long leafId = portfolio.getPortfolioJobCategory().getLeafJobCategoryId();
         List<SharedResponseDto.JobCategory> jobCategories = hierarchiesByLeafId
                 .getOrDefault(leafId, List.of()).stream()
                 .map(h -> new SharedResponseDto.JobCategory(h.id(), h.depth(), h.categoryCode(), h.name()))
@@ -116,8 +116,8 @@ public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfo
         Set<Long> leafIds = new HashSet<>();
         for (PublicPortfolioRow row : rows) {
             PortfolioJobCategory pjc = row.portfolio().getPortfolioJobCategory();
-            if (pjc != null && pjc.getJobCategoryId() != null) {
-                leafIds.add(pjc.getJobCategoryId());
+            if (pjc != null && pjc.getLeafJobCategoryId() != null) {
+                leafIds.add(pjc.getLeafJobCategoryId());
             }
         }
         return leafIds;

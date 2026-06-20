@@ -81,7 +81,7 @@ class DeletePortfolioUseCaseImplTest {
         void should_delete_and_publish_when_owner() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
 
             // when
             sut.execute(PORTFOLIO_ID, OWNER_ID);
@@ -100,7 +100,7 @@ class DeletePortfolioUseCaseImplTest {
         @DisplayName("존재하지 않는 포트폴리오면 PORTFOLIO_NOT_FOUND 응용 예외를 던지고 후속 호출은 없다")
         void should_throw_when_portfolio_not_found() {
             // given
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.empty());
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OWNER_ID))
@@ -117,13 +117,13 @@ class DeletePortfolioUseCaseImplTest {
         void should_propagate_domain_exception_when_non_owner() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OTHER_USER_ID))
                     .isInstanceOf(PortfolioDomainException.class)
                     .extracting("errorCode")
-                    .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN.getErrorCode());
+                    .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_DELETE_DENIED.getErrorCode());
 
             then(deletePortfolioPort).should(never()).delete(any());
             then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));

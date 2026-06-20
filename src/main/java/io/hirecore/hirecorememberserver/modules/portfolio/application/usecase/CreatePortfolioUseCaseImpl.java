@@ -50,7 +50,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
         markImagesAsUploadedPort.markUploaded(memberId, imageIds);
 
-        Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.jobCategory().code());
+        Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.leafJobCategory().code());
         Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryId);
 
         return savePortfolioPort.save(portfolio).getId();
@@ -70,7 +70,7 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
                 command.previewSummary(),
                 command.privateMemo(),
                 jobCategoryId,
-                command.jobCategory().userInput(),
+                command.leafJobCategory().userInput(),
                 serializeContentJson(content),
                 content.html(),
                 command.contentImageIds(),

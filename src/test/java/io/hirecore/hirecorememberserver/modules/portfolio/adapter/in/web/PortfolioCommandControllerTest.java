@@ -25,9 +25,6 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.Re
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.UpdatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.mapper.SharedDomainVoWebMapperImpl;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
-import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -51,7 +48,6 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
@@ -113,7 +109,7 @@ class PortfolioCommandControllerTest {
 
     private String createValidRequestBody() throws Exception {
         return objectMapper.writeValueAsString(Map.ofEntries(
-                Map.entry("jobCategory", Map.of(
+                Map.entry("leafJobCategory", Map.of(
                         "code", "DEV_BACKEND",
                         "userInput", "백엔드 직무"
                 )),
@@ -181,7 +177,7 @@ class PortfolioCommandControllerTest {
                                                         [처리 흐름]
                                                          1. 요청에 포함된 이미지 식별자(썸네일, 본문 이미지)의 소유권을 검증하고 UPLOADED 상태로 전이합니다.
                                                             전이 시 ImageUploadedEvent가 발행되어, 트랜잭션 커밋 이후 storage BC가 사용량을 갱신합니다.
-                                                         2. jobCategory.code 를 직무 카테고리 ID로 해석합니다.
+                                                         2. leafJobCategory.code 를 직무 카테고리 ID로 해석합니다.
                                                          3. Portfolio 도메인을 생성하고 영속화합니다.
 
                                                         [응답 방식]
@@ -191,17 +187,17 @@ class PortfolioCommandControllerTest {
                                                          - 400 REQUEST_VALUE_INVALID: 요청 본문 필수 필드 누락
                                                          - 403 IMAGE_OWNERSHIP_VIOLATION: 다른 사용자 소유 이미지 사용 시도
                                                          - 404 IMAGE_NOT_FOUND: 존재하지 않는 imageFileMetaId 참조
-                                                         - 404 JOB_CATEGORY_CODE_NOT_FOUND: 유효하지 않은 jobCategory.code
+                                                         - 404 JOB_CATEGORY_CODE_NOT_FOUND: 유효하지 않은 leafJobCategory.code
                                                          - 409 INVALID_UPLOAD_STATUS_TRANSITION: 이미지가 PENDING 상태가 아님
                                                     """)
                                             .requestFields(
-                                                    fieldWithPath("jobCategory")
+                                                    fieldWithPath("leafJobCategory")
                                                             .type(JsonFieldType.OBJECT)
                                                             .description("직무 카테고리 선택 정보"),
-                                                    fieldWithPath("jobCategory.code")
+                                                    fieldWithPath("leafJobCategory.code")
                                                             .type(JsonFieldType.STRING)
                                                             .description("직무 카테고리 코드 (예: DEV_BACKEND)"),
-                                                    fieldWithPath("jobCategory.userInput")
+                                                    fieldWithPath("leafJobCategory.userInput")
                                                             .type(JsonFieldType.STRING)
                                                             .description("사용자가 입력한 포트폴리오 카테고리 라벨 (allowsCustomInput 카테고리에서만 입력)")
                                                             .optional(),
@@ -436,7 +432,7 @@ class PortfolioCommandControllerTest {
         void create_portfolio_validation_missing_required_fields() throws Exception {
             // given — title을 비운 요청
             String requestBody = objectMapper.writeValueAsString(Map.ofEntries(
-                    Map.entry("jobCategory", Map.of("code", "DEV_BACKEND")),
+                    Map.entry("leafJobCategory", Map.of("code", "DEV_BACKEND")),
                     Map.entry("collaborationType", "team"),
                     Map.entry("visibility", "public"),
                     Map.entry("title", ""),
@@ -470,11 +466,11 @@ class PortfolioCommandControllerTest {
         }
 
         @Test
-        @DisplayName("[400 Bad Request] jobCategory.userInput 길이가 10자를 초과하면 REQUEST_VALUE_INVALID 에러를 반환한다.")
+        @DisplayName("[400 Bad Request] leafJobCategory.userInput 길이가 10자를 초과하면 REQUEST_VALUE_INVALID 에러를 반환한다.")
         void create_portfolio_validation_user_input_too_long() throws Exception {
             // given — userInput 11자
             String requestBody = objectMapper.writeValueAsString(Map.ofEntries(
-                    Map.entry("jobCategory", Map.of(
+                    Map.entry("leafJobCategory", Map.of(
                             "code", "DEV_BACKEND",
                             "userInput", "가".repeat(11)
                     )),
@@ -543,7 +539,7 @@ class PortfolioCommandControllerTest {
 
                                                         [처리 흐름]
                                                          1. 신규 이미지(thumbnailImageId, contentImageIds)에 대해 markUploaded 호출 (PENDING → UPLOADED 전이)
-                                                         2. jobCategory.code 를 직무 카테고리 ID 로 해석
+                                                         2. leafJobCategory.code 를 직무 카테고리 ID 로 해석
                                                          3. Portfolio.modify(...) 로 도메인 invariant 재검증 + 자식 컬렉션 전체 교체
                                                          4. UpdatePortfolioPort.update(...) 로 영속화 (cascade + orphanRemoval)
 
@@ -564,13 +560,13 @@ class PortfolioCommandControllerTest {
                                                             .description("수정 대상 포트폴리오 ID (TSID, JSON 문자열)")
                                             )
                                             .requestFields(
-                                                    fieldWithPath("jobCategory")
+                                                    fieldWithPath("leafJobCategory")
                                                             .type(JsonFieldType.OBJECT)
                                                             .description("직무 카테고리 선택 정보"),
-                                                    fieldWithPath("jobCategory.code")
+                                                    fieldWithPath("leafJobCategory.code")
                                                             .type(JsonFieldType.STRING)
                                                             .description("직무 카테고리 코드 (예: DEV_BACKEND)"),
-                                                    fieldWithPath("jobCategory.userInput")
+                                                    fieldWithPath("leafJobCategory.userInput")
                                                             .type(JsonFieldType.STRING)
                                                             .description("사용자 입력 카테고리 라벨")
                                                             .optional(),
@@ -1002,18 +998,18 @@ class PortfolioCommandControllerTest {
         private static final Long NONEXISTENT_PORTFOLIO_ID = 9000000000000000003L;
 
         @Test
-        @DisplayName("[403 Forbidden] 비소유자가 DELETE 하면 PORTFOLIO_FORBIDDEN 에러를 반환한다.")
+        @DisplayName("[403 Forbidden] 비소유자가 DELETE 하면 PORTFOLIO_DELETE_DENIED 에러를 반환한다.")
         void delete_portfolio_forbidden_non_owner() throws Exception {
             // given
             willThrow(new PortfolioDomainException(
-                    PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN
+                    PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_DELETE_DENIED
             )).given(deletePortfolioUseCase).execute(OTHERS_PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // when & then
             mockMvc.perform(delete("/api/portfolios/{portfolioId}", OTHERS_PORTFOLIO_ID))
                     .andDo(print())
                     .andExpect(status().isForbidden())
-                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_FORBIDDEN"))
+                    .andExpect(jsonPath("$.errorCode").value("PORTFOLIO_DELETE_DENIED"))
 
                     // 문서화
                     .andDo(document("403-portfolio-delete-forbidden",

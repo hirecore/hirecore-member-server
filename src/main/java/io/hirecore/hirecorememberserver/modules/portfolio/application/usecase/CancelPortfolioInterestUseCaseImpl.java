@@ -20,7 +20,7 @@ public class CancelPortfolioInterestUseCaseImpl implements CancelPortfolioIntere
     @Override
     @Transactional
     public void execute(Long portfolioId, Long memberAccountId) {
-        Portfolio portfolio = loadPortfolioPort.findPortfolio(portfolioId)
+        Portfolio portfolio = loadPortfolioPort.findById(portfolioId)
                 .orElseThrow(() -> new PortfolioApplicationException(
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND
                 ));

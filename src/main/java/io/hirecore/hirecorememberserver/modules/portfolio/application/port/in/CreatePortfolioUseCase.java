@@ -14,7 +14,7 @@ public interface CreatePortfolioUseCase {
     Long execute(Long memberId, Command command);
 
     record Command(
-            SharedCommandDto.JobCategory jobCategory,
+            SharedCommandDto.LeafJobCategory leafJobCategory,
             CollaborationType collaborationType,
             Visibility visibility,
             String title,
@@ -30,7 +30,7 @@ public interface CreatePortfolioUseCase {
     ) {
         public Command {
             AssertionUtils.notNull(
-                    jobCategory,
+                    leafJobCategory,
                     PortfolioApplicationExceptionCodeCluster.DetailResponse.CATEGORY_CODE_MISSING,
                     PortfolioApplicationException::new
             );

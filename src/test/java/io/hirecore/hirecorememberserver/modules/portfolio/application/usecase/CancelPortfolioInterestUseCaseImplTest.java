@@ -75,7 +75,7 @@ class CancelPortfolioInterestUseCaseImplTest {
         void should_publish_event_on_cancel() {
             // given
             Portfolio loaded = portfolioOf(OWNER_ID, Visibility.PUBLIC);
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
 
             // when
             sut.execute(PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
@@ -93,7 +93,7 @@ class CancelPortfolioInterestUseCaseImplTest {
         @DisplayName("존재하지 않는 포트폴리오면 INTEREST_PORTFOLIO_NOT_FOUND 예외를 던지고 이벤트는 발행되지 않는다")
         void should_throw_when_portfolio_not_found() {
             // given
-            given(loadPortfolioPort.findPortfolio(PORTFOLIO_ID)).willReturn(Optional.empty());
+            given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, MEMBER_ACCOUNT_ID))

@@ -25,7 +25,7 @@ public class CreatePortfolioApi {
     public record Request(
             @Valid
             @NotNull(message = "카테고리는 필수입니다.")
-            SharedRequestApiDto.JobCategory jobCategory,
+            SharedRequestApiDto.LeafJobCategory leafJobCategory,
 
             @NotNull(message = "협업 유형은 필수입니다.")
             CollaborationTypeApiValue collaborationType,

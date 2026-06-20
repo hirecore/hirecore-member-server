@@ -61,7 +61,7 @@ class CreatePortfolioUseCaseImplTest {
 
     private CreatePortfolioUseCase.Command createCommand() {
         return new CreatePortfolioUseCase.Command(
-                new SharedCommandDto.JobCategory("DEV_BACKEND", "백엔드 직무"),
+                new SharedCommandDto.LeafJobCategory("DEV_BACKEND", "백엔드 직무"),
                 CollaborationType.TEAM,
                 Visibility.PUBLIC,
                 "회원 서비스 도메인 모델링 회고",
@@ -134,7 +134,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_only_content_image_ids_when_thumbnail_is_null() {
             // given
             CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
-                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
+                    new SharedCommandDto.LeafJobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, CONTENT_IMAGE_IDS, null, null,
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
@@ -161,7 +161,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_call_mark_uploaded_with_empty_when_no_images() {
             // given
             CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
-                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
+                    new SharedCommandDto.LeafJobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, null,
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
@@ -200,7 +200,7 @@ class CreatePortfolioUseCaseImplTest {
 
             Portfolio captured = captor.getValue();
             assertThat(captured.getMemberAccountId()).isEqualTo(MEMBER_ACCOUNT_ID);
-            assertThat(captured.getPortfolioJobCategory().getJobCategoryId()).isEqualTo(JOB_CATEGORY_ID);
+            assertThat(captured.getPortfolioJobCategory().getLeafJobCategoryId()).isEqualTo(JOB_CATEGORY_ID);
             assertThat(captured.getPortfolioJobCategory().getUserInput()).isEqualTo("백엔드 직무");
             assertThat(captured.getTitle()).isEqualTo("회원 서비스 도메인 모델링 회고");
             assertThat(captured.getCollaborationType()).isEqualTo(CollaborationType.TEAM);
@@ -219,7 +219,7 @@ class CreatePortfolioUseCaseImplTest {
             // given
             String userPreview = "협업 에디터를 직접 구현해본 경험을 정리한 글";
             CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
-                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
+                    new SharedCommandDto.LeafJobCategory("DEV_BACKEND", null),
                     CollaborationType.TEAM, Visibility.PUBLIC,
                     "title", null, userPreview, null, null, null, null,
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>본문</p>"),
@@ -266,7 +266,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_empty_tags_when_input_is_null() {
             // given
             CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
-                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
+                    new SharedCommandDto.LeafJobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, null,
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
@@ -290,7 +290,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_coerce_null_external_links_to_empty() {
             // given — externalLinks=null
             CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
-                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
+                    new SharedCommandDto.LeafJobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, null,
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
@@ -315,7 +315,7 @@ class CreatePortfolioUseCaseImplTest {
             // given
             SharedCommandDto.ExternalLink linkCommand = new SharedCommandDto.ExternalLink("Repo", "https://github.com/example");
             CreatePortfolioUseCase.Command command = new CreatePortfolioUseCase.Command(
-                    new SharedCommandDto.JobCategory("DEV_BACKEND", null),
+                    new SharedCommandDto.LeafJobCategory("DEV_BACKEND", null),
                     CollaborationType.PERSONAL, Visibility.PRIVATE,
                     "title", null, "한 줄 소개", null, null, null, List.of(linkCommand),
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),

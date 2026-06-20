@@ -156,21 +156,15 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 .build();
     }
 
-    /**
-     * 포트폴리오의 편집 가능한 모든 필드를 새 값으로 교체합니다 (PUT 시맨틱).
-     *
-     * <p>자식 컬렉션({@code externalLinks}, {@code portfolioTags}) 은 전체 교체되며,
-     * 단일 자식 집계({@code portfolioJobCategory}, {@code portfolioContent}) 는 기존 식별자를 보존한 채 값이 갱신됩니다.
-     * 식별자/소유자/통계/상태는 변경되지 않습니다.</p>
-     */
     public void modify(
+            Long requestMemberAccountId,
             Long thumbnailImageId,
             Long coverLetterId,
             Long resumeId,
             String title,
             String previewSummary,
             String privateMemo,
-            Long jobCategoryId,
+            Long leafJobCategoryId,
             String jobCategoryUserInput,
             String contentJson,
             String contentHtml,
@@ -180,24 +174,27 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             CollaborationType collaborationType,
             Visibility visibility
     ) {
-        PortfolioJobCategory newJobCategory = this.portfolioJobCategory.modify(jobCategoryId, jobCategoryUserInput);
-        List<Long> resolvedNewContentImageIds = contentImageIds != null ? contentImageIds : List.of();
+        ensurePortfolioOwner(requestMemberAccountId);
+
+        PortfolioJobCategory jobCategory = this.portfolioJobCategory.modify(leafJobCategoryId, jobCategoryUserInput);
+        contentImageIds = contentImageIds != null ? contentImageIds : List.of();
+
         PortfolioContent newContent = PortfolioContent.create(
                 this.id,
                 contentJson,
                 contentHtml,
-                resolvedNewContentImageIds
+                contentImageIds
         );
 
         ensureInvariants(
                 this.id, this.memberAccountId, title, previewSummary, privateMemo,
-                newJobCategory, newContent, externalLinks, portfolioTags,
+                jobCategory, newContent, externalLinks, portfolioTags,
                 this.status, collaborationType, visibility, this.auditingInfo
         );
 
         List<Long> releasedImageIds = computeReleasedImageIds(
                 this.thumbnailImageId, this.portfolioContent.getImageIds(),
-                thumbnailImageId, resolvedNewContentImageIds
+                thumbnailImageId, contentImageIds
         );
 
         this.thumbnailImageId = thumbnailImageId;
@@ -206,7 +203,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.title = title;
         this.previewSummary = previewSummary;
         this.privateMemo = privateMemo;
-        this.portfolioJobCategory = newJobCategory;
+        this.portfolioJobCategory = jobCategory;
         this.portfolioContent = newContent;
         this.externalLinks = externalLinks != null ? externalLinks : List.of();
         this.portfolioTags = portfolioTags != null ? portfolioTags : List.of();
@@ -274,7 +271,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
      * 작성자 본인의 영구 삭제 의사를 검증하고, 본문/썸네일에서 참조 중이던 이미지들을 ORPHANED 대상으로
      * {@link PortfolioImagesUnlinkedEvent} 에 실어 발행합니다.
      *
-     * <p>소유자 검증 위반 시 {@link PortfolioDomainExceptionCodeCluster.DetailResponse#PORTFOLIO_FORBIDDEN}
+     * <p>소유자 검증 위반 시 {@link PortfolioDomainExceptionCodeCluster.DetailResponse#PORTFOLIO_DELETE_DENIED}
      * 도메인 예외를 던집니다. 참조 이미지가 한 건도 없는 경우 {@code PortfolioImagesUnlinkedEvent} 의
      * invariant(비공집합) 에 부합하지 않으므로 이벤트 발행을 생략합니다.</p>
      *
@@ -283,7 +280,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
      */
     public void delete(Long requesterMemberAccountId) {
         if (!this.memberAccountId.equals(requesterMemberAccountId)) {
-            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN);
+            throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_DELETE_DENIED);
         }
         List<Long> unlinkedImageIds = collectReferencedImageIds();
         if (!unlinkedImageIds.isEmpty()) {
@@ -437,6 +434,15 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         AssertionUtils.notNull(
                 auditingInfo,
                 SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
+                PortfolioDomainException::new
+        );
+    }
+
+    private void ensurePortfolioOwner(Long requestMemberAccountId) {
+        AssertionUtils.isEqual(
+                requestMemberAccountId,
+                this.memberAccountId,
+                PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_DELETE_DENIED,
                 PortfolioDomainException::new
         );
     }

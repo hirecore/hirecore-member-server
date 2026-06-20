@@ -101,7 +101,7 @@ class PortfolioJpaQueryAdapterTest {
             Portfolio saved = saveSamplePortfolio(1L, Visibility.PUBLIC, List.of("Spring", "JPA", "DDD"));
 
             // when
-            Optional<Portfolio> loaded = queryAdapter.findPortfolio(saved.getId());
+            Optional<Portfolio> loaded = queryAdapter.findById(saved.getId());
 
             // then
             assertThat(loaded).isPresent();
@@ -119,7 +119,7 @@ class PortfolioJpaQueryAdapterTest {
             statistics.clear();
 
             // when
-            Optional<Portfolio> loaded = queryAdapter.findPortfolio(saved.getId());
+            Optional<Portfolio> loaded = queryAdapter.findById(saved.getId());
 
             // then
             assertThat(loaded).isPresent();

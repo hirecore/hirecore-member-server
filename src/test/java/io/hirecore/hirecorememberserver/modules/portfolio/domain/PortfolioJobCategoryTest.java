@@ -27,7 +27,7 @@ class PortfolioJobCategoryTest {
             PortfolioJobCategory category = PortfolioJobCategory.create(PORTFOLIO_ID, 10L, null);
 
             assertThat(category.getPortfolioId()).isEqualTo(PORTFOLIO_ID);
-            assertThat(category.getJobCategoryId()).isEqualTo(10L);
+            assertThat(category.getLeafJobCategoryId()).isEqualTo(10L);
             assertThat(category.getConnectedAt()).isNotNull();
         }
 
@@ -47,7 +47,7 @@ class PortfolioJobCategoryTest {
         private static PortfolioJobCategory existing(Long jobCategoryId, String userInput, Instant connectedAt) {
             return PortfolioJobCategory.builder()
                     .portfolioId(PORTFOLIO_ID)
-                    .jobCategoryId(jobCategoryId)
+                    .leafJobCategoryId(jobCategoryId)
                     .userInput(userInput)
                     .connectedAt(connectedAt)
                     .build();
@@ -114,7 +114,7 @@ class PortfolioJobCategoryTest {
 
             PortfolioJobCategory after = before.modify(20L, "프론트엔드");
 
-            assertThat(after.getJobCategoryId()).isEqualTo(20L);
+            assertThat(after.getLeafJobCategoryId()).isEqualTo(20L);
             assertThat(after.getUserInput()).isEqualTo("프론트엔드");
         }
     }
@@ -128,7 +128,7 @@ class PortfolioJobCategoryTest {
         void should_throw_when_portfolio_id_is_null() {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .portfolioId(null)
-                    .jobCategoryId(10L)
+                    .leafJobCategoryId(10L)
                     .connectedAt(Instant.now())
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)
@@ -141,7 +141,7 @@ class PortfolioJobCategoryTest {
         void should_throw_when_job_category_id_is_null() {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .portfolioId(PORTFOLIO_ID)
-                    .jobCategoryId(null)
+                    .leafJobCategoryId(null)
                     .connectedAt(Instant.now())
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)
@@ -154,7 +154,7 @@ class PortfolioJobCategoryTest {
         void should_throw_when_connected_at_is_null() {
             assertThatThrownBy(() -> PortfolioJobCategory.builder()
                     .portfolioId(PORTFOLIO_ID)
-                    .jobCategoryId(10L)
+                    .leafJobCategoryId(10L)
                     .connectedAt(null)
                     .build())
                     .isInstanceOf(PortfolioJobCategoryDomainException.class)

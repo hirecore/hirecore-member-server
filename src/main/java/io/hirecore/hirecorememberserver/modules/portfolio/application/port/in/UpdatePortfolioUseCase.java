@@ -14,7 +14,7 @@ public interface UpdatePortfolioUseCase {
     Long execute(Long portfolioId, Long viewerId, Command command);
 
     record Command(
-            SharedCommandDto.JobCategory jobCategory,
+            SharedCommandDto.LeafJobCategory leafJobCategory,
             CollaborationType collaborationType,
             Visibility visibility,
             String title,
@@ -30,7 +30,7 @@ public interface UpdatePortfolioUseCase {
     ) {
         public Command {
             AssertionUtils.notNull(
-                    jobCategory,
+                    leafJobCategory,
                     PortfolioApplicationExceptionCodeCluster.DetailResponse.CATEGORY_CODE_MISSING,
                     PortfolioApplicationException::new
             );

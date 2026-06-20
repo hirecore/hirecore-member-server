@@ -75,6 +75,11 @@ public class PortfolioApplicationExceptionCodeCluster {
                 "포트폴리오 접근 권한이 없습니다.",
                 "요청한 포트폴리오가 비공개이거나 접근할 권한이 없습니다."),
 
+        PORTFOLIO_DELETE_DENIED(
+                HttpStatus.FORBIDDEN,
+                "본인 소유가 아닌 포트폴리오에 대한 변경/삭제 시도입니다.",
+                "본인이 등록한 포트폴리오에 대해서만 변경 또는 삭제할 수 있습니다."),
+
         PORTFOLIO_NICKNAME_NOT_FOUND(
                 HttpStatus.NOT_FOUND,
                 "포트폴리오 작성자의 닉네임을 불러올 수 없습니다.",

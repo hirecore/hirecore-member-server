@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(config = GlobalMapStructConfig.class)
 public abstract class PortfolioJobCategoryJpaEntityMapper {
 
+    @Mapping(target = "id", source = "portfolioId")
     @Mapping(target = "portfolio", ignore = true)
     public abstract PortfolioJobCategoryJpaEntity toJpaEntity(PortfolioJobCategory domain);
 
@@ -17,7 +18,7 @@ public abstract class PortfolioJobCategoryJpaEntityMapper {
             return null;
         }
         return PortfolioJobCategory.builder()
-                .id(entity.getId())
+                .portfolioId(entity.getId())
                 .jobCategoryId(entity.getJobCategoryId())
                 .userInput(entity.getUserInput())
                 .connectedAt(entity.getConnectedAt())

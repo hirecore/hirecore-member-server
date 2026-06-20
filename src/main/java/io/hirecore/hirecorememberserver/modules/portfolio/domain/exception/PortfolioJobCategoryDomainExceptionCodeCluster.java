@@ -9,10 +9,10 @@ public class PortfolioJobCategoryDomainExceptionCodeCluster {
     @Getter
     @RequiredArgsConstructor
     public enum HiddenDetailResponse implements DomainExceptionCode {
-        // ID
-        ID_MISSING(
+        // PORTFOLIO_ID
+        PORTFOLIO_ID_MISSING(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "PortfolioJobCategory 도메인 객체 생성에서 id 필드가 누락되었습니다.",
+                "PortfolioJobCategory 도메인 객체 생성에서 portfolioId 필드가 누락되었습니다.",
                 "서버에서 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
         // JOB_CATEGORY_ID

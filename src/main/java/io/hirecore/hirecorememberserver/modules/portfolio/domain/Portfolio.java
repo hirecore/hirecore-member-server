@@ -140,7 +140,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 .privateMemo(privateMemo)
                 .cachedViewCount(0L)
                 .cachedInterestCount(0L)
-                .portfolioJobCategory(PortfolioJobCategory.create(jobCategoryId, userInput))
+                .portfolioJobCategory(PortfolioJobCategory.create(portfolioId, jobCategoryId, userInput))
                 .portfolioContent(PortfolioContent.create(
                         portfolioId,
                         contentJson,
@@ -160,7 +160,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
      * 포트폴리오의 편집 가능한 모든 필드를 새 값으로 교체합니다 (PUT 시맨틱).
      *
      * <p>자식 컬렉션({@code externalLinks}, {@code portfolioTags}) 은 전체 교체되며,
-     * 단일 자식 집계({@code portfolioJobCategory}, {@code portfolioContent}) 는 새 인스턴스로 교체됩니다.
+     * 단일 자식 집계({@code portfolioJobCategory}, {@code portfolioContent}) 는 기존 식별자를 보존한 채 값이 갱신됩니다.
      * 식별자/소유자/통계/상태는 변경되지 않습니다.</p>
      */
     public void modify(
@@ -180,7 +180,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
             CollaborationType collaborationType,
             Visibility visibility
     ) {
-        PortfolioJobCategory newJobCategory = PortfolioJobCategory.create(jobCategoryId, jobCategoryUserInput);
+        PortfolioJobCategory newJobCategory = this.portfolioJobCategory.modify(jobCategoryId, jobCategoryUserInput);
         List<Long> resolvedNewContentImageIds = contentImageIds != null ? contentImageIds : List.of();
         PortfolioContent newContent = PortfolioContent.create(
                 this.id,

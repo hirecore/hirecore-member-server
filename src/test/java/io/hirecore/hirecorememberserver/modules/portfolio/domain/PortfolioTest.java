@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -234,6 +235,63 @@ class PortfolioTest {
                     .filter(PortfolioImagesUnlinkedEvent.class::isInstance)
                     .map(e -> (PortfolioImagesUnlinkedEvent) e)
                     .toList();
+        }
+    }
+
+    @Nested
+    @DisplayName("modify() 시 직무카테고리 처리")
+    class ModifyJobCategoryTest {
+
+        private static void modifyJobCategory(Portfolio portfolio, Long jobCategoryId, String userInput) {
+            portfolio.modify(
+                    100L,
+                    null,
+                    null,
+                    "title",
+                    "본문 미리보기",
+                    null,
+                    jobCategoryId,
+                    userInput,
+                    "{\"type\":\"doc\"}",
+                    "<p>본문</p>",
+                    List.of(),
+                    List.of(),
+                    List.of(),
+                    CollaborationType.TEAM,
+                    Visibility.PUBLIC
+            );
+        }
+
+        @Test
+        @DisplayName("수정해도 직무카테고리 식별자(portfolioId)는 포트폴리오 ID로 유지된다")
+        void should_keep_job_category_identity_as_portfolio_id() {
+            Portfolio portfolio = createWithImages(100L, List.of());
+
+            modifyJobCategory(portfolio, 20L, "백엔드");
+
+            assertThat(portfolio.getPortfolioJobCategory().getPortfolioId()).isEqualTo(portfolio.getId());
+        }
+
+        @Test
+        @DisplayName("직무카테고리가 그대로면 connectedAt 을 보존한다")
+        void should_keep_connected_at_when_job_category_unchanged() {
+            Portfolio portfolio = createWithImages(100L, List.of());
+            Instant before = portfolio.getPortfolioJobCategory().getConnectedAt();
+
+            modifyJobCategory(portfolio, 10L, null);
+
+            assertThat(portfolio.getPortfolioJobCategory().getConnectedAt()).isEqualTo(before);
+        }
+
+        @Test
+        @DisplayName("직무카테고리가 바뀌면 새 jobCategoryId/userInput 을 반영한다")
+        void should_apply_changed_job_category() {
+            Portfolio portfolio = createWithImages(100L, List.of());
+
+            modifyJobCategory(portfolio, 20L, "프론트엔드");
+
+            assertThat(portfolio.getPortfolioJobCategory().getJobCategoryId()).isEqualTo(20L);
+            assertThat(portfolio.getPortfolioJobCategory().getUserInput()).isEqualTo("프론트엔드");
         }
     }
 

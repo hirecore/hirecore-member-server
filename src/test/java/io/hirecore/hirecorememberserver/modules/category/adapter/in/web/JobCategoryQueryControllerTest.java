@@ -4,7 +4,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
 import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
 import io.hirecore.hirecorememberserver.common.web.SwaggerDocs;
-import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.response.JobCategoryApiResponse;
+import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.JobCategoryApi;
 import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.mapper.JobCategoryWebMapper;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryTreeUseCase;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
@@ -71,11 +71,11 @@ class JobCategoryQueryControllerTest {
                     new JobCategoryResponse(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
                     new JobCategoryResponse(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
             );
-            List<JobCategoryApiResponse> apiResponses = List.of(
-                    new JobCategoryApiResponse(1L, 1, 1, null, "개발", "DEV", false),
-                    new JobCategoryApiResponse(2L, 1, 2, null, "디자인", "DESIGN", false),
-                    new JobCategoryApiResponse(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
-                    new JobCategoryApiResponse(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
+            List<JobCategoryApi.Response> apiResponses = List.of(
+                    new JobCategoryApi.Response(1L, 1, 1, null, "개발", "DEV", false),
+                    new JobCategoryApi.Response(2L, 1, 2, null, "디자인", "DESIGN", false),
+                    new JobCategoryApi.Response(11L, 2, 1, 1L, "백엔드", "DEV_BACKEND", true),
+                    new JobCategoryApi.Response(12L, 2, 2, 1L, "프론트엔드", "DEV_FRONTEND", true)
             );
             given(loadJobCategoryTreeUseCase.execute(2)).willReturn(applicationResponse);
             given(jobCategoryWebMapper.toApiResponses(applicationResponse)).willReturn(apiResponses);

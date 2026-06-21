@@ -6,8 +6,8 @@ import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
 import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.exception.DataConsistencyException;
-import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.response.UserProfileSummaryApiResponse;
-import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileQueryWebMapper;
+import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.UserProfileSummaryApi;
+import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileWebMapper;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.LoadUserProfileSummaryUseCase;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +65,7 @@ class UserProfileQueryControllerTest {
     private LoadUserProfileSummaryUseCase loadUserProfileSummaryUseCase;
 
     @MockitoBean
-    private UserProfileQueryWebMapper userProfileQueryWebMapper;
+    private UserProfileWebMapper userProfileWebMapper;
 
     private static UsernamePasswordAuthenticationToken createAuthToken() {
         AuthPrincipal principal = new AuthPrincipal(MEMBER_ID, EMAIL, ROLE, 0);
@@ -85,11 +85,11 @@ class UserProfileQueryControllerTest {
             UserProfileSummaryResponse response = new UserProfileSummaryResponse(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, PROFILE_IMAGE_URL
             );
-            UserProfileSummaryApiResponse apiResponse = new UserProfileSummaryApiResponse(
+            UserProfileSummaryApi.Response apiResponse = new UserProfileSummaryApi.Response(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, PROFILE_IMAGE_URL
             );
             given(loadUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL)).willReturn(response);
-            given(userProfileQueryWebMapper.toApiResponse(response)).willReturn(apiResponse);
+            given(userProfileWebMapper.toApiResponse(response)).willReturn(apiResponse);
 
             // when & then
             mockMvc.perform(get("/api/user/profile/summary")
@@ -155,11 +155,11 @@ class UserProfileQueryControllerTest {
             UserProfileSummaryResponse response = new UserProfileSummaryResponse(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, null
             );
-            UserProfileSummaryApiResponse apiResponse = new UserProfileSummaryApiResponse(
+            UserProfileSummaryApi.Response apiResponse = new UserProfileSummaryApi.Response(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, null
             );
             given(loadUserProfileSummaryUseCase.execute(MEMBER_ID, EMAIL)).willReturn(response);
-            given(userProfileQueryWebMapper.toApiResponse(response)).willReturn(apiResponse);
+            given(userProfileWebMapper.toApiResponse(response)).willReturn(apiResponse);
 
             // when & then
             mockMvc.perform(get("/api/user/profile/summary")

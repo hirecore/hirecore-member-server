@@ -81,15 +81,15 @@ class ImageFileMetaTest {
     }
 
     @Nested
-    @DisplayName("updateUploadStatus 상태 전이")
-    class UpdateUploadStatusTest {
+    @DisplayName("markUploaded 상태 전이")
+    class MarkUploadedTest {
 
         @Test
         @DisplayName("PENDING에서 UPLOADED로 전이하면 ImageUploadedEvent가 emit된다")
         void should_emit_image_uploaded_event_when_transition_pending_to_uploaded() {
             ImageFileMeta meta = createValid();
 
-            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markUploaded();
 
             Collection<Object> events = meta.pollAllEvents();
             assertThat(events).hasSize(1);
@@ -104,25 +104,31 @@ class ImageFileMetaTest {
         }
 
         @Test
-        @DisplayName("이미 UPLOADED인 상태에서 UPLOADED로 재전이하면 INVALID_UPLOAD_STATUS_TRANSITION 예외가 발생한다")
-        void should_throw_when_already_uploaded() {
+        @DisplayName("이미 UPLOADED 인 상태에서 markUploaded 를 호출하면 멱등 처리되어 이벤트가 emit 되지 않는다")
+        void should_be_idempotent_when_already_uploaded() {
             ImageFileMeta meta = createValid();
-            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markUploaded();
+            Instant firstCompletedUploadAt = meta.getCompletedUploadAt();
+            meta.pollAllEvents(); // 기존 ImageUploadedEvent 비움
 
-            assertThatThrownBy(() -> meta.updateUploadStatus(UploadStatus.UPLOADED))
-                    .isInstanceOf(ImageFileMetaDomainException.class)
-                    .extracting("errorCode")
-                    .isEqualTo(ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION.getErrorCode());
+            meta.markUploaded();
+
+            assertThat(meta.getUploadStatus()).isEqualTo(UploadStatus.UPLOADED);
+            assertThat(meta.getCompletedUploadAt()).isEqualTo(firstCompletedUploadAt);
+            assertThat(meta.pollAllEvents()).isEmpty();
         }
 
         @Test
-        @DisplayName("UPLOADED 외 다른 상태로의 전이는 이벤트를 emit하지 않는다")
-        void should_not_emit_event_for_non_uploaded_transition() {
+        @DisplayName("ORPHANED 상태에서 markUploaded 를 호출하면 INVALID_UPLOAD_STATUS_TRANSITION 예외가 발생한다")
+        void should_throw_when_mark_uploaded_from_orphaned() {
             ImageFileMeta meta = createValid();
+            meta.markUploaded();
+            meta.markOrphaned();
 
-            meta.updateUploadStatus(UploadStatus.ORPHANED);
-
-            assertThat(meta.pollAllEvents()).isEmpty();
+            assertThatThrownBy(meta::markUploaded)
+                    .isInstanceOf(ImageFileMetaDomainException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION.getErrorCode());
         }
     }
 
@@ -134,7 +140,7 @@ class ImageFileMetaTest {
         @DisplayName("UPLOADED 상태에서 ORPHANED 로 전이하면 ImageOrphanedEvent 가 emit 된다")
         void should_emit_image_orphaned_event_when_transition_uploaded_to_orphaned() {
             ImageFileMeta meta = createValid();
-            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markUploaded();
             meta.pollAllEvents(); // 기존 ImageUploadedEvent 비움
 
             meta.markOrphaned();
@@ -157,7 +163,7 @@ class ImageFileMetaTest {
         @DisplayName("이미 ORPHANED 인 상태에서 markOrphaned 를 호출하면 멱등 처리되어 이벤트가 emit 되지 않는다")
         void should_be_idempotent_when_already_orphaned() {
             ImageFileMeta meta = createValid();
-            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markUploaded();
             meta.markOrphaned();
             Instant firstOrphanedAt = meta.getOrphanedAt();
             meta.pollAllEvents(); // 기존 이벤트 비움
@@ -189,7 +195,7 @@ class ImageFileMetaTest {
         @DisplayName("ORPHANED 상태에서 DELETED 로 전이되고 completedDeleteAt 이 채워진다")
         void should_transition_orphaned_to_deleted() {
             ImageFileMeta meta = createValid();
-            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markUploaded();
             meta.markOrphaned();
             meta.pollAllEvents();
 
@@ -204,7 +210,7 @@ class ImageFileMetaTest {
         @DisplayName("이미 DELETED 인 상태에서 markDeleted 를 호출하면 멱등 처리된다")
         void should_be_idempotent_when_already_deleted() {
             ImageFileMeta meta = createValid();
-            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markUploaded();
             meta.markOrphaned();
             meta.markDeleted();
             Instant firstCompletedAt = meta.getCompletedDeleteAt();
@@ -232,7 +238,7 @@ class ImageFileMetaTest {
         @DisplayName("UPLOADED 상태에서 markDeleted 를 호출하면 INVALID_UPLOAD_STATUS_TRANSITION 예외가 발생한다")
         void should_throw_when_call_mark_deleted_in_uploaded_status() {
             ImageFileMeta meta = createValid();
-            meta.updateUploadStatus(UploadStatus.UPLOADED);
+            meta.markUploaded();
             meta.pollAllEvents();
 
             assertThatThrownBy(meta::markDeleted)

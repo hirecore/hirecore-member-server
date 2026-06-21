@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.in.web;
 
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.common.security.utils.AuthCookieUtils;
-import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.request.SocialLoginApiRequest;
+import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.SocialLoginApi;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapper;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LogoutUseCase;
@@ -34,7 +34,7 @@ public class AuthCommandController {
     @PostMapping("/login/user/{provider}")
     public ResponseEntity<Void> socialLogin(
             @PathVariable String provider,
-            @Valid @RequestBody SocialLoginApiRequest request
+            @Valid @RequestBody SocialLoginApi.Request request
     ) {
         SocialLoginCommand socialLoginCommand = socialLoginWebMapper.toSocialLoginCommand(provider, request);
         PairTokenResponse pairTokenResponse = loginSocialUserUseCase.execute(socialLoginCommand);

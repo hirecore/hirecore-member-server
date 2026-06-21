@@ -1,0 +1,59 @@
+package io.hirecore.hirecorememberserver.modules.category.adapter.in.shared;
+
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryHierarchiesUseCase;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryHierarchyUseCase;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryIdByCodeUseCase;
+import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Component
+@RequiredArgsConstructor
+public class JobCategorySharedQueryAdapter implements LoadJobCategoryPort {
+
+    private final LoadJobCategoryIdByCodeUseCase loadJobCategoryIdByCodeUseCase;
+    private final LoadJobCategoryHierarchyUseCase findJobCategoryHierarchyUseCase;
+    private final LoadJobCategoryHierarchiesUseCase findJobCategoryHierarchiesUseCase;
+
+    @Override
+    public Long findIdByCode(String categoryCode) {
+        return loadJobCategoryIdByCodeUseCase.execute(categoryCode);
+    }
+
+    @Override
+    public List<PortfolioJobCategoryHierarchyResult> findJobCategoryHierarchy(Long leafJobCategoryId) {
+        return findJobCategoryHierarchyUseCase.execute(leafJobCategoryId).stream()
+                .map(JobCategorySharedQueryAdapter::toResult)
+                .toList();
+    }
+
+    @Override
+    public Map<Long, List<PortfolioJobCategoryHierarchyResult>> findJobCategoryHierarchies(Collection<Long> leafJobCategoryIds) {
+        return findJobCategoryHierarchiesUseCase.execute(leafJobCategoryIds).entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .map(JobCategorySharedQueryAdapter::toResult)
+                                .toList(),
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
+
+    private static PortfolioJobCategoryHierarchyResult toResult(JobCategory category) {
+        return new PortfolioJobCategoryHierarchyResult(
+                category.getId(),
+                category.getDepth().longValue(),
+                category.getCategoryCode(),
+                category.getCategoryName()
+        );
+    }
+}

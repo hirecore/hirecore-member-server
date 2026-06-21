@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.coverletter.adapter.out.persist
 import io.hirecore.hirecorememberserver.modules.coverletter.adapter.out.persistence.jpa.repository.CoverLetterJpaQueryRepository;
 import io.hirecore.hirecorememberserver.modules.coverletter.application.port.in.LoadCoverLetterContentUseCase;
 import io.hirecore.hirecorememberserver.modules.coverletter.application.port.out.LoadCoverLetterContentPort;
-import io.hirecore.hirecorememberserver.modules.coverletter.application.port.out.LoadCoverLetterTitlesPort;
+import io.hirecore.hirecorememberserver.modules.coverletter.application.port.out.LoadCoverLetterTitlePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class CoverLetterJpaQueryAdapter implements
-        LoadCoverLetterTitlesPort,
+        LoadCoverLetterTitlePort,
         LoadCoverLetterContentPort
 {
 
     private final CoverLetterJpaQueryRepository coverLetterJpaQueryRepository;
 
     @Override
-    public Map<Long, String> findAllTitlesByIds(Collection<Long> coverLetterIds) {
+    public Map<Long, String> findTitleMapByIds(Collection<Long> coverLetterIds) {
         if (coverLetterIds == null || coverLetterIds.isEmpty()) {
             return Map.of();
         }

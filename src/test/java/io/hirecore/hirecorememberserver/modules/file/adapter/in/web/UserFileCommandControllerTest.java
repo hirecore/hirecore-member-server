@@ -6,7 +6,7 @@ import io.hirecore.hirecorememberserver.common.web.SwaggerDocs;
 import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
 import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
-import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlMapperImpl;
+import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlWebMapperImpl;
 import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationException;
 import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.GenerateUserPresignedPutUrlUseCase;
@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({
         WebMvcSecuritySupport.class,
         StrictJsonConfig.class,
-        ImagePresignedPutUrlMapperImpl.class
+        ImagePresignedPutUrlWebMapperImpl.class
 })
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs

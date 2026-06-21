@@ -72,7 +72,7 @@ class LoadJobCategoryTreeUseCaseImplTest {
             JobCategoryResponse rootResponse = response(1L, null, 1, 1);
             JobCategoryResponse childResponse = response(11L, 1L, 2, 1);
 
-            given(loadJobCategoryPort.loadAllWithinDepth(2))
+            given(loadJobCategoryPort.findAllWithinDepth(2))
                     .willReturn(List.of(root, child));
             given(jobCategoryMapper.toResponse(root)).willReturn(rootResponse);
             given(jobCategoryMapper.toResponse(child)).willReturn(childResponse);
@@ -82,7 +82,7 @@ class LoadJobCategoryTreeUseCaseImplTest {
 
             // then
             assertThat(result).containsExactly(rootResponse, childResponse);
-            then(loadJobCategoryPort).should().loadAllWithinDepth(2);
+            then(loadJobCategoryPort).should().findAllWithinDepth(2);
             then(jobCategoryMapper).should().toResponse(root);
             then(jobCategoryMapper).should().toResponse(child);
         }
@@ -91,7 +91,7 @@ class LoadJobCategoryTreeUseCaseImplTest {
         @DisplayName("Load Port 가 빈 리스트를 반환하면 매핑 호출 없이 빈 리스트를 반환한다")
         void should_return_empty_list_when_query_service_returns_empty() {
             // given
-            given(loadJobCategoryPort.loadAllWithinDepth(1)).willReturn(List.of());
+            given(loadJobCategoryPort.findAllWithinDepth(1)).willReturn(List.of());
 
             // when
             List<JobCategoryResponse> result = useCase.execute(1);

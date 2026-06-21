@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.in.web;
 
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
-import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.response.UserProfileSummaryApiResponse;
-import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileQueryWebMapper;
+import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.UserProfileSummaryApi;
+import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileWebMapper;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.LoadUserProfileSummaryUseCase;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserProfileQueryController {
 
     private final LoadUserProfileSummaryUseCase loadUserProfileSummaryUseCase;
-    private final UserProfileQueryWebMapper userProfileQueryWebMapper;
+    private final UserProfileWebMapper userProfileWebMapper;
 
     @GetMapping("/summary")
-    public ResponseEntity<UserProfileSummaryApiResponse> getUserProfileSummary(
+    public ResponseEntity<UserProfileSummaryApi.Response> getUserProfileSummary(
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
         UserProfileSummaryResponse response = loadUserProfileSummaryUseCase.execute(
                 principal.id(), principal.email()
         );
-        return ResponseEntity.ok(userProfileQueryWebMapper.toApiResponse(response));
+        return ResponseEntity.ok(userProfileWebMapper.toApiResponse(response));
     }
 }

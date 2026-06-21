@@ -1,10 +1,9 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.web;
 
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
-import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.request.ImagesPresignedPutUrlApiRequest;
-import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.response.ImagePresignedPutUrlApiResponse;
-import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.response.ImagesPresignedPutUrlApiResponse;
-import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlMapper;
+import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.ImagesPresignedPutUrlApi;
+import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.ImagePresignedPutUrlApi;
+import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlWebMapper;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.GenerateUserPresignedPutUrlUseCase;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.request.ImagePresignedPutUrlCommand;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
@@ -24,18 +23,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserFileCommandController {
 
-    private final ImagePresignedPutUrlMapper imagePresignedPutUrlMapper;
+    private final ImagePresignedPutUrlWebMapper imagePresignedPutUrlWebMapper;
     private final GenerateUserPresignedPutUrlUseCase generateUserPresignedPutUrlUseCase;
 
     @PostMapping("/images/presigned-put-url")
-    public ResponseEntity<ImagesPresignedPutUrlApiResponse> postImagesPresignedPutUrl(
+    public ResponseEntity<ImagesPresignedPutUrlApi.Response> postImagesPresignedPutUrl(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
-            @Valid @RequestBody ImagesPresignedPutUrlApiRequest request
+            @Valid @RequestBody ImagesPresignedPutUrlApi.Request request
     ) {
-        List<ImagePresignedPutUrlCommand> commandList = imagePresignedPutUrlMapper.toCommandList(request.files());
+        List<ImagePresignedPutUrlCommand> commandList = imagePresignedPutUrlWebMapper.toCommandList(request.files());
         List<ImagePresignedPutUrlResponse> applicationResponseList = generateUserPresignedPutUrlUseCase.execute(authPrincipal.id(), commandList);
-        List<ImagePresignedPutUrlApiResponse> apiResponseList = imagePresignedPutUrlMapper.toResponseList(applicationResponseList);
+        List<ImagePresignedPutUrlApi.Response> apiResponseList = imagePresignedPutUrlWebMapper.toResponseList(applicationResponseList);
 
-        return ResponseEntity.ok().body(new ImagesPresignedPutUrlApiResponse(apiResponseList));
+        return ResponseEntity.ok().body(new ImagesPresignedPutUrlApi.Response(apiResponseList));
     }
 }

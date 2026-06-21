@@ -77,8 +77,8 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
         void should_return_presigned_url_responses() {
             // given
             ImagePresignedPutUrlCommand command = createCommand(1048576L);
-            given(loadUserStorageLimitPort.getStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
-            given(loadUserStorageUsagePort.getUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
+            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
+            given(loadUserStorageUsagePort.findUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -112,8 +112,8 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
         void should_pass_correct_data_to_save_port() {
             // given
             ImagePresignedPutUrlCommand command = createCommand(2097152L);
-            given(loadUserStorageLimitPort.getStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
-            given(loadUserStorageUsagePort.getUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
+            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
+            given(loadUserStorageUsagePort.findUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -154,8 +154,8 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
         void should_pass_correct_params_to_presigned_url_port() {
             // given
             ImagePresignedPutUrlCommand command = createCommand(1048576L);
-            given(loadUserStorageLimitPort.getStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
-            given(loadUserStorageUsagePort.getUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
+            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
+            given(loadUserStorageUsagePort.findUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -182,8 +182,8 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
             // given
             ImagePresignedPutUrlCommand command1 = createCommand(1048576L);
             ImagePresignedPutUrlCommand command2 = createCommand(2097152L);
-            given(loadUserStorageLimitPort.getStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
-            given(loadUserStorageUsagePort.getUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
+            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(10485760L);
+            given(loadUserStorageUsagePort.findUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -214,8 +214,8 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
         void should_throw_when_storage_quota_exceeded() {
             // given
             ImagePresignedPutUrlCommand command = createCommand(10485760L);
-            given(loadUserStorageLimitPort.getStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(5242880L);
-            given(loadUserStorageUsagePort.getUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
+            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(5242880L);
+            given(loadUserStorageUsagePort.findUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(0L);
 
             // when & then
             assertThatThrownBy(() -> sut.execute(MEMBER_ACCOUNT_ID, List.of(command)))
@@ -230,8 +230,8 @@ class GenerateUserPresignedPutUrlUseCaseImplTest {
         void should_throw_when_used_plus_request_exceeds_quota() {
             // given
             ImagePresignedPutUrlCommand command = createCommand(3145728L);
-            given(loadUserStorageLimitPort.getStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(5242880L);
-            given(loadUserStorageUsagePort.getUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(3145728L);
+            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(5242880L);
+            given(loadUserStorageUsagePort.findUsedQuotaBytes(MEMBER_ACCOUNT_ID)).willReturn(3145728L);
 
             // when & then
             assertThatThrownBy(() -> sut.execute(MEMBER_ACCOUNT_ID, List.of(command)))

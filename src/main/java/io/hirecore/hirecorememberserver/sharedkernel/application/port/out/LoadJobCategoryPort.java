@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface LoadJobCategoryPort {
     Long findIdByCode(String categoryCode);
-    List<PortfolioJobCategoryHierarchyResult> loadJobCategoryHierarchy(Long leafJobCategoryId);
+    List<PortfolioJobCategoryHierarchyResult> findJobCategoryHierarchy(Long leafJobCategoryId);
 
     /**
      * 여러 leaf 직무 카테고리의 계층 경로를 단일 쿼리로 일괄 조회한다.
@@ -16,5 +16,5 @@ public interface LoadJobCategoryPort {
      * <p>반환 Map 의 키는 입력 leaf id, 값은 root → leaf 순서의 경로 (depth 오름차순) 다.
      * 존재하지 않는 leaf 는 결과에 포함되지 않는다.</p>
      */
-    Map<Long, List<PortfolioJobCategoryHierarchyResult>> loadJobCategoryHierarchies(Collection<Long> leafJobCategoryIds);
+    Map<Long, List<PortfolioJobCategoryHierarchyResult>> findJobCategoryHierarchies(Collection<Long> leafJobCategoryIds);
 }

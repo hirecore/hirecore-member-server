@@ -6,7 +6,7 @@ import io.hirecore.hirecorememberserver.modules.account.application.SocialAccoun
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialUserProfilePort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
@@ -33,14 +33,14 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
     private final SocialAccountQueryService socialAccountQueryService;
     private final MemberAccountQueryService memberAccountQueryService;
     private final MemberAccountCommandService memberAccountCommandService;
-    private final LoadSocialUserProfilePort loadSocialUserProfilePort;
+    private final FetchSocialUserProfilePort fetchSocialUserProfilePort;
     private final IssueTokenPort tokenUtilsPort;
     private final TransactionTemplate transactionTemplate;
     private final SocialUserProfileInfoMapper socialUserProfileInfoMapper;
 
     @Override
     public PairTokenResponse execute(SocialLoginCommand socialLoginCommand) {
-        SocialUserProfileResult profile = loadSocialUserProfilePort.load(socialLoginCommand.authorizationCode());
+        SocialUserProfileResult profile = fetchSocialUserProfilePort.fetchByAuthorizationCode(socialLoginCommand.authorizationCode());
         return transactionTemplate.execute(status -> processLoginOrRegistration(profile));
     }
 

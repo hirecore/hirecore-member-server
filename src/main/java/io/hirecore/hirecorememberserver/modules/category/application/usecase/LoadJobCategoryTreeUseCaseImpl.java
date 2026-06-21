@@ -21,7 +21,7 @@ public class LoadJobCategoryTreeUseCaseImpl implements LoadJobCategoryTreeUseCas
     @Override
     @Transactional(readOnly = true)
     public List<JobCategoryResponse> execute(Integer maxDepth) {
-        return loadJobCategoryPort.loadAllWithinDepth(maxDepth).stream()
+        return loadJobCategoryPort.findAllWithinDepth(maxDepth).stream()
                 .map(jobCategoryMapper::toResponse)
                 .toList();
     }

@@ -61,14 +61,14 @@ class LoadJobCategoryHierarchiesUseCaseImplTest {
                 111L, List.of(category(1L, null, 1), category(11L, 1L, 2), category(111L, 11L, 3)),
                 222L, List.of(category(2L, null, 1), category(222L, 2L, 2))
         );
-        given(loadJobCategoryPort.loadHierarchiesByLeafIds(leafIds)).willReturn(expected);
+        given(loadJobCategoryPort.findHierarchiesByLeafIds(leafIds)).willReturn(expected);
 
         // when
         Map<Long, List<JobCategory>> result = sut.execute(leafIds);
 
         // then
         assertThat(result).isEqualTo(expected);
-        then(loadJobCategoryPort).should(only()).loadHierarchiesByLeafIds(leafIds);
+        then(loadJobCategoryPort).should(only()).findHierarchiesByLeafIds(leafIds);
     }
 
     @Test
@@ -79,6 +79,6 @@ class LoadJobCategoryHierarchiesUseCaseImplTest {
 
         // then
         assertThat(result).isEmpty();
-        then(loadJobCategoryPort).should(never()).loadHierarchiesByLeafIds(anyCollection());
+        then(loadJobCategoryPort).should(never()).findHierarchiesByLeafIds(anyCollection());
     }
 }

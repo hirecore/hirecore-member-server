@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.resume.adapter.out.persistence.
 import io.hirecore.hirecorememberserver.modules.resume.adapter.out.persistence.jpa.repository.ResumeJpaQueryRepository;
 import io.hirecore.hirecorememberserver.modules.resume.application.port.in.LoadResumeContentUseCase;
 import io.hirecore.hirecorememberserver.modules.resume.application.port.out.LoadResumeContentPort;
-import io.hirecore.hirecorememberserver.modules.resume.application.port.out.LoadResumeTitlesPort;
+import io.hirecore.hirecorememberserver.modules.resume.application.port.out.LoadResumeTitlePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ResumeJpaQueryAdapter implements
-        LoadResumeTitlesPort,
+        LoadResumeTitlePort,
         LoadResumeContentPort
 {
 
     private final ResumeJpaQueryRepository resumeJpaQueryRepository;
 
     @Override
-    public Map<Long, String> findAllTitlesByIds(Collection<Long> resumeIds) {
+    public Map<Long, String> findTitleMapByIds(Collection<Long> resumeIds) {
         if (resumeIds == null || resumeIds.isEmpty()) {
             return Map.of();
         }

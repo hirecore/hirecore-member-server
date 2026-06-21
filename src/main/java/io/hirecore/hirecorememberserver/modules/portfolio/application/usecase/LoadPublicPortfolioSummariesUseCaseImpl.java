@@ -1,16 +1,16 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPublicPortfolioSummariesUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummariesPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.cursor.EffectiveTimeCursor;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummariesPort.PublicPortfolioRow;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort.PublicPortfolioRow;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfilePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +26,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfolioSummariesUseCase {
 
-    private final LoadPublicPortfolioSummariesPort loadPublicPortfolioSummariesPort;
+    private final LoadPublicPortfolioSummaryPort loadPublicPortfolioSummaryPort;
     private final LoadJobCategoryPort loadJobCategoryPort;
-    private final LoadProfilePort loadProfilePort;
+    private final LoadProfileNicknamePort loadProfileNicknamePort;
     private final LoadImageUrlPort loadImageUrlPort;
 
     /**
@@ -50,7 +50,7 @@ public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfo
                 ? null
                 : EffectiveTimeCursor.decode(cursorToken);
 
-        List<PublicPortfolioRow> rows = loadPublicPortfolioSummariesPort
+        List<PublicPortfolioRow> rows = loadPublicPortfolioSummaryPort
                 .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(
                         cursor != null ? cursor.time() : null,
                         cursor != null ? cursor.id() : null,
@@ -61,7 +61,7 @@ public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfo
         List<PublicPortfolioRow> pageRows = hasNext ? rows.subList(0, size) : rows;
 
         Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
-                loadJobCategoryPort.loadJobCategoryHierarchies(collectLeafIds(pageRows));
+                loadJobCategoryPort.findJobCategoryHierarchies(collectLeafIds(pageRows));
 
         List<Response.Item> items = pageRows.stream()
                 .map(row -> toItem(row, hierarchiesByLeafId, viewerId))
@@ -84,7 +84,7 @@ public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfo
                 .map(h -> new SharedResponseDto.JobCategory(h.id(), h.depth(), h.categoryCode(), h.name()))
                 .toList();
 
-        String nickname = loadProfilePort.findNickname(portfolio.getMemberAccountId()).orElse(null);
+        String nickname = loadProfileNicknamePort.findNickname(portfolio.getMemberAccountId()).orElse(null);
         boolean isOwner = portfolio.getMemberAccountId().equals(viewerId);
 
         return new Response.Item(

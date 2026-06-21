@@ -6,11 +6,10 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.Lo
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfilePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
@@ -45,8 +44,7 @@ class LoadPortfolioDetailUseCaseImplTest {
     private LoadPortfolioDetailUseCaseImpl sut;
 
     @Mock private LoadPortfolioPort loadPortfolioPort;
-    @Mock private LoadPortfoliosByMemberPort loadPortfoliosByMemberPort;
-    @Mock private LoadProfilePort loadProfilePort;
+    @Mock private LoadProfileNicknamePort loadProfileNicknamePort;
     @Mock private LoadJobCategoryPort loadJobCategoryPort;
     @Mock private LoadResumeContentPort loadResumeContentPort;
     @Mock private LoadCoverLetterContentPort loadCoverLetterContentPort;
@@ -89,8 +87,8 @@ class LoadPortfolioDetailUseCaseImplTest {
     }
 
     private void stubCommonPorts() {
-        given(loadProfilePort.findNickname(OWNER_ID)).willReturn(Optional.of(NICKNAME));
-        given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+        given(loadProfileNicknamePort.findNickname(OWNER_ID)).willReturn(Optional.of(NICKNAME));
+        given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                 .willReturn(List.of(new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")));
     }
 
@@ -241,11 +239,11 @@ class LoadPortfolioDetailUseCaseImplTest {
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
-            given(loadPortfoliosByMemberPort
+            given(loadPortfolioPort
                     .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(OWNER_ID, portfolio.getId()))
                     .willReturn(List.of(other1, other2));
             // 다른 K개 포트폴리오의 직무 계층은 단일 일괄 호출로 가져온다
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(List.of(JOB_CATEGORY_ID, JOB_CATEGORY_ID)))
+            given(loadJobCategoryPort.findJobCategoryHierarchies(List.of(JOB_CATEGORY_ID, JOB_CATEGORY_ID)))
                     .willReturn(Map.of(JOB_CATEGORY_ID, List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     )));
@@ -271,7 +269,7 @@ class LoadPortfolioDetailUseCaseImplTest {
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
-            given(loadPortfoliosByMemberPort
+            given(loadPortfolioPort
                     .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(OWNER_ID, portfolio.getId()))
                     .willReturn(List.of());
 

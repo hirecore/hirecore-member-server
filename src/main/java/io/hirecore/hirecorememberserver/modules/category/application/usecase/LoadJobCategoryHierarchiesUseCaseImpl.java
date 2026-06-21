@@ -23,6 +23,6 @@ public class LoadJobCategoryHierarchiesUseCaseImpl implements LoadJobCategoryHie
         if (leafJobCategoryIds == null || leafJobCategoryIds.isEmpty()) {
             return Map.of();
         }
-        return loadJobCategoryPort.loadHierarchiesByLeafIds(leafJobCategoryIds);
+        return loadJobCategoryPort.findHierarchiesByLeafIds(leafJobCategoryIds);
     }
 }

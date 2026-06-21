@@ -6,14 +6,13 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.Lo
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberInterestPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfilePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
@@ -38,8 +37,7 @@ import java.util.stream.Stream;
 public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final LoadPortfoliosByMemberPort loadPortfoliosByMemberPort;
-    private final LoadProfilePort loadProfilePort;
+    private final LoadProfileNicknamePort loadProfileNicknamePort;
     private final LoadJobCategoryPort loadJobCategoryPort;
     private final LoadResumeContentPort loadResumeContentPort;
     private final LoadCoverLetterContentPort loadCoverLetterContentPort;
@@ -54,7 +52,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         boolean isOwner = portfolio.getMemberAccountId().equals(viewerId);
         ensureAccessible(portfolio, isOwner);
 
-        String publisherNickname = loadProfilePort.findNickname(portfolio.getMemberAccountId())
+        String publisherNickname = loadProfileNicknamePort.findNickname(portfolio.getMemberAccountId())
                 .orElseThrow(() -> new PortfolioApplicationException(
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NICKNAME_NOT_FOUND
                 ));
@@ -83,7 +81,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
      * 작품 개수 K 와 무관하게 SQL 한 번만 발행된다.</p>
      */
     private Response.Publisher buildPublisher(Portfolio portfolio, String publisherNickname) {
-        List<Portfolio> otherPublicPortfolios = loadPortfoliosByMemberPort
+        List<Portfolio> otherPublicPortfolios = loadPortfolioPort
                 .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(
                         portfolio.getMemberAccountId(),
                         portfolio.getId()
@@ -100,7 +98,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 })
                 .toList();
         Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
-                loadJobCategoryPort.loadJobCategoryHierarchies(otherLeafIds);
+                loadJobCategoryPort.findJobCategoryHierarchies(otherLeafIds);
 
         List<Response.Publisher.OtherPortfolioSummary> otherPortfolios = otherPublicPortfolios.stream()
                 .map(other -> toOtherPortfolioSummary(other, hierarchiesByLeafId))
@@ -260,7 +258,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 PortfolioApplicationException::new
         );
 
-        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
+        return loadJobCategoryPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
                 .stream()
                 .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),

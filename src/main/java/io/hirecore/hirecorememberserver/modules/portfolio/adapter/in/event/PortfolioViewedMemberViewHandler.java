@@ -36,7 +36,7 @@ public class PortfolioViewedMemberViewHandler {
         try {
             PortfolioMemberView view = PortfolioMemberView.create(event.viewerMemberAccountId());
             savePortfolioMemberViewPort.save(event.portfolioId(), view);
-            incrementPortfolioViewCountPort.incrementById(event.portfolioId());
+            incrementPortfolioViewCountPort.incrementViewCountById(event.portfolioId());
         } catch (DataIntegrityViolationException e) {
             log.debug(
                     "PortfolioMemberView UNIQUE 충돌 — 동시 요청으로 이미 기록됨, 스킵: portfolioId={}, viewerId={}",

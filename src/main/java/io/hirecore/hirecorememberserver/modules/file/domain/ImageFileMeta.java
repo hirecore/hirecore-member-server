@@ -151,32 +151,38 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
                 .build();
     }
 
-    public void updateUploadStatus(UploadStatus uploadStatus) {
-        AssertionUtils.notNull(
-                uploadStatus,
-                ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.UPLOAD_STATUS_MISSING,
-                ImageFileMetaDomainException::new
-        );
-
-        if (uploadStatus == UploadStatus.UPLOADED && this.uploadStatus != UploadStatus.PENDING) {
+    /**
+     * 본 이미지를 UPLOADED 로 전이합니다 (업로드 확정).
+     *
+     * <p>PENDING 에서만 UPLOADED 로 전이할 수 있습니다. 이미 UPLOADED 인 경우 멱등 처리되며
+     * (no-op, 이벤트도 재발행하지 않음), 그 외 상태(ORPHANED, DELETED)에서 호출되면
+     * {@link ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse#INVALID_UPLOAD_STATUS_TRANSITION}
+     * 예외가 발생합니다.</p>
+     *
+     * <p>전이 직후 {@link ImageUploadedEvent} 가 등록되어, 사용자 스토리지 사용량 적재 등
+     * 후속 BC 핸들러가 부수효과를 처리할 수 있게 합니다.</p>
+     */
+    public void markUploaded() {
+        if (this.uploadStatus == UploadStatus.UPLOADED) {
+            return;
+        }
+        if (this.uploadStatus != UploadStatus.PENDING) {
             throw new ImageFileMetaDomainException(
                     ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse.INVALID_UPLOAD_STATUS_TRANSITION
             );
         }
 
-        this.uploadStatus = uploadStatus;
+        this.uploadStatus = UploadStatus.UPLOADED;
         this.completedUploadAt = Instant.now();
 
-        if (uploadStatus == UploadStatus.UPLOADED) {
-            registerEvent(new ImageUploadedEvent(
-                    this.id,
-                    this.memberAccountId,
-                    this.domainType,
-                    this.purpose,
-                    this.fileSizeBytes,
-                    this.completedUploadAt
-            ));
-        }
+        registerEvent(new ImageUploadedEvent(
+                this.id,
+                this.memberAccountId,
+                this.domainType,
+                this.purpose,
+                this.fileSizeBytes,
+                this.completedUploadAt
+        ));
     }
 
     /**

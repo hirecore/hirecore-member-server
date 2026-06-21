@@ -7,7 +7,6 @@ import io.hirecore.hirecorememberserver.modules.file.adapter.out.persistence.jpa
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.UpdateImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
-import io.hirecore.hirecorememberserver.modules.file.domain.vo.UploadStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +59,7 @@ public class ImageFileMetaJpaCommandAdapter implements
                 continue;
             }
 
-            entity.updateUploadStatus(UploadStatus.UPLOADED, domain.getCompletedUploadAt());
+            entity.markUploaded(domain.getCompletedUploadAt());
 
             Collection<Object> domainEvents = domain.pollAllEvents();
             if (domainEvents != null && !domainEvents.isEmpty()) {

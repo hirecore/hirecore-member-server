@@ -84,7 +84,7 @@ class JobCategoryJpaQueryAdapterTest {
     }
 
     @Nested
-    @DisplayName("loadAllWithinDepth")
+    @DisplayName("findAllWithinDepth")
     class LoadAllWithinDepthTest {
 
         @Test
@@ -97,7 +97,7 @@ class JobCategoryJpaQueryAdapterTest {
             flushAndClear();
 
             // when
-            List<JobCategory> result = adapter.loadAllWithinDepth(2);
+            List<JobCategory> result = adapter.findAllWithinDepth(2);
 
             // then
             assertThat(result).extracting(JobCategory::getId)
@@ -113,7 +113,7 @@ class JobCategoryJpaQueryAdapterTest {
             flushAndClear();
 
             // when
-            List<JobCategory> result = adapter.loadAllWithinDepth(3);
+            List<JobCategory> result = adapter.findAllWithinDepth(3);
 
             // then
             assertThat(result).extracting(JobCategory::getId)
@@ -133,7 +133,7 @@ class JobCategoryJpaQueryAdapterTest {
             flushAndClear();
 
             // when
-            List<JobCategory> result = adapter.loadAllWithinDepth(3);
+            List<JobCategory> result = adapter.findAllWithinDepth(3);
 
             // then: depth1 (sortOrder asc) → depth2 (parentId asc, 그 안에서 sortOrder asc)
             assertThat(result).extracting(JobCategory::getId)
@@ -151,7 +151,7 @@ class JobCategoryJpaQueryAdapterTest {
         @DisplayName("저장된 카테고리가 없으면 빈 리스트를 반환한다")
         void should_return_empty_list_when_no_categories() {
             // when
-            List<JobCategory> result = adapter.loadAllWithinDepth(3);
+            List<JobCategory> result = adapter.findAllWithinDepth(3);
 
             // then
             assertThat(result).isEmpty();
@@ -159,7 +159,7 @@ class JobCategoryJpaQueryAdapterTest {
     }
 
     @Nested
-    @DisplayName("loadHierarchyByLeafId — Recursive CTE")
+    @DisplayName("findHierarchyByLeafId — Recursive CTE")
     class LoadHierarchyByLeafIdTest {
 
         private Statistics statistics;
@@ -180,7 +180,7 @@ class JobCategoryJpaQueryAdapterTest {
             flushAndClear();
 
             // when
-            List<JobCategory> result = adapter.loadHierarchyByLeafId(111L);
+            List<JobCategory> result = adapter.findHierarchyByLeafId(111L);
 
             // then
             assertThat(result).extracting(JobCategory::getId).containsExactly(1L, 11L, 111L);
@@ -190,7 +190,7 @@ class JobCategoryJpaQueryAdapterTest {
         @DisplayName("leaf 가 존재하지 않으면 빈 리스트를 반환한다")
         void should_return_empty_when_leaf_missing() {
             // when
-            List<JobCategory> result = adapter.loadHierarchyByLeafId(9999L);
+            List<JobCategory> result = adapter.findHierarchyByLeafId(9999L);
 
             // then
             assertThat(result).isEmpty();
@@ -208,7 +208,7 @@ class JobCategoryJpaQueryAdapterTest {
             statistics.clear(); // setup INSERT 카운트 제외
 
             // when
-            List<JobCategory> result = adapter.loadHierarchyByLeafId(1111L);
+            List<JobCategory> result = adapter.findHierarchyByLeafId(1111L);
 
             // then
             assertThat(result).hasSize(4);
@@ -226,7 +226,7 @@ class JobCategoryJpaQueryAdapterTest {
             statistics.clear();
 
             // when
-            List<JobCategory> result = adapter.loadHierarchyByLeafId(1L);
+            List<JobCategory> result = adapter.findHierarchyByLeafId(1L);
 
             // then
             assertThat(result).extracting(JobCategory::getId).containsExactly(1L);
@@ -235,7 +235,7 @@ class JobCategoryJpaQueryAdapterTest {
     }
 
     @Nested
-    @DisplayName("loadHierarchiesByLeafIds — 다중 leaf Recursive CTE")
+    @DisplayName("findHierarchiesByLeafIds — 다중 leaf Recursive CTE")
     class LoadHierarchiesByLeafIdsTest {
 
         private Statistics statistics;
@@ -259,7 +259,7 @@ class JobCategoryJpaQueryAdapterTest {
             statistics.clear();
 
             // when
-            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of(111L, 22L));
+            Map<Long, List<JobCategory>> result = adapter.findHierarchiesByLeafIds(List.of(111L, 22L));
 
             // then
             assertThat(result).containsOnlyKeys(111L, 22L);
@@ -284,7 +284,7 @@ class JobCategoryJpaQueryAdapterTest {
             statistics.clear();
 
             // when - K=5
-            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of(10L, 20L, 30L, 40L, 50L));
+            Map<Long, List<JobCategory>> result = adapter.findHierarchiesByLeafIds(List.of(10L, 20L, 30L, 40L, 50L));
 
             // then
             assertThat(result).hasSize(5);
@@ -301,7 +301,7 @@ class JobCategoryJpaQueryAdapterTest {
             statistics.clear();
 
             // when - 11L 은 존재, 9999L 은 없음
-            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of(11L, 9999L));
+            Map<Long, List<JobCategory>> result = adapter.findHierarchiesByLeafIds(List.of(11L, 9999L));
 
             // then
             assertThat(result).containsOnlyKeys(11L);
@@ -312,7 +312,7 @@ class JobCategoryJpaQueryAdapterTest {
         @DisplayName("입력이 비어 있으면 SQL 을 발행하지 않고 빈 Map 을 반환한다")
         void should_not_emit_sql_when_input_is_empty() {
             // when
-            Map<Long, List<JobCategory>> result = adapter.loadHierarchiesByLeafIds(List.of());
+            Map<Long, List<JobCategory>> result = adapter.findHierarchiesByLeafIds(List.of());
 
             // then
             assertThat(result).isEmpty();

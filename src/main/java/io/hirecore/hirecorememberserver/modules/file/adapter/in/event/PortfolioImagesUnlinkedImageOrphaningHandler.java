@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.event;
 
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.MarkImagesAsOrphanedUseCase;
+import io.hirecore.hirecorememberserver.modules.file.application.port.in.MarkImageFileMetasAsOrphanedUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.PortfolioImagesUnlinkedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,10 +20,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class PortfolioImagesUnlinkedImageOrphaningHandler {
 
-    private final MarkImagesAsOrphanedUseCase markImagesAsOrphanedUseCase;
+    private final MarkImageFileMetasAsOrphanedUseCase markImageFileMetasAsOrphanedUseCase;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void on(PortfolioImagesUnlinkedEvent event) {
-        markImagesAsOrphanedUseCase.execute(event.memberAccountId(), event.imageFileMetaIds());
+        markImageFileMetasAsOrphanedUseCase.execute(event.memberAccountId(), event.imageFileMetaIds());
     }
 }

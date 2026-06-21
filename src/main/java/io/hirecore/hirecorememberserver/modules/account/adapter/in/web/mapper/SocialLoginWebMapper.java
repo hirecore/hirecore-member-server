@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper;
 
-import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.request.SocialLoginApiRequest;
+import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.SocialLoginApi;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,5 +12,5 @@ public abstract class SocialLoginWebMapper {
             @Mapping(target = "provider", source = "provider"),
             @Mapping(target = "authorizationCode", source = "socialLoginApiRequest.authorizationCode")
     })
-    public abstract SocialLoginCommand toSocialLoginCommand(String provider, SocialLoginApiRequest socialLoginApiRequest);
+    public abstract SocialLoginCommand toSocialLoginCommand(String provider, SocialLoginApi.Request socialLoginApiRequest);
 }

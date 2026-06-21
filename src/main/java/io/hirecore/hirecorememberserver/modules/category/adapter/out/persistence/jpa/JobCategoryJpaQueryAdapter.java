@@ -24,33 +24,33 @@ public class JobCategoryJpaQueryAdapter implements LoadJobCategoryPort {
 
 
     @Override
-    public List<JobCategory> loadAllWithinDepth(Integer depth) {
-        return jobCategoryJpaQueryRepository.loadAllWithinDepth(depth).stream()
+    public List<JobCategory> findAllWithinDepth(Integer depth) {
+        return jobCategoryJpaQueryRepository.findAllWithinDepth(depth).stream()
                 .map(jobCategoryJpaEntityMapper::toDomain)
                 .toList();
     }
 
     @Override
-    public Optional<JobCategory> loadByCategoryCode(String categoryCode) {
+    public Optional<JobCategory> findByCategoryCode(String categoryCode) {
         return jobCategoryJpaQueryRepository.findActiveByCategoryCode(categoryCode)
                 .map(jobCategoryJpaEntityMapper::toDomain);
     }
 
     @Override
-    public Optional<JobCategory> loadById(Long id) {
+    public Optional<JobCategory> findById(Long id) {
         return jobCategoryJpaQueryRepository.findById(id)
                 .map(jobCategoryJpaEntityMapper::toDomain);
     }
 
     @Override
-    public List<JobCategory> loadHierarchyByLeafId(Long leafJobCategoryId) {
+    public List<JobCategory> findHierarchyByLeafId(Long leafJobCategoryId) {
         return jobCategoryJpaQueryRepository.findHierarchyPathByLeafId(leafJobCategoryId).stream()
                 .map(jobCategoryJpaEntityMapper::toDomain)
                 .toList();
     }
 
     @Override
-    public Map<Long, List<JobCategory>> loadHierarchiesByLeafIds(Collection<Long> leafJobCategoryIds) {
+    public Map<Long, List<JobCategory>> findHierarchiesByLeafIds(Collection<Long> leafJobCategoryIds) {
         if (leafJobCategoryIds == null || leafJobCategoryIds.isEmpty()) {
             return Map.of();
         }

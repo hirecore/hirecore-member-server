@@ -18,7 +18,7 @@ public class LoadJobCategoryIdByCodeUseCaseImpl implements LoadJobCategoryIdByCo
     @Override
     @Transactional(readOnly = true)
     public Long execute(String categoryCode) {
-        return loadJobCategoryPort.loadByCategoryCode(categoryCode)
+        return loadJobCategoryPort.findByCategoryCode(categoryCode)
                 .map(JobCategory::getId)
                 .orElseThrow(() -> new CategoryApplicationException(
                         CategoryApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_CODE_NOT_FOUND

@@ -90,7 +90,7 @@ class ImageFileMetaJpaCommandAdapterTest {
             sut.markAllAsUploaded(List.of(domain));
 
             // then
-            then(entity).should().updateUploadStatus(UploadStatus.UPLOADED, domainCompletedUploadAt);
+            then(entity).should().markUploaded(domainCompletedUploadAt);
             then(imageFileMetaJpaCommandRepository).should().save(entity);
         }
 

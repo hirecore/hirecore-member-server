@@ -8,5 +8,5 @@ package io.hirecore.hirecorememberserver.sharedkernel.application.port.out;
  * ({@code Optional<UserStorageUsage>} 반환)를 사용합니다.</p>
  */
 public interface LoadUserUsedQuotaPort {
-    Long getUsedQuotaBytes(Long memberAccountId);
+    Long findUsedQuotaBytes(Long memberAccountId);
 }

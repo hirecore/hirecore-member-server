@@ -1,12 +1,12 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlesPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitlesPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitlePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -38,13 +38,13 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
     private LoadMyPortfolioSummariesUseCaseImpl sut;
 
     @Mock
-    private LoadPortfoliosByMemberPort loadPortfoliosByMemberPort;
+    private LoadPortfolioPort loadPortfolioPort;
 
     @Mock
-    private LoadResumeTitlesPort loadResumeTitlesPort;
+    private LoadResumeTitlePort loadResumeTitlePort;
 
     @Mock
-    private LoadCoverLetterTitlesPort loadCoverLetterTitlesPort;
+    private LoadCoverLetterTitlePort loadCoverLetterTitlePort;
 
     @Mock
     private LoadJobCategoryPort loadJobCategoryPort;
@@ -88,7 +88,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
         @DisplayName("보유 포트폴리오가 없으면 빈 items 를 반환하고 외부 조회를 호출하지 않는다")
         void should_return_empty_when_no_portfolios() {
             // given
-            given(loadPortfoliosByMemberPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
+            given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of());
 
             // when
@@ -96,9 +96,9 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
             // then
             assertThat(response.items()).isEmpty();
-            then(loadResumeTitlesPort).should(never()).findAllTitlesByIds(any());
-            then(loadCoverLetterTitlesPort).should(never()).findAllTitlesByIds(any());
-            then(loadJobCategoryPort).should(never()).loadJobCategoryHierarchy(anyLong());
+            then(loadResumeTitlePort).should(never()).findTitleMapByIds(any());
+            then(loadCoverLetterTitlePort).should(never()).findTitleMapByIds(any());
+            then(loadJobCategoryPort).should(never()).findJobCategoryHierarchy(anyLong());
             then(loadImageUrlPort).should(never()).findUrlById(anyLong());
         }
 
@@ -111,13 +111,13 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             Long thumbnailImageId = 5100L;
             Portfolio loaded = portfolioOf(thumbnailImageId, resumeId, coverLetterId);
 
-            given(loadPortfoliosByMemberPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
+            given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(loaded));
-            given(loadResumeTitlesPort.findAllTitlesByIds(Set.of(resumeId)))
+            given(loadResumeTitlePort.findTitleMapByIds(Set.of(resumeId)))
                     .willReturn(Map.of(resumeId, "백엔드 신입 이력서"));
-            given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of(coverLetterId)))
+            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of(coverLetterId)))
                     .willReturn(Map.of(coverLetterId, "B사 지원용 자소서"));
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(1001L, 1L, "DEV", "개발"),
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
@@ -148,11 +148,11 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             // given
             Portfolio loaded = portfolioOf(null, null, null);
 
-            given(loadPortfoliosByMemberPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
+            given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(loaded));
-            given(loadResumeTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
-            given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadResumeTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
+            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
+            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
@@ -175,11 +175,11 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             Long resumeId = 7100L;
             Portfolio loaded = portfolioOf(null, resumeId, null);
 
-            given(loadPortfoliosByMemberPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
+            given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(loaded));
-            given(loadResumeTitlesPort.findAllTitlesByIds(Set.of(resumeId))).willReturn(Map.of());
-            given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadResumeTitlePort.findTitleMapByIds(Set.of(resumeId))).willReturn(Map.of());
+            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
+            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
@@ -201,18 +201,18 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             Portfolio second = portfolioOf(null, sharedResumeId, null);
             Portfolio third = portfolioOf(null, otherResumeId, null);
 
-            given(loadPortfoliosByMemberPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
+            given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(first, second, third));
-            given(loadJobCategoryPort.loadJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
-            given(loadResumeTitlesPort.findAllTitlesByIds(Set.of(sharedResumeId, otherResumeId)))
+            given(loadResumeTitlePort.findTitleMapByIds(Set.of(sharedResumeId, otherResumeId)))
                     .willReturn(Map.of(
                             sharedResumeId, "공통 이력서",
                             otherResumeId, "다른 이력서"
                     ));
-            given(loadCoverLetterTitlesPort.findAllTitlesByIds(Set.of())).willReturn(Map.of());
+            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
 
             // when
             LoadMyPortfolioSummariesUseCase.Response response = sut.execute(VIEWER_ID);

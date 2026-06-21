@@ -11,6 +11,6 @@ public class LoadUserMembershipEntitlementService {
     private final LoadUserMembershipEntitlementPort loadUserMembershipEntitlement;
 
     public Long loadStorageQuotaBytesSnapshot(Long memberAccountId){
-        return loadUserMembershipEntitlement.getStorageQuotaBytesSnapshot(memberAccountId);
+        return loadUserMembershipEntitlement.findStorageQuotaBytesSnapshot(memberAccountId);
     }
 }

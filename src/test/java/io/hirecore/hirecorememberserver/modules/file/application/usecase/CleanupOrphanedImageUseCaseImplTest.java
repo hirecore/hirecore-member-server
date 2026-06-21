@@ -74,7 +74,7 @@ class CleanupOrphanedImageUseCaseImplTest {
                 100,
                 100
         );
-        meta.updateUploadStatus(UploadStatus.UPLOADED);
+        meta.markUploaded();
         meta.markOrphaned();
         meta.pollAllEvents();
         return meta;

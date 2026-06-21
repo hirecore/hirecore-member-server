@@ -54,7 +54,7 @@ class LoadJobCategoryIdByCodeUseCaseImplTest {
         @DisplayName("코드에 매칭되는 카테고리가 존재하면 해당 ID를 반환한다")
         void should_return_id_when_category_exists() {
             // given
-            given(loadJobCategoryPort.loadByCategoryCode("DEV_BACKEND"))
+            given(loadJobCategoryPort.findByCategoryCode("DEV_BACKEND"))
                     .willReturn(Optional.of(category(42L, "DEV_BACKEND")));
 
             // when
@@ -62,7 +62,7 @@ class LoadJobCategoryIdByCodeUseCaseImplTest {
 
             // then
             assertThat(result).isEqualTo(42L);
-            then(loadJobCategoryPort).should().loadByCategoryCode("DEV_BACKEND");
+            then(loadJobCategoryPort).should().findByCategoryCode("DEV_BACKEND");
         }
     }
 
@@ -74,7 +74,7 @@ class LoadJobCategoryIdByCodeUseCaseImplTest {
         @DisplayName("코드에 매칭되는 카테고리가 없으면 JOB_CATEGORY_CODE_NOT_FOUND 예외가 발생한다")
         void should_throw_when_category_not_found() {
             // given
-            given(loadJobCategoryPort.loadByCategoryCode("UNKNOWN")).willReturn(Optional.empty());
+            given(loadJobCategoryPort.findByCategoryCode("UNKNOWN")).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> sut.execute("UNKNOWN"))

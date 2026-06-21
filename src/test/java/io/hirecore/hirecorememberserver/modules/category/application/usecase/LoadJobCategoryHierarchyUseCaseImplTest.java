@@ -60,7 +60,7 @@ class LoadJobCategoryHierarchyUseCaseImplTest {
         JobCategory root = category(1L, null, 1);
         JobCategory mid = category(11L, 1L, 2);
         JobCategory leaf = category(111L, 11L, 3);
-        given(loadJobCategoryPort.loadHierarchyByLeafId(111L))
+        given(loadJobCategoryPort.findHierarchyByLeafId(111L))
                 .willReturn(List.of(root, mid, leaf));
 
         // when
@@ -68,14 +68,14 @@ class LoadJobCategoryHierarchyUseCaseImplTest {
 
         // then
         assertThat(result).containsExactly(root, mid, leaf);
-        then(loadJobCategoryPort).should(only()).loadHierarchyByLeafId(111L);
+        then(loadJobCategoryPort).should(only()).findHierarchyByLeafId(111L);
     }
 
     @Test
     @DisplayName("포트가 빈 리스트를 반환하면 JOB_CATEGORY_NOT_FOUND 예외를 던진다")
     void should_throw_not_found_when_port_returns_empty() {
         // given - 존재하지 않는 leaf
-        given(loadJobCategoryPort.loadHierarchyByLeafId(999L)).willReturn(List.of());
+        given(loadJobCategoryPort.findHierarchyByLeafId(999L)).willReturn(List.of());
 
         // when & then
         assertThatThrownBy(() -> sut.execute(999L))

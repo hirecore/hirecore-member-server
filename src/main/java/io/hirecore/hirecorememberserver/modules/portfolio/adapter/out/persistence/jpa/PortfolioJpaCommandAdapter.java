@@ -49,7 +49,7 @@ public class PortfolioJpaCommandAdapter implements
     }
 
     @Override
-    public void incrementById(Long portfolioId) {
+    public void incrementViewCountById(Long portfolioId) {
         portfolioRepository.incrementCachedViewCountById(portfolioId);
     }
 

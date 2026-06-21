@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.event;
 
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.MarkImagesAsOrphanedUseCase;
+import io.hirecore.hirecorememberserver.modules.file.application.port.in.MarkImageFileMetasAsOrphanedUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.PortfolioImagesUnlinkedEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class PortfolioImagesUnlinkedImageOrphaningHandlerTest {
     private PortfolioImagesUnlinkedImageOrphaningHandler handler;
 
     @Mock
-    private MarkImagesAsOrphanedUseCase markImagesAsOrphanedUseCase;
+    private MarkImageFileMetasAsOrphanedUseCase markImageFileMetasAsOrphanedUseCase;
 
     @Test
     @DisplayName("이벤트의 memberAccountId 와 imageFileMetaIds 가 그대로 UseCase 로 위임된다")
@@ -37,7 +37,7 @@ class PortfolioImagesUnlinkedImageOrphaningHandlerTest {
         handler.on(event);
 
         // then
-        then(markImagesAsOrphanedUseCase).should()
+        then(markImageFileMetasAsOrphanedUseCase).should()
                 .execute(1L, List.of(100L, 200L, 300L));
     }
 }

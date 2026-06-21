@@ -18,7 +18,7 @@ public interface JobCategoryJpaQueryRepository extends Repository<JobCategoryJpa
               AND jc.isActive = true
             ORDER BY jc.depth, jc.parentId, jc.sortOrder
             """)
-    List<JobCategoryJpaEntity> loadAllWithinDepth(@Param("depth") Integer depth);
+    List<JobCategoryJpaEntity> findAllWithinDepth(@Param("depth") Integer depth);
 
     @Query("""
             SELECT jc FROM JobCategoryJpaEntity jc

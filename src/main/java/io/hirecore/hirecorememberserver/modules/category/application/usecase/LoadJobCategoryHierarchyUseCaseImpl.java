@@ -20,7 +20,7 @@ public class LoadJobCategoryHierarchyUseCaseImpl implements LoadJobCategoryHiera
     @Override
     @Transactional(readOnly = true)
     public List<JobCategory> execute(Long leafJobCategoryId) {
-        List<JobCategory> hierarchy = loadJobCategoryPort.loadHierarchyByLeafId(leafJobCategoryId);
+        List<JobCategory> hierarchy = loadJobCategoryPort.findHierarchyByLeafId(leafJobCategoryId);
         if (hierarchy.isEmpty()) {
             throw new CategoryApplicationException(
                     CategoryApplicationExceptionCodeCluster.DetailResponse.JOB_CATEGORY_NOT_FOUND

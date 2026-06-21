@@ -1,15 +1,15 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfoliosByMemberPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlesPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitlesPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitlePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +24,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSummariesUseCase {
 
-    private final LoadPortfoliosByMemberPort loadPortfoliosByMemberPort;
-    private final LoadResumeTitlesPort loadResumeTitlesPort;
-    private final LoadCoverLetterTitlesPort loadCoverLetterTitlesPort;
+    private final LoadPortfolioPort loadPortfolioPort;
+    private final LoadResumeTitlePort loadResumeTitlePort;
+    private final LoadCoverLetterTitlePort loadCoverLetterTitlePort;
     private final LoadJobCategoryPort loadJobCategoryPort;
     private final LoadImageUrlPort loadImageUrlPort;
 
@@ -39,16 +39,16 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
     @Override
     @Transactional(readOnly = true)
     public Response execute(Long viewerId) {
-        List<Portfolio> portfolios = loadPortfoliosByMemberPort
+        List<Portfolio> portfolios = loadPortfolioPort
                 .findAllByMemberAccountIdOrderByUpdatedAtDesc(viewerId);
         if (portfolios.isEmpty()) {
             return new Response(List.of());
         }
 
-        Map<Long, String> resumeTitles = loadResumeTitlesPort
-                .findAllTitlesByIds(collectIds(portfolios, Portfolio::getResumeId));
-        Map<Long, String> coverLetterTitles = loadCoverLetterTitlesPort
-                .findAllTitlesByIds(collectIds(portfolios, Portfolio::getCoverLetterId));
+        Map<Long, String> resumeTitles = loadResumeTitlePort
+                .findTitleMapByIds(collectIds(portfolios, Portfolio::getResumeId));
+        Map<Long, String> coverLetterTitles = loadCoverLetterTitlePort
+                .findTitleMapByIds(collectIds(portfolios, Portfolio::getCoverLetterId));
 
         List<Response.Item> items = portfolios.stream()
                 .map(p -> toItem(p, resumeTitles, coverLetterTitles))
@@ -136,7 +136,7 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
         if (portfolioJobCategory == null) {
             return List.of();
         }
-        return loadJobCategoryPort.loadJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
+        return loadJobCategoryPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
                 .stream()
                 .filter(Objects::nonNull)
                 .map(hierarchy -> new SharedResponseDto.JobCategory(

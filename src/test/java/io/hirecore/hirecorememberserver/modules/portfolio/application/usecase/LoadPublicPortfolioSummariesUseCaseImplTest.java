@@ -1,15 +1,15 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPublicPortfolioSummariesUseCase;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummariesPort;
-import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummariesPort.PublicPortfolioRow;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort.PublicPortfolioRow;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.cursor.EffectiveTimeCursor;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.SharedKernelApplicationException;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.SharedKernelApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfilePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -46,13 +46,13 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
     private LoadPublicPortfolioSummariesUseCaseImpl sut;
 
     @Mock
-    private LoadPublicPortfolioSummariesPort loadPublicPortfolioSummariesPort;
+    private LoadPublicPortfolioSummaryPort loadPublicPortfolioSummaryPort;
 
     @Mock
     private LoadJobCategoryPort loadJobCategoryPort;
 
     @Mock
-    private LoadProfilePort loadProfilePort;
+    private LoadProfileNicknamePort loadProfileNicknamePort;
 
     @Mock
     private LoadImageUrlPort loadImageUrlPort;
@@ -92,7 +92,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
         @DisplayName("첫 페이지 요청 시 port 에 cursor 인자를 null 로 전달한다 (size + 1 limit 으로 hasNext 판정)")
         void should_call_port_with_null_cursor_on_first_page() {
             // given
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of());
 
@@ -103,7 +103,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             ArgumentCaptor<Instant> cursorEffectiveCaptor = ArgumentCaptor.forClass(Instant.class);
             ArgumentCaptor<Long> cursorIdCaptor = ArgumentCaptor.forClass(Long.class);
             ArgumentCaptor<Integer> limitCaptor = ArgumentCaptor.forClass(Integer.class);
-            then(loadPublicPortfolioSummariesPort).should()
+            then(loadPublicPortfolioSummaryPort).should()
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(
                             cursorEffectiveCaptor.capture(),
                             cursorIdCaptor.capture(),
@@ -118,7 +118,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
         @DisplayName("결과가 비어있으면 hasNext=false, nextCursor=null 로 응답한다 (외부 BC 조회 호출 없음)")
         void should_return_empty_when_no_rows() {
             // given
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of());
 
@@ -129,7 +129,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             assertThat(response.items()).isEmpty();
             assertThat(response.pagination().hasNext()).isFalse();
             assertThat(response.pagination().nextCursor()).isNull();
-            then(loadProfilePort).should(never()).findNickname(anyLong());
+            then(loadProfileNicknamePort).should(never()).findNickname(anyLong());
             then(loadImageUrlPort).should(never()).findUrlById(anyLong());
         }
 
@@ -138,12 +138,12 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
         void should_set_has_next_false_when_rows_le_size() {
             // given
             Portfolio p1 = portfolioOf(101L, null);
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(p1, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any()))
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any()))
                     .willReturn(Map.of());
-            given(loadProfilePort.findNickname(101L)).willReturn(Optional.of("euncheol"));
+            given(loadProfileNicknamePort.findNickname(101L)).willReturn(Optional.of("euncheol"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -165,15 +165,15 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             Portfolio p1 = portfolioOf(101L, null);
             Portfolio p2 = portfolioOf(102L, null);
             Portfolio p3 = portfolioOf(103L, null); // size + 1번째 — 응답에서 제외돼야 함
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), eq(size + 1)))
                     .willReturn(List.of(
                             rowOf(p1, effective1),
                             rowOf(p2, effective2),
                             rowOf(p3, effective3Discarded)
                     ));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfilePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, size, null);
@@ -206,7 +206,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             Long cursorPortfolioId = 5555L;
             String token = new EffectiveTimeCursor(cursorEffective, cursorPortfolioId).encode();
 
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of());
 
@@ -216,7 +216,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             // then
             ArgumentCaptor<Instant> effectiveCaptor = ArgumentCaptor.forClass(Instant.class);
             ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
-            then(loadPublicPortfolioSummariesPort).should()
+            then(loadPublicPortfolioSummaryPort).should()
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(
                             effectiveCaptor.capture(),
                             idCaptor.capture(),
@@ -230,7 +230,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
         @DisplayName("빈 문자열 커서는 첫 페이지로 간주된다 (null 과 동일)")
         void should_treat_blank_cursor_as_first_page() {
             // given
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of());
 
@@ -239,7 +239,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
 
             // then
             ArgumentCaptor<Instant> effectiveCaptor = ArgumentCaptor.forClass(Instant.class);
-            then(loadPublicPortfolioSummariesPort).should()
+            then(loadPublicPortfolioSummaryPort).should()
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(
                             effectiveCaptor.capture(),
                             any(),
@@ -274,11 +274,11 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             // given
             Portfolio portfolio = portfolioOf(101L, null);
             Instant effectiveFromPort = Instant.parse("2026-06-15T10:00:00Z");
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(portfolio, effectiveFromPort)));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfilePort.findNickname(anyLong())).willReturn(Optional.of("euncheol"));
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("euncheol"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -292,11 +292,11 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
         void should_set_thumbnail_null_when_not_attached() {
             // given
             Portfolio noThumbnail = portfolioOf(101L, null);
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(noThumbnail, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfilePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -312,11 +312,11 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             // given
             Long thumbnailImageId = 7777L;
             Portfolio withThumbnail = portfolioOf(101L, thumbnailImageId);
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(withThumbnail, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfilePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
             given(loadImageUrlPort.findUrlById(thumbnailImageId)).willReturn(Optional.empty());
 
             // when
@@ -333,11 +333,11 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
         void should_set_nickname_null_when_lookup_fails() {
             // given
             Portfolio portfolio = portfolioOf(101L, null);
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(portfolio, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfilePort.findNickname(101L)).willReturn(Optional.empty());
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknamePort.findNickname(101L)).willReturn(Optional.empty());
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -353,14 +353,14 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             Long viewerId = 101L;
             Portfolio mine = portfolioOf(viewerId, null);     // 작성자 == viewer
             Portfolio others = portfolioOf(202L, null);       // 작성자 != viewer
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(
                             rowOf(mine, Instant.parse("2026-06-10T15:00:00Z")),
                             rowOf(others, Instant.parse("2026-06-10T14:00:00Z"))
                     ));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfilePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, viewerId);
@@ -376,11 +376,11 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
         void should_return_is_owner_false_when_not_logged_in() {
             // given
             Portfolio anyPortfolio = portfolioOf(101L, null);
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(anyPortfolio, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfilePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -395,25 +395,25 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             // given
             Portfolio p1 = portfolioOf(101L, null);
             Portfolio p2 = portfolioOf(102L, null);
-            given(loadPublicPortfolioSummariesPort
+            given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(
                             rowOf(p1, Instant.parse("2026-06-10T15:00:00Z")),
                             rowOf(p2, Instant.parse("2026-06-10T14:00:00Z"))
                     ));
-            given(loadJobCategoryPort.loadJobCategoryHierarchies(any()))
+            given(loadJobCategoryPort.findJobCategoryHierarchies(any()))
                     .willReturn(Map.of(JOB_CATEGORY_ID, List.of(
                             new PortfolioJobCategoryHierarchyResult(1001L, 1L, "DEV", "개발"),
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
                     )));
-            given(loadProfilePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
 
             // then — 단일 호출로 끝남
-            then(loadJobCategoryPort).should().loadJobCategoryHierarchies(any());
-            then(loadJobCategoryPort).should(never()).loadJobCategoryHierarchy(anyLong());
+            then(loadJobCategoryPort).should().findJobCategoryHierarchies(any());
+            then(loadJobCategoryPort).should(never()).findJobCategoryHierarchy(anyLong());
             assertThat(response.items()).allSatisfy(item ->
                     assertThat(item.jobCategories())
                             .extracting("categoryCode")

@@ -12,7 +12,7 @@ public class UserMembershipEntitlementJpaQueryAdapter implements LoadUserMembers
     private final UserMembershipEntitlementJpaQueryRepository userMembershipEntitlementJpaQueryRepository;
 
     @Override
-    public Long getStorageQuotaBytesSnapshot(Long memberAccountId) {
+    public Long findStorageQuotaBytesSnapshot(Long memberAccountId) {
         // todo: 차후에 수정해야할듯
         Long tempSize = 40L * (1024 * 1024);
 

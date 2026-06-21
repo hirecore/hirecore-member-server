@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPr
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.ImagesPresignedPutUrlApi;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.ImagePresignedPutUrlApi;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlWebMapper;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.GenerateUserPresignedPutUrlUseCase;
+import io.hirecore.hirecorememberserver.modules.file.application.port.in.IssueImageUploadUrlUseCase;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.request.ImagePresignedPutUrlCommand;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ import java.util.List;
 public class UserFileCommandController {
 
     private final ImagePresignedPutUrlWebMapper imagePresignedPutUrlWebMapper;
-    private final GenerateUserPresignedPutUrlUseCase generateUserPresignedPutUrlUseCase;
+    private final IssueImageUploadUrlUseCase issueImageUploadUrlUseCase;
 
     @PostMapping("/images/presigned-put-url")
     public ResponseEntity<ImagesPresignedPutUrlApi.Response> postImagesPresignedPutUrl(
@@ -32,7 +32,7 @@ public class UserFileCommandController {
             @Valid @RequestBody ImagesPresignedPutUrlApi.Request request
     ) {
         List<ImagePresignedPutUrlCommand> commandList = imagePresignedPutUrlWebMapper.toCommandList(request.files());
-        List<ImagePresignedPutUrlResponse> applicationResponseList = generateUserPresignedPutUrlUseCase.execute(authPrincipal.id(), commandList);
+        List<ImagePresignedPutUrlResponse> applicationResponseList = issueImageUploadUrlUseCase.execute(authPrincipal.id(), commandList);
         List<ImagePresignedPutUrlApi.Response> apiResponseList = imagePresignedPutUrlWebMapper.toResponseList(applicationResponseList);
 
         return ResponseEntity.ok().body(new ImagesPresignedPutUrlApi.Response(apiResponseList));

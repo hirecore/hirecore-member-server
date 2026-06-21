@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.file.application.port.out;
 
+import io.hirecore.hirecorememberserver.modules.file.application.port.out.dto.PresignedPutUrl;
+
 public interface GeneratePresignedPutUrlPort {
-    String generate(String objectKey, String contentType, long contentLength);
-    String getBucketName();
-    String getPublicBaseUrl();
+    PresignedPutUrl generate(String objectKey, String contentType, long contentLength);
 }

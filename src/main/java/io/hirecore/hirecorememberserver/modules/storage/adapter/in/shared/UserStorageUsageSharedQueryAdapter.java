@@ -1,18 +1,32 @@
 package io.hirecore.hirecorememberserver.modules.storage.adapter.in.shared;
 
+import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationException;
+import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.storage.application.port.in.LoadUserStorageUsageUseCase;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserUsedQuotaPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacityPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserStorageUsageSharedQueryAdapter implements LoadUserUsedQuotaPort {
+public class UserStorageUsageSharedQueryAdapter implements VerifyUserStorageCapacityPort
+{
 
-    private final LoadUserStorageUsageUseCase userStorageUsageUseCase;
+    private final LoadUserStorageUsageUseCase loadUserStorageUsageUseCase;
+    private final LoadUserStorageLimitPort loadUserStorageLimitPort;
+
 
     @Override
-    public Long findUsedQuotaBytes(Long memberAccountId) {
-        return userStorageUsageUseCase.execute(memberAccountId);
+    public void verifyCapacityFor(Long memberAccountId, Long uploadFileSizeBytes) {
+        Long storageSnapshotBytes = loadUserStorageLimitPort.findStorageLimitBytes(memberAccountId);
+        Long usedStorageBytes = loadUserStorageUsageUseCase.execute(memberAccountId);
+
+        if (uploadFileSizeBytes + usedStorageBytes > storageSnapshotBytes) {
+            throw new UserStorageApplicationException(
+                    UserStorageApplicationExceptionCodeCluster.DetailResponse.STORAGE_QUOTA_EXCEEDED
+            );
+        }
     }
 }

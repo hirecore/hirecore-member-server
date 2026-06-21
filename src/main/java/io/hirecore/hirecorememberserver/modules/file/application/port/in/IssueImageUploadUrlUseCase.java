@@ -5,6 +5,6 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.res
 
 import java.util.List;
 
-public interface GenerateUserPresignedPutUrlUseCase {
+public interface IssueImageUploadUrlUseCase {
     List<ImagePresignedPutUrlResponse> execute(Long memberAccountId, List<ImagePresignedPutUrlCommand> commandList);
 }

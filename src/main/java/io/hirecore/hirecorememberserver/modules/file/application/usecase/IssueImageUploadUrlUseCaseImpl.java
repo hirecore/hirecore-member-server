@@ -1,16 +1,14 @@
 package io.hirecore.hirecorememberserver.modules.file.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationException;
-import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.GenerateUserPresignedPutUrlUseCase;
+import io.hirecore.hirecorememberserver.modules.file.application.port.in.IssueImageUploadUrlUseCase;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.request.ImagePresignedPutUrlCommand;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.GeneratePresignedPutUrlPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveImageFileMetaPort;
+import io.hirecore.hirecorememberserver.modules.file.application.port.out.dto.PresignedPutUrl;
 import io.hirecore.hirecorememberserver.modules.file.application.util.ImageObjectKeyResolver;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserUsedQuotaPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacityPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +17,9 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresignedPutUrlUseCase {
+public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCase {
 
-    private final LoadUserStorageLimitPort loadUserStorageLimitPort;
-    private final LoadUserUsedQuotaPort loadUserStorageUsagePort;
+    private final VerifyUserStorageCapacityPort verifyUserStorageCapacityPort;
     private final GeneratePresignedPutUrlPort generatePresignedPutUrlPort;
     private final SaveImageFileMetaPort saveImageFileMetaPort;
 
@@ -31,21 +28,28 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
             Long memberAccountId,
             List<ImagePresignedPutUrlCommand> commandList
     ) {
-        Long storageSnapshotBytes = loadUserStorageLimitPort.findStorageLimitBytes(memberAccountId);
-        Long usedStorageBytes = loadUserStorageUsagePort.findUsedQuotaBytes(memberAccountId);
+        Long requestBytesSum = commandList.stream()
+                .mapToLong(ImagePresignedPutUrlCommand::fileSizeBytes)
+                .sum();
 
-        verifyUploadEligibility(commandList, storageSnapshotBytes, usedStorageBytes);
+        verifyUserStorageCapacityPort.verifyCapacityFor(memberAccountId, requestBytesSum);
 
         return commandList.stream()
-                .map(command -> generatePresignedPutUrlResponse(memberAccountId, command))
+                .map(command -> issueUploadUrl(memberAccountId, command))
                 .toList();
     }
 
-    private ImagePresignedPutUrlResponse generatePresignedPutUrlResponse(
+    private ImagePresignedPutUrlResponse issueUploadUrl(
             Long memberAccountId,
             ImagePresignedPutUrlCommand command
     ) {
         String objectKey = buildObjectKey(memberAccountId, command);
+
+        PresignedPutUrl presignedPutUrl = generatePresignedPutUrlPort.generate(
+                objectKey,
+                command.mimeType().getValue(),
+                command.fileSizeBytes()
+        );
 
         ImageFileMeta imageFileMeta = saveImageFileMetaPort.save(
                 ImageFileMeta.create(
@@ -53,7 +57,7 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
                         command.domainType(),
                         command.purpose(),
                         "AWS_S3",
-                        generatePresignedPutUrlPort.getBucketName(),
+                        presignedPutUrl.bucketName(),
                         objectKey,
                         command.originalFileName(),
                         command.mimeType(),
@@ -64,19 +68,11 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
                 )
         );
 
-        String presignedUrl = generatePresignedPutUrlPort.generate(
-                objectKey,
-                command.mimeType().getValue(),
-                command.fileSizeBytes()
-        );
-
-        String publicUrl = generatePresignedPutUrlPort.getPublicBaseUrl() + "/" + objectKey;
-
         return new ImagePresignedPutUrlResponse(
                 command.clientFileId(),
                 imageFileMeta.getId(),
-                presignedUrl,
-                publicUrl
+                presignedPutUrl.presignedUrl(),
+                presignedPutUrl.publicUrl()
         );
     }
 
@@ -92,30 +88,5 @@ public class GenerateUserPresignedPutUrlUseCaseImpl implements GenerateUserPresi
                 ImageObjectKeyResolver.pathSegmentOf(command.purpose()),
                 UUID.randomUUID() + "." + command.fileExtension().name().toLowerCase()
         );
-    }
-
-    /*
-    *   [검증 항목]
-    *       1. 요청 파일 크기 합계가 스토리지 잔여 용량을 초과하는지 확인
-    *       2. 이미 사용된 스토리지 용량과 합산하여 스토리지 잔여 용량을 초과하는지 확인
-    *
-    *   [특이사항]
-    *       1. MIME 타입 검증: MIME 타입에 검증의 경우 요청된 JSON이 역직렬화 될 때 검증진행
-    *           - application layer에서도 MIME 타입 검증을 진행해야 하지 않는가에 대한 고민이 필요.
-    * */
-    private static void verifyUploadEligibility(
-            List<ImagePresignedPutUrlCommand> commandList,
-            Long storageSnapshotBytes,
-            Long usedStorageBytes
-    ) {
-        Long requestBytesSum = commandList.stream()
-                .mapToLong(ImagePresignedPutUrlCommand::fileSizeBytes)
-                .sum();
-
-        if (requestBytesSum + usedStorageBytes > storageSnapshotBytes) {
-            throw new FileApplicationException(
-                    FileApplicationExceptionCodeCluster.DetailResponse.STORAGE_QUOTA_EXCEEDED
-            );
-        }
     }
 }

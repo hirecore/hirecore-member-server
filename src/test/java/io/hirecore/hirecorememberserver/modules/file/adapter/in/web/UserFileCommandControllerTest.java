@@ -7,9 +7,9 @@ import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
 import io.hirecore.hirecorememberserver.common.config.StrictJsonConfig;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlWebMapperImpl;
-import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationException;
-import io.hirecore.hirecorememberserver.modules.file.application.exception.FileApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.GenerateUserPresignedPutUrlUseCase;
+import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationException;
+import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationExceptionCodeCluster;
+import io.hirecore.hirecorememberserver.modules.file.application.port.in.IssueImageUploadUrlUseCase;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +60,7 @@ class UserFileCommandControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private GenerateUserPresignedPutUrlUseCase generateUserPresignedPutUrlUseCase;
+    private IssueImageUploadUrlUseCase issueImageUploadUrlUseCase;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
 
@@ -110,7 +110,7 @@ class UserFileCommandControllerTest {
                     "https://cdn.hirecore.io/users/1/portfolio/content-image/uuid.webp"
             );
 
-            given(generateUserPresignedPutUrlUseCase.execute(eq(MEMBER_ACCOUNT_ID), any()))
+            given(issueImageUploadUrlUseCase.execute(eq(MEMBER_ACCOUNT_ID), any()))
                     .willReturn(List.of(useCaseResponse));
 
             // when & then
@@ -219,9 +219,9 @@ class UserFileCommandControllerTest {
             // given
             String requestBody = createValidRequestBody();
 
-            given(generateUserPresignedPutUrlUseCase.execute(eq(MEMBER_ACCOUNT_ID), any()))
-                    .willThrow(new FileApplicationException(
-                            FileApplicationExceptionCodeCluster.DetailResponse.STORAGE_QUOTA_EXCEEDED
+            given(issueImageUploadUrlUseCase.execute(eq(MEMBER_ACCOUNT_ID), any()))
+                    .willThrow(new UserStorageApplicationException(
+                            UserStorageApplicationExceptionCodeCluster.DetailResponse.STORAGE_QUOTA_EXCEEDED
                     ));
 
             // when & then

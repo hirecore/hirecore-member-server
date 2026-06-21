@@ -92,7 +92,7 @@ class UserProfileQueryControllerTest {
             given(userProfileWebMapper.toApiResponse(response)).willReturn(apiResponse);
 
             // when & then
-            mockMvc.perform(get("/api/user/profile/summary")
+            mockMvc.perform(get("/api/users/profile/summary")
                             .with(authentication(createAuthToken())))
                     .andDo(print())
                     .andExpect(status().isOk())
@@ -162,7 +162,7 @@ class UserProfileQueryControllerTest {
             given(userProfileWebMapper.toApiResponse(response)).willReturn(apiResponse);
 
             // when & then
-            mockMvc.perform(get("/api/user/profile/summary")
+            mockMvc.perform(get("/api/users/profile/summary")
                             .with(authentication(createAuthToken())))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.nickname").value(NICKNAME))
@@ -178,7 +178,7 @@ class UserProfileQueryControllerTest {
         @DisplayName("[401 Unauthorized] 인증 토큰 없이 요청하면 401을 반환한다")
         void should_return_401_when_not_authenticated() throws Exception {
             // when & then
-            mockMvc.perform(get("/api/user/profile/summary"))
+            mockMvc.perform(get("/api/users/profile/summary"))
                     .andDo(print())
                     .andExpect(status().isUnauthorized());
         }
@@ -198,7 +198,7 @@ class UserProfileQueryControllerTest {
                     ));
 
             // when & then
-            mockMvc.perform(get("/api/user/profile/summary")
+            mockMvc.perform(get("/api/users/profile/summary")
                             .with(authentication(createAuthToken())))
                     .andDo(print())
                     .andExpect(status().isInternalServerError());

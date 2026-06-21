@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 확인하는 데 사용됩니다.</p>
  */
 @RestController
-@RequestMapping("/api/user/profile")
+@RequestMapping("/api/users/profile")
 @RequiredArgsConstructor
 public class UserProfileQueryController {
 

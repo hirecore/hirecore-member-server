@@ -4,7 +4,8 @@ import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberA
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberAccountDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.SocialUserProfileInfo;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberRegisteredEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountProfileCreatedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountSocialAccountCreatedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,8 +21,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("MemberAccount 도메인 단위 테스트")
 class MemberAccountTest {
 
+    private static SocialUserProfileInfo validSocialInfo() {
+        return new SocialUserProfileInfo(
+                OAuth2Provider.KAKAO, "pid", "user@example.com", Instant.now(), true, true);
+    }
+
     @Nested
-    @DisplayName("create() 팩토리 메서드")
+    @DisplayName("createWithSocial() 팩토리 메서드")
     class CreateTest {
 
         @Test
@@ -32,7 +38,7 @@ class MemberAccountTest {
             MemberRole role = MemberRole.USER;
 
             // when
-            MemberAccount memberAccount = MemberAccount.create(email, role);
+            MemberAccount memberAccount = MemberAccount.createWithSocial(email, role, validSocialInfo());
 
             // then
             assertThat(memberAccount).satisfies(account -> {
@@ -50,7 +56,7 @@ class MemberAccountTest {
         @DisplayName("모든 권한 유형으로 MemberAccount를 생성할 수 있다")
         void should_create_member_account_with_any_role(MemberRole role) {
             // when
-            MemberAccount memberAccount = MemberAccount.create("user@example.com", role);
+            MemberAccount memberAccount = MemberAccount.createWithSocial("user@example.com", role, validSocialInfo());
 
             // then
             assertThat(memberAccount.getRole()).isEqualTo(role);
@@ -64,7 +70,7 @@ class MemberAccountTest {
         @Test
         @DisplayName("이메일이 null이면 EMAIL_MISSING 에러코드로 예외가 발생한다")
         void should_throw_exception_when_email_is_null() {
-            assertThatThrownBy(() -> MemberAccount.create(null, MemberRole.USER))
+            assertThatThrownBy(() -> MemberAccount.createWithSocial(null, MemberRole.USER, validSocialInfo()))
                     .isInstanceOf(MemberAccountDomainException.class)
                     .extracting("errorCode")
                     .isEqualTo(MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.EMAIL_MISSING.getErrorCode());
@@ -73,7 +79,7 @@ class MemberAccountTest {
         @Test
         @DisplayName("이메일이 빈 문자열이면 EMAIL_MISSING 에러코드로 예외가 발생한다")
         void should_throw_exception_when_email_is_blank() {
-            assertThatThrownBy(() -> MemberAccount.create(" ", MemberRole.USER))
+            assertThatThrownBy(() -> MemberAccount.createWithSocial(" ", MemberRole.USER, validSocialInfo()))
                     .isInstanceOf(MemberAccountDomainException.class)
                     .extracting("errorCode")
                     .isEqualTo(MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.EMAIL_MISSING.getErrorCode());
@@ -82,7 +88,7 @@ class MemberAccountTest {
         @Test
         @DisplayName("권한이 null이면 ROLE_MISSING 에러코드로 예외가 발생한다")
         void should_throw_exception_when_role_is_null() {
-            assertThatThrownBy(() -> MemberAccount.create("user@example.com", null))
+            assertThatThrownBy(() -> MemberAccount.createWithSocial("user@example.com", null, validSocialInfo()))
                     .isInstanceOf(MemberAccountDomainException.class)
                     .extracting("errorCode")
                     .isEqualTo(MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.ROLE_MISSING.getErrorCode());
@@ -94,19 +100,20 @@ class MemberAccountTest {
     class LinkSocialAccountTest {
 
         @Test
-        @DisplayName("동의 항목이 모두 true이면 소셜 연동 이벤트가 등록된다")
+        @DisplayName("동의 항목이 모두 true이면 소셜 연동·프로필 생성 이벤트가 등록된다")
         void should_register_event_when_link_succeeds() {
             // given
             SocialUserProfileInfo info = new SocialUserProfileInfo(
                     OAuth2Provider.KAKAO, "pid", "user@example.com", Instant.now(), true, true);
 
             // when
-            MemberAccount account = MemberAccount.createWithSocialLink("user@example.com", MemberRole.USER, info);
+            MemberAccount account = MemberAccount.createWithSocial("user@example.com", MemberRole.USER, info);
 
-            // then
+            // then — 소셜 계정 생성과 프로필 생성 이벤트가 각각 등록된다
             assertThat(account.pollAllEvents())
-                    .hasSize(1)
-                    .first().isInstanceOf(MemberRegisteredEvent.class);
+                    .hasSize(2)
+                    .hasAtLeastOneElementOfType(MemberAccountSocialAccountCreatedEvent.class)
+                    .hasAtLeastOneElementOfType(MemberAccountProfileCreatedEvent.class);
         }
 
         @Test
@@ -121,7 +128,7 @@ class MemberAccountTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> MemberAccount.createWithSocialLink(email, MemberRole.USER, info))
+            assertThatThrownBy(() -> MemberAccount.createWithSocial(email, MemberRole.USER, info))
                     .isInstanceOf(MemberAccountDomainException.class)
                     .extracting("errorCode")
                     .isEqualTo(MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.SOCIAL_LINK_WITHOUT_EMAIL_AGREED.getErrorCode());
@@ -139,7 +146,7 @@ class MemberAccountTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> MemberAccount.createWithSocialLink(email, MemberRole.USER, info))
+            assertThatThrownBy(() -> MemberAccount.createWithSocial(email, MemberRole.USER, info))
                     .isInstanceOf(MemberAccountDomainException.class)
                     .extracting("errorCode")
                     .isEqualTo(MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.SOCIAL_LINK_WITHOUT_PROFILE_NICKNAME_AGREED.getErrorCode());
@@ -157,7 +164,7 @@ class MemberAccountTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> MemberAccount.createWithSocialLink(email, MemberRole.USER, info))
+            assertThatThrownBy(() -> MemberAccount.createWithSocial(email, MemberRole.USER, info))
                     .isInstanceOf(MemberAccountDomainException.class);
         }
     }

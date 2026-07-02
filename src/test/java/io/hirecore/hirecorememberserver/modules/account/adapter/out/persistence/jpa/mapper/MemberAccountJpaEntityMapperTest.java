@@ -4,6 +4,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.persistence.jpa.entity.MemberAccountJpaEntity;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,15 @@ class MemberAccountJpaEntityMapperTest {
     @Autowired
     private MemberAccountJpaEntityMapper mapper;
 
+    private static MemberAccount memberAccount(String email) {
+        return MemberAccount.builder()
+                .id(1000L)
+                .email(email)
+                .role(MemberRole.USER)
+                .auditingInfo(AuditingInfo.create())
+                .build();
+    }
+
     @Nested
     @DisplayName("toJpaEntity() — Domain → JPA Entity")
     class ToJpaEntityTest {
@@ -32,7 +42,7 @@ class MemberAccountJpaEntityMapperTest {
         @DisplayName("MemberAccount의 모든 필드가 MemberAccountJpaEntity로 정확하게 매핑된다")
         void should_map_all_fields_from_domain_to_jpa_entity() {
             // given
-            MemberAccount domain = MemberAccount.create("user@test.com", MemberRole.USER);
+            MemberAccount domain = memberAccount("user@test.com");
 
             // when
             MemberAccountJpaEntity entity = mapper.toJpaEntity(domain);
@@ -49,8 +59,8 @@ class MemberAccountJpaEntityMapperTest {
         @Test
         @DisplayName("password가 null인 소셜 회원도 정상적으로 매핑된다")
         void should_map_domain_with_null_password() {
-            // given — MemberAccount.create()는 password를 null로 생성
-            MemberAccount domain = MemberAccount.create("social@test.com", MemberRole.USER);
+            // given — 빌더로 password 미설정(null) 도메인 생성
+            MemberAccount domain = memberAccount("social@test.com");
 
             // when
             MemberAccountJpaEntity entity = mapper.toJpaEntity(domain);
@@ -92,7 +102,7 @@ class MemberAccountJpaEntityMapperTest {
         @DisplayName("toJpaEntity → toDomain 왕복 변환 시 핵심 필드가 보존된다")
         void should_preserve_core_fields_through_roundtrip_conversion() {
             // given
-            MemberAccount original = MemberAccount.create("roundtrip@test.com", MemberRole.USER);
+            MemberAccount original = memberAccount("roundtrip@test.com");
 
             // when
             MemberAccountJpaEntity entity = mapper.toJpaEntity(original);

@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.in.event;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import io.hirecore.hirecorememberserver.modules.account.application.SocialAccountCommandService;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberRegisteredEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountSocialAccountCreatedEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import io.hirecore.hirecorememberserver.support.FixtureMonkeyFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -20,14 +20,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("MemberRegisteredSocialAccountHandler 단위 테스트")
+@DisplayName("SocialSignupListener 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class MemberRegisteredSocialAccountHandlerTest {
+class SocialSignupListenerTest {
 
     private final FixtureMonkey fm = FixtureMonkeyFactory.monkey();
 
     @InjectMocks
-    private MemberRegisteredSocialAccountHandler handler;
+    private SocialSignupListener listener;
 
     @Mock
     private SocialAccountCommandService socialAccountCommandService;
@@ -39,7 +39,7 @@ class MemberRegisteredSocialAccountHandlerTest {
     @DisplayName("소셜 연동 이벤트를 수신하면 SocialAccount를 생성하여 저장한다")
     void should_create_and_save_social_account_when_event_received() {
         // given
-        MemberRegisteredEvent event = fm.giveMeBuilder(MemberRegisteredEvent.class)
+        MemberAccountSocialAccountCreatedEvent event = fm.giveMeBuilder(MemberAccountSocialAccountCreatedEvent.class)
                 .set("provider", OAuth2Provider.KAKAO)
                 .sample();
 
@@ -47,7 +47,7 @@ class MemberRegisteredSocialAccountHandlerTest {
                 .willReturn(fm.giveMeOne(SocialAccount.class));
 
         // when
-        handler.handleSocialAccountCreation(event);
+        listener.handleMemberSignup(event);
 
         // then — 이벤트 필드가 SocialAccount에 정확히 매핑되었는지 검증
         then(socialAccountCommandService).should().saveSocialAccount(socialAccountCaptor.capture());

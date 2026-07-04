@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.in.event;
 
-import io.hirecore.hirecorememberserver.modules.profile.application.ProfileCommandService;
-import io.hirecore.hirecorememberserver.modules.profile.application.ProfileQueryService;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.CheckProfilePublicCodePort;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.SaveProfilePort;
 import io.hirecore.hirecorememberserver.modules.profile.domain.Profile;
 import io.hirecore.hirecorememberserver.modules.profile.domain.vo.PublicCodeInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountCreatedEvent;
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MemberSignupListener {
 
-    private final ProfileCommandService profileCommandService;
-    private final ProfileQueryService profileQueryService;
+    private final SaveProfilePort saveProfilePort;
+    private final CheckProfilePublicCodePort checkProfilePublicCodePort;
 
     @EventListener
     public void handleMemberSignup(MemberAccountCreatedEvent event) {
@@ -25,7 +25,7 @@ public class MemberSignupListener {
         do{
             publicCodeInfo = PublicCodeInfo.generate();
 
-        } while(profileQueryService.existsByPublicCode(publicCodeInfo.publicCode()));
+        } while(checkProfilePublicCodePort.existsByPublicCode(publicCodeInfo.publicCode()));
 
 
         Profile profile = Profile.createUserProfile(
@@ -36,7 +36,7 @@ public class MemberSignupListener {
                 null
         );
 
-        profileCommandService.save(profile);
+        saveProfilePort.save(profile);
         log.info("=== 프로필 연동 이벤트 처리 완료 - Profile ID: {}, MemberAccount ID: {}, ===",
                 profile.getId(), profile.getMemberAccountId()
         );

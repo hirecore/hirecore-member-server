@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.profile.adapter.in.event;
 
-import io.hirecore.hirecorememberserver.modules.profile.application.ProfileCommandService;
-import io.hirecore.hirecorememberserver.modules.profile.application.ProfileQueryService;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.CheckProfilePublicCodePort;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.SaveProfilePort;
 import io.hirecore.hirecorememberserver.modules.profile.domain.Profile;
 import io.hirecore.hirecorememberserver.modules.profile.domain.UserProfileDetail;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountCreatedEvent;
@@ -30,10 +30,10 @@ class MemberSignupListenerTest {
     private MemberSignupListener listener;
 
     @Mock
-    private ProfileCommandService profileCommandService;
+    private SaveProfilePort saveProfilePort;
 
     @Mock
-    private ProfileQueryService profileQueryService;
+    private CheckProfilePublicCodePort checkProfilePublicCodePort;
 
     @Captor
     private ArgumentCaptor<Profile> profileCaptor;
@@ -48,13 +48,13 @@ class MemberSignupListenerTest {
             // given
             MemberAccountCreatedEvent event =
                     new MemberAccountCreatedEvent(1L, "user@example.com");
-            given(profileQueryService.existsByPublicCode(anyString())).willReturn(false);
+            given(checkProfilePublicCodePort.existsByPublicCode(anyString())).willReturn(false);
 
             // when
             listener.handleMemberSignup(event);
 
             // then — 이벤트 필드가 Profile에 정확히 매핑되었는지 검증
-            then(profileCommandService).should().save(profileCaptor.capture());
+            then(saveProfilePort).should().save(profileCaptor.capture());
 
             Profile captured = profileCaptor.getValue();
             assertThat(captured.getMemberAccountId()).isEqualTo(1L);
@@ -71,7 +71,7 @@ class MemberSignupListenerTest {
             // given: 처음에는 충돌(true), 두 번째에는 성공(false)
             MemberAccountCreatedEvent event =
                     new MemberAccountCreatedEvent(2L, "test@kakao.com");
-            given(profileQueryService.existsByPublicCode(anyString()))
+            given(checkProfilePublicCodePort.existsByPublicCode(anyString()))
                     .willReturn(true)    // 첫 번째 생성 → 충돌
                     .willReturn(false);  // 두 번째 생성 → 성공
 
@@ -79,8 +79,8 @@ class MemberSignupListenerTest {
             listener.handleMemberSignup(event);
 
             // then: existsByPublicCode가 두 번 호출되어야 한다
-            then(profileQueryService).should(times(2)).existsByPublicCode(anyString());
-            then(profileCommandService).should().save(any(Profile.class));
+            then(checkProfilePublicCodePort).should(times(2)).existsByPublicCode(anyString());
+            then(saveProfilePort).should().save(any(Profile.class));
         }
     }
 }

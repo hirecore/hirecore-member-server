@@ -70,6 +70,7 @@ src/main/generated/
 ## [docs]: 로컬 스크래치는 제외, 공유 대상(문서·다이어그램)만 화이트리스트로 추적
 ## ==========================================
 /docs/*
+!/docs/README.md
 !/docs/diagram/
 
 /docker/prod/.env.prod

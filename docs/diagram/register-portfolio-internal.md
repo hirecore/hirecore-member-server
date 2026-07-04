@@ -68,15 +68,10 @@ sequenceDiagram
     Ctrl->>UC: execute(memberId, command)
 
     UC->>Img: markUploaded() 시도 (존재·소유·상태 검증)
-    alt 이미지 존재하지 않음
-        Img-->>Ctrl: IMAGE_NOT_FOUND
-        Ctrl-->>Client: 404 Not Found (이미지를 찾을 수 없음)
-    else 소유자 불일치
-        Img-->>Ctrl: IMAGE_OWNERSHIP_VIOLATION
-        Ctrl-->>Client: 403 Forbidden (이미지 소유권자 아님)
-    else 잘못된 상태 전이
-        Img-->>Ctrl: INVALID_UPLOAD_STATUS_TRANSITION
-        Ctrl-->>Client: 409 Conflict (현재 상태에서 불가)
+    alt 이미지 검증 실패
+        Img-->>Ctrl: 검증 예외
+        Note over Img,Ctrl: 존재하지 않음 404 · 소유자 불일치 403 · 잘못된 상태 전이 409
+        Ctrl-->>Client: 4xx (검증 실패)
     else 검증 통과
         Img-->>UC: PENDING→UPLOADED 확정
         Note right of Img: ImageUploadedEvent 등록

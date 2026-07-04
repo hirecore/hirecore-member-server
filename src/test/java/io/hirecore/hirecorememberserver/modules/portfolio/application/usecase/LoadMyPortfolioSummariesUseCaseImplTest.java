@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
+import io.hirecore.hirecorememberserver.modules.portfolio.application.assembler.MyPortfolioSummariesAssembler;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
@@ -10,11 +11,11 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadRe
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -34,7 +35,6 @@ import static org.mockito.Mockito.never;
 @ExtendWith(MockitoExtension.class)
 class LoadMyPortfolioSummariesUseCaseImplTest {
 
-    @InjectMocks
     private LoadMyPortfolioSummariesUseCaseImpl sut;
 
     @Mock
@@ -51,6 +51,18 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
     @Mock
     private LoadImageUrlPort loadImageUrlPort;
+
+    // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
+    @BeforeEach
+    void setUp() {
+        MyPortfolioSummariesAssembler assembler = new MyPortfolioSummariesAssembler(
+                loadResumeTitlePort,
+                loadCoverLetterTitlePort,
+                loadJobCategoryPort,
+                loadImageUrlPort
+        );
+        sut = new LoadMyPortfolioSummariesUseCaseImpl(loadPortfolioPort, assembler);
+    }
 
     private static final Long VIEWER_ID = 1L;
     private static final Long JOB_CATEGORY_ID = 9001L;

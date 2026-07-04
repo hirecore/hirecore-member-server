@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
+import io.hirecore.hirecorememberserver.modules.portfolio.application.assembler.PortfolioDetailAssembler;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationException;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPortfolioDetailUseCase;
@@ -17,11 +18,11 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.re
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.ResumeContentResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -40,7 +41,6 @@ import static org.mockito.Mockito.never;
 @ExtendWith(MockitoExtension.class)
 class LoadPortfolioDetailUseCaseImplTest {
 
-    @InjectMocks
     private LoadPortfolioDetailUseCaseImpl sut;
 
     @Mock private LoadPortfolioPort loadPortfolioPort;
@@ -51,6 +51,25 @@ class LoadPortfolioDetailUseCaseImplTest {
     @Mock private ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
     @Mock private ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
     @Mock private PublishDomainEventsPort publishDomainEventsPort;
+
+    // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
+    @BeforeEach
+    void setUp() {
+        PortfolioDetailAssembler portfolioDetailAssembler = new PortfolioDetailAssembler(
+                loadPortfolioPort,
+                loadJobCategoryPort,
+                loadResumeContentPort,
+                loadCoverLetterContentPort
+        );
+        sut = new LoadPortfolioDetailUseCaseImpl(
+                loadPortfolioPort,
+                loadProfileNicknamePort,
+                existsPortfolioMemberViewPort,
+                existsPortfolioMemberInterestPort,
+                publishDomainEventsPort,
+                portfolioDetailAssembler
+        );
+    }
 
     private static final Long OWNER_ID = 1L;
     private static final Long OTHER_VIEWER_ID = 2L;

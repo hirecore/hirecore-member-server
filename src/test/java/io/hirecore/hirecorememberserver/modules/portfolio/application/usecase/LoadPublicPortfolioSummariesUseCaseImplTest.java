@@ -1,5 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
+import io.hirecore.hirecorememberserver.modules.portfolio.application.assembler.PublicPortfolioSummariesAssembler;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPublicPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort.PublicPortfolioRow;
@@ -14,12 +15,12 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.re
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -42,7 +43,6 @@ import static org.mockito.BDDMockito.then;
 @ExtendWith(MockitoExtension.class)
 class LoadPublicPortfolioSummariesUseCaseImplTest {
 
-    @InjectMocks
     private LoadPublicPortfolioSummariesUseCaseImpl sut;
 
     @Mock
@@ -56,6 +56,17 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
 
     @Mock
     private LoadImageUrlPort loadImageUrlPort;
+
+    // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
+    @BeforeEach
+    void setUp() {
+        PublicPortfolioSummariesAssembler assembler = new PublicPortfolioSummariesAssembler(
+                loadJobCategoryPort,
+                loadProfileNicknamePort,
+                loadImageUrlPort
+        );
+        sut = new LoadPublicPortfolioSummariesUseCaseImpl(loadPublicPortfolioSummaryPort, assembler);
+    }
 
     private static final Long JOB_CATEGORY_ID = 9001L;
 

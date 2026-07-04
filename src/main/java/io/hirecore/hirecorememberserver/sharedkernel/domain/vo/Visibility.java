@@ -28,4 +28,11 @@ public enum Visibility {
     public String getValue() {
         return value;
     }
+
+    /**
+     * 공개(PUBLIC) 가시성인지 여부를 반환합니다.
+     */
+    public boolean isPublic() {
+        return this == PUBLIC;
+    }
 }

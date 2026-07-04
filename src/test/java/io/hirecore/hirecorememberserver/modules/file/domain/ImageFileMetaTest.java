@@ -38,6 +38,56 @@ class ImageFileMetaTest {
     }
 
     @Nested
+    @DisplayName("isOwnedBy()")
+    class IsOwnedByTest {
+
+        @Test
+        @DisplayName("소유자면 true, 아니면(또는 null) false 를 반환한다")
+        void should_report_ownership() {
+            ImageFileMeta meta = createValid();
+
+            assertThat(meta.isOwnedBy(1L)).isTrue();
+            assertThat(meta.isOwnedBy(2L)).isFalse();
+            assertThat(meta.isOwnedBy(null)).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("업로드 상태 질의 (isUploaded/isOrphaned)")
+    class UploadStatusQueryTest {
+
+        @Test
+        @DisplayName("PENDING 상태면 isUploaded/isOrphaned 모두 false 다")
+        void should_report_false_when_pending() {
+            ImageFileMeta meta = createValid();
+
+            assertThat(meta.isUploaded()).isFalse();
+            assertThat(meta.isOrphaned()).isFalse();
+        }
+
+        @Test
+        @DisplayName("markUploaded 후 isUploaded 만 true 다")
+        void should_report_uploaded_after_mark_uploaded() {
+            ImageFileMeta meta = createValid();
+            meta.markUploaded();
+
+            assertThat(meta.isUploaded()).isTrue();
+            assertThat(meta.isOrphaned()).isFalse();
+        }
+
+        @Test
+        @DisplayName("markOrphaned 후 isOrphaned 만 true 다")
+        void should_report_orphaned_after_mark_orphaned() {
+            ImageFileMeta meta = createValid();
+            meta.markUploaded();
+            meta.markOrphaned();
+
+            assertThat(meta.isOrphaned()).isTrue();
+            assertThat(meta.isUploaded()).isFalse();
+        }
+    }
+
+    @Nested
     @DisplayName("create() 팩토리 메서드")
     class CreateTest {
 

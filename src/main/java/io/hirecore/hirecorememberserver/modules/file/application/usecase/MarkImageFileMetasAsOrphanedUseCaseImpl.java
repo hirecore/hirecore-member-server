@@ -5,7 +5,6 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.out.LoadIm
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.UpdateImageFileMetaPort;
 import io.hirecore.hirecorememberserver.modules.file.application.util.ImageFileMetaVerifier;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
-import io.hirecore.hirecorememberserver.modules.file.domain.vo.UploadStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +32,9 @@ public class MarkImageFileMetasAsOrphanedUseCaseImpl implements MarkImageFileMet
         ImageFileMetaVerifier.verifyAllExist(distinctImageIds, imageFileMetas);
         ImageFileMetaVerifier.verifyAllOwnedBy(memberAccountId, imageFileMetas);
 
-        // 멱등 처리: 이미 ORPHANED 인 항목은 전이 대상에서 제외합니다 (영속 호출도 생략).
-        // 다른 상태(PENDING, DELETED) 면 도메인이 INVALID_UPLOAD_STATUS_TRANSITION 예외를 던집니다.
+        // 이미 ORPHANED 는 제외 (멱등), 그 외 부적합 상태는 도메인이 예외
         List<ImageFileMeta> toTransition = imageFileMetas.stream()
-                .filter(meta -> meta.getUploadStatus() != UploadStatus.ORPHANED)
+                .filter(meta -> !meta.isOrphaned())
                 .toList();
         if (toTransition.isEmpty()) {
             return;

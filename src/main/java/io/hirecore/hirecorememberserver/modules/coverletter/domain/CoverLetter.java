@@ -49,11 +49,7 @@ public class CoverLetter extends AbstractDomainEventPublisher implements DomainA
     private Visibility visibility;
     private AuditingInfo auditingInfo;
 
-    /**
-     * [복원용 빌더]
-     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
-     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
-     */
+    // 복원 전용 빌더 (인프라 조회 → 도메인, Application 직접 호출은 ArchUnit 차단)
     @Builder(access = AccessLevel.PUBLIC)
     private CoverLetter(
             Long id,
@@ -90,9 +86,9 @@ public class CoverLetter extends AbstractDomainEventPublisher implements DomainA
         this.cachedInterestCount = cachedInterestCount;
         this.coverLetterJobCategory = coverLetterJobCategory;
         this.coverLetterContent = coverLetterContent;
-        this.externalLinks = externalLinks;
-        this.coverLetterTags = coverLetterTags;
-        this.portfolioIds = portfolioIds;
+        this.externalLinks = externalLinks == null ? List.of() : List.copyOf(externalLinks);
+        this.coverLetterTags = coverLetterTags == null ? List.of() : List.copyOf(coverLetterTags);
+        this.portfolioIds = portfolioIds == null ? List.of() : List.copyOf(portfolioIds);
         this.status = status;
         this.collaborationType = collaborationType;
         this.visibility = visibility;

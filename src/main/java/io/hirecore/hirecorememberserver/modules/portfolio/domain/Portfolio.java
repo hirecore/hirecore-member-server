@@ -10,6 +10,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.event.Portfolio
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.PortfolioStatus;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ReferencedImageIds;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -20,10 +21,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Getter
 public class Portfolio extends AbstractDomainEventPublisher implements DomainAggregateRoot {
@@ -57,11 +59,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
     private Visibility visibility;
     private AuditingInfo auditingInfo;
 
-    /**
-     * [복원용 빌더]
-     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
-     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
-     */
+    // 복원용 빌더 (인프라 조회 전용, ArchUnit으로 임의 호출 차단)
     @Builder(access = AccessLevel.PUBLIC)
     private Portfolio(
             Long id,
@@ -101,8 +99,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.cachedInterestCount = cachedInterestCount;
         this.portfolioJobCategory = portfolioJobCategory;
         this.portfolioContent = portfolioContent;
-        this.externalLinks = externalLinks;
-        this.portfolioTags = portfolioTags;
+        this.externalLinks = externalLinks == null ? List.of() : List.copyOf(externalLinks);
+        this.portfolioTags = portfolioTags == null ? List.of() : List.copyOf(portfolioTags);
         this.status = status;
         this.collaborationType = collaborationType;
         this.visibility = visibility;
@@ -192,10 +190,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
                 this.status, collaborationType, visibility, this.auditingInfo
         );
 
-        List<Long> releasedImageIds = computeReleasedImageIds(
-                this.thumbnailImageId, this.portfolioContent.getImageIds(),
-                thumbnailImageId, contentImageIds
-        );
+        List<Long> releasedImageIds = ReferencedImageIds.of(this.thumbnailImageId, this.portfolioContent.getImageIds())
+                .minus(ReferencedImageIds.of(thumbnailImageId, contentImageIds));
 
         this.thumbnailImageId = thumbnailImageId;
         this.coverLetterId = coverLetterId;
@@ -205,8 +201,8 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         this.privateMemo = privateMemo;
         this.portfolioJobCategory = jobCategory;
         this.portfolioContent = newContent;
-        this.externalLinks = externalLinks != null ? externalLinks : List.of();
-        this.portfolioTags = portfolioTags != null ? portfolioTags : List.of();
+        this.externalLinks = externalLinks == null ? List.of() : List.copyOf(externalLinks);
+        this.portfolioTags = portfolioTags == null ? List.of() : List.copyOf(portfolioTags);
         this.collaborationType = collaborationType;
         this.visibility = visibility;
         this.auditingInfo = this.auditingInfo.update();
@@ -220,13 +216,7 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         }
     }
 
-    /**
-     * 조회수 기록 정책(소유자 제외 / 첫 조회만 카운트) 을 검증하고 통과 시 {@link PortfolioViewedEvent}를 발행합니다.
-     *
-     * <p>첫 조회 여부는 set-based 제약이므로 호출 측에서 미리 확인한 결과를 {@code alreadyViewed} 로 받아 멱등 처리합니다.
-     * 통과 여부는 boolean 으로 반환하며, 실제 {@code PortfolioMemberView} 적재와 {@code cachedViewCount} 증가는
-     * 이벤트 소비자가 처리합니다.</p>
-     */
+    // 조회수 정책(소유자 제외/첫 조회만) 검증 후 이벤트 발행, alreadyViewed로 멱등 처리
     public boolean markViewedBy(Long viewerMemberAccountId, boolean alreadyViewed) {
         if (this.memberAccountId.equals(viewerMemberAccountId)) {
             return false;
@@ -238,17 +228,12 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         return true;
     }
 
-    /**
-     * 관심 등록 정책(소유자 금지 / 비공개 금지)을 검증하고 {@link PortfolioInterestRegisteredEvent}를 등록합니다.
-     *
-     * <p>중복 검사는 set-based 제약이므로 호출 측에서 미리 확인한 결과를 {@code alreadyInterested}로 받아 멱등 처리합니다.
-     * 실제 {@code PortfolioMemberInterest} 적재와 {@code cachedInterestCount} 증가는 이벤트 소비자가 처리합니다.</p>
-     */
+    // 관심 등록 정책(소유자/비공개 금지) 검증 후 이벤트 등록, alreadyInterested로 멱등 처리
     public void registerInterestBy(Long memberAccountId, boolean alreadyInterested) {
         if (this.memberAccountId.equals(memberAccountId)) {
             throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED);
         }
-        if (this.visibility != Visibility.PUBLIC) {
+        if (!this.visibility.isPublic()) {
             throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN);
         }
         if (alreadyInterested) {
@@ -257,32 +242,41 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         registerEvent(new PortfolioInterestRegisteredEvent(this.id, memberAccountId));
     }
 
-    /**
-     * 관심 해제 의사를 표기하고 {@link PortfolioInterestCancelledEvent}를 등록합니다.
-     *
-     * <p>실제 {@code PortfolioMemberInterest} 삭제와 {@code cachedInterestCount} 감소(실제 삭제가 발생한 경우에 한정)는
-     * 이벤트 소비자가 처리합니다. 등록된 관심이 없는 사용자의 호출은 소비자 단에서 멱등으로 종료됩니다.</p>
-     */
+    // 관심 해제 이벤트 등록 (소비자 단에서 멱등 처리)
     public void cancelInterestBy(Long memberAccountId) {
         registerEvent(new PortfolioInterestCancelledEvent(this.id, memberAccountId));
     }
 
-    /**
-     * 작성자 본인의 영구 삭제 의사를 검증하고, 본문/썸네일에서 참조 중이던 이미지들을 ORPHANED 대상으로
-     * {@link PortfolioImagesUnlinkedEvent} 에 실어 발행합니다.
-     *
-     * <p>소유자 검증 위반 시 {@link PortfolioDomainExceptionCodeCluster.DetailResponse#PORTFOLIO_DELETE_DENIED}
-     * 도메인 예외를 던집니다. 참조 이미지가 한 건도 없는 경우 {@code PortfolioImagesUnlinkedEvent} 의
-     * invariant(비공집합) 에 부합하지 않으므로 이벤트 발행을 생략합니다.</p>
-     *
-     * <p>실제 영구 행 삭제와 {@code portfolio_member_interests} / {@code portfolio_member_views} 의 cleanup 은
-     * 영속 어댑터가 처리합니다.</p>
-     */
+    public boolean isOwnedBy(Long memberAccountId) {
+        return this.memberAccountId.equals(memberAccountId);
+    }
+
+    // 공개는 누구나, 비공개는 소유자만 조회 가능
+    public boolean isViewableBy(Long memberAccountId) {
+        return this.visibility.isPublic() || isOwnedBy(memberAccountId);
+    }
+
+    // 본체·본문·태그 수정 시각 중 최신값
+    public Instant latestUpdatedAt() {
+        Stream<Instant> base = Stream.of(
+                this.auditingInfo.updatedAt(),
+                this.portfolioContent.getAuditingInfo().updatedAt()
+        );
+        Stream<Instant> tagUpdates = this.portfolioTags == null
+                ? Stream.empty()
+                : this.portfolioTags.stream().map(tag -> tag.getAuditingInfo().updatedAt());
+        return Stream.concat(base, tagUpdates)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+    }
+
+    // 소유자 검증 후 참조 이미지 unlink 이벤트 발행 (참조 없으면 비공집합 invariant 위반이라 생략)
     public void delete(Long requesterMemberAccountId) {
         if (!this.memberAccountId.equals(requesterMemberAccountId)) {
             throw new PortfolioDomainException(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_DELETE_DENIED);
         }
-        List<Long> unlinkedImageIds = collectReferencedImageIds();
+        List<Long> unlinkedImageIds = referencedImageIds();
         if (!unlinkedImageIds.isEmpty()) {
             registerEvent(new PortfolioImagesUnlinkedEvent(
                     this.id,
@@ -292,58 +286,10 @@ public class Portfolio extends AbstractDomainEventPublisher implements DomainAgg
         }
     }
 
-    /**
-     * 썸네일과 본문에서 참조 중인 이미지 식별자 집합을 입력 순서를 보존하며 중복 없이 모읍니다.
-     */
-    private List<Long> collectReferencedImageIds() {
-        List<Long> collected = new ArrayList<>();
-        Set<Long> seen = new HashSet<>();
-        if (this.thumbnailImageId != null && seen.add(this.thumbnailImageId)) {
-            collected.add(this.thumbnailImageId);
-        }
+    // 썸네일+본문 참조 이미지 집합 (순서 보존, 중복 제거)
+    public List<Long> referencedImageIds() {
         List<Long> contentImageIds = this.portfolioContent != null ? this.portfolioContent.getImageIds() : null;
-        if (contentImageIds != null) {
-            for (Long imageId : contentImageIds) {
-                if (imageId != null && seen.add(imageId)) {
-                    collected.add(imageId);
-                }
-            }
-        }
-        return collected;
-    }
-
-    /**
-     * 이전 이미지 집합({@code (oldThumbnail ∪ oldContent)}) 에서 새 집합({@code (newThumbnail ∪ newContent)}) 을
-     * 뺀 차집합 — 즉 본문/썸네일에서 더 이상 참조되지 않게 된 imageId 들을 반환합니다.
-     * 입력 순서를 보존하기 위해 LinkedHashSet 의미론으로 계산합니다.
-     */
-    private static List<Long> computeReleasedImageIds(
-            Long oldThumbnailImageId,
-            List<Long> oldContentImageIds,
-            Long newThumbnailImageId,
-            List<Long> newContentImageIds
-    ) {
-        Set<Long> newSet = new HashSet<>();
-        if (newThumbnailImageId != null) {
-            newSet.add(newThumbnailImageId);
-        }
-        if (newContentImageIds != null) {
-            newSet.addAll(newContentImageIds);
-        }
-
-        List<Long> released = new ArrayList<>();
-        Set<Long> seen = new HashSet<>();
-        if (oldThumbnailImageId != null && !newSet.contains(oldThumbnailImageId) && seen.add(oldThumbnailImageId)) {
-            released.add(oldThumbnailImageId);
-        }
-        if (oldContentImageIds != null) {
-            for (Long oldId : oldContentImageIds) {
-                if (oldId != null && !newSet.contains(oldId) && seen.add(oldId)) {
-                    released.add(oldId);
-                }
-            }
-        }
-        return released;
+        return ReferencedImageIds.of(this.thumbnailImageId, contentImageIds).values();
     }
 
     private static void ensureInvariants(

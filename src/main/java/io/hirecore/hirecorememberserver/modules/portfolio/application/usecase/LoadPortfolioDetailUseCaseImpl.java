@@ -25,12 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +45,8 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
     @Transactional(readOnly = true)
     public Response execute(Long portfolioId, Long viewerId) {
         Portfolio portfolio = loadPortfolio(portfolioId);
-        boolean isOwner = portfolio.getMemberAccountId().equals(viewerId);
-        ensureAccessible(portfolio, isOwner);
+        boolean isOwner = portfolio.isOwnedBy(viewerId);
+        ensureAccessible(portfolio, viewerId);
 
         String publisherNickname = loadProfileNicknamePort.findNickname(portfolio.getMemberAccountId())
                 .orElseThrow(() -> new PortfolioApplicationException(
@@ -65,7 +61,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 .viewCount(displayedViewCount)
                 .interestCount(portfolio.getCachedInterestCount())
                 .isInterested(isInterested)
-                .updatedAt(resolveLatestUpdatedAt(portfolio))
+                .updatedAt(portfolio.latestUpdatedAt())
                 .portfolio(buildPortfolioBody(portfolio))
                 .publisher(buildPublisher(portfolio, publisherNickname))
                 .linkedResume(buildLinkedResume(portfolio.getResumeId(), viewerId))
@@ -73,13 +69,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 .build();
     }
 
-    /**
-     * publisher 섹션을 합성한다. otherPortfolios 는 작성자의 PUBLIC 작품 중 본 포트폴리오를 제외한 전체를
-     * 마지막 수정 시각 내림차순으로 노출한다. 작품이 없으면 빈 배열로 응답한다.
-     *
-     * <p>각 작품의 직무 카테고리 계층은 leaf id 들을 모아 단일 쿼리 (Recursive CTE) 로 일괄 로딩하므로
-     * 작품 개수 K 와 무관하게 SQL 한 번만 발행된다.</p>
-     */
+    // publisher 섹션 합성 (작성자의 다른 PUBLIC 작품, 직무 계층은 배치 단일 쿼리)
     private Response.Publisher buildPublisher(Portfolio portfolio, String publisherNickname) {
         List<Portfolio> otherPublicPortfolios = loadPortfolioPort
                 .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(
@@ -140,13 +130,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         );
     }
 
-    /**
-     * 자원 자체의 가시성 정책을 기준으로 본문 노출 여부를 결정한다.
-     *
-     * <p>자원이 존재하지 않거나 연결이 없으면 {@code null} 을 반환한다.
-     * 자원이 PUBLIC 이거나 viewer 가 자원 소유자와 일치하면 본문을 채우고,
-     * 그 외에는 {@code content} 를 {@code null} 로 두어 메타만 노출한다.</p>
-     */
+    // 자원 가시성에 따라 본문 노출 결정 (PUBLIC이거나 소유자면 본문, 아니면 메타만)
     private Response.LinkedResume buildLinkedResume(Long resumeId, Long viewerId) {
         if (resumeId == null) {
             return null;
@@ -176,7 +160,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
     }
 
     private static boolean canViewContent(Visibility resourceVisibility, Long resourceOwnerId, Long viewerId) {
-        if (resourceVisibility == Visibility.PUBLIC) {
+        if (resourceVisibility.isPublic()) {
             return true;
         }
         return viewerId != null && viewerId.equals(resourceOwnerId);
@@ -210,27 +194,12 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
                 ));
     }
 
-    private void ensureAccessible(Portfolio portfolio, boolean isOwner) {
-        if (portfolio.getVisibility() != Visibility.PUBLIC && !isOwner) {
+    private void ensureAccessible(Portfolio portfolio, Long viewerId) {
+        if (!portfolio.isViewableBy(viewerId)) {
             throw new PortfolioApplicationException(
                     PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN
             );
         }
-    }
-
-    private Instant resolveLatestUpdatedAt(Portfolio portfolio) {
-        Stream<Instant> portfolioAndContent = Stream.of(
-                portfolio.getAuditingInfo().updatedAt(),
-                portfolio.getPortfolioContent().getAuditingInfo().updatedAt()
-        );
-        Stream<Instant> tagUpdates = portfolio.getPortfolioTags() == null
-                ? Stream.empty()
-                : portfolio.getPortfolioTags().stream()
-                        .map(tag -> tag.getAuditingInfo().updatedAt());
-        return Stream.concat(portfolioAndContent, tagUpdates)
-                .filter(Objects::nonNull)
-                .max(Comparator.naturalOrder())
-                .orElse(null);
     }
 
     private List<SharedResponseDto.ExternalLink> toExternalLinkResponses(List<ExternalLink> links) {

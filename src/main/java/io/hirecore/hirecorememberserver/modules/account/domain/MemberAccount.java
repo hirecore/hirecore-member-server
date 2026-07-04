@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.account.domain;
 
 import com.github.f4b6a3.tsid.TsidCreator;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountProfileCreatedEvent;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountSocialAccountCreatedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountCreatedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberSocialSignedUpEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.SharedKernelExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
@@ -66,6 +66,7 @@ public class MemberAccount extends AbstractDomainEventPublisher implements Domai
         newMember.createProfile(newMember.getId(), email);
         return newMember;
     }
+
     // 프로필 생성
     private void createProfile(Long memberId, String email) {
         AssertionUtils.notNull(
@@ -73,14 +74,14 @@ public class MemberAccount extends AbstractDomainEventPublisher implements Domai
                 MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.ID_MISSING,
                 MemberAccountDomainException::new
         );
-        registerEvent(new MemberAccountProfileCreatedEvent(memberId, email));
+        registerEvent(new MemberAccountCreatedEvent(memberId, email));
     }
 
     // 소셜 계정 연결 이벤트 등록
     private void createSocialAccount(SocialUserProfileInfo socialUserProfileInfo) {
-        ensureCreateSocialAccountInvariants(socialUserProfileInfo);
+        socialUserProfileInfo.ensureConsentedForLink();
 
-        registerEvent(new MemberAccountSocialAccountCreatedEvent(
+        registerEvent(new MemberSocialSignedUpEvent(
                 this.id,
                 socialUserProfileInfo.provider(),
                 socialUserProfileInfo.providerId(),
@@ -112,21 +113,6 @@ public class MemberAccount extends AbstractDomainEventPublisher implements Domai
                 auditingInfo,
                 SharedKernelExceptionCodeCluster.HiddenDetailResponse.AUDITING_MISSING,
                 SharedKernelException::new
-        );
-    }
-
-    // 소셜 계정 연결 불변성 검증
-    private static void ensureCreateSocialAccountInvariants(SocialUserProfileInfo socialUserProfileInfo) {
-        AssertionUtils.isTrue(
-                socialUserProfileInfo.emailAgreed(),
-                MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.SOCIAL_LINK_WITHOUT_EMAIL_AGREED,
-                MemberAccountDomainException::new
-        );
-
-        AssertionUtils.isTrue(
-                socialUserProfileInfo.profileNicknameAgreed(),
-                MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.SOCIAL_LINK_WITHOUT_PROFILE_NICKNAME_AGREED,
-                MemberAccountDomainException::new
         );
     }
 }

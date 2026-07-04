@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -117,23 +118,25 @@ class PortfolioTest {
         }
 
         @Test
-        @DisplayName("외부에서 주입한 portfolioTags를 그대로 보유한다")
+        @DisplayName("외부에서 주입한 portfolioTags를 동일 내용으로 보유하되, 내부 컬렉션은 방어적으로 복사한다")
         void should_hold_provided_tags() {
-            List<PortfolioTag> tags = List.of(PortfolioTag.create("백엔드", 0));
+            List<PortfolioTag> tags = new ArrayList<>(List.of(PortfolioTag.create("백엔드", 0)));
 
             Portfolio portfolio = createValid("본문", tags, List.of());
 
-            assertThat(portfolio.getPortfolioTags()).isSameAs(tags);
+            assertThat(portfolio.getPortfolioTags()).isEqualTo(tags);
+            assertThat(portfolio.getPortfolioTags()).isNotSameAs(tags);
         }
 
         @Test
-        @DisplayName("외부에서 주입한 externalLinks를 그대로 보유한다")
+        @DisplayName("외부에서 주입한 externalLinks를 동일 내용으로 보유하되, 내부 컬렉션은 방어적으로 복사한다")
         void should_hold_provided_external_links() {
-            List<ExternalLink> links = List.of(new ExternalLink("Repo", "https://github.com/example"));
+            List<ExternalLink> links = new ArrayList<>(List.of(new ExternalLink("Repo", "https://github.com/example")));
 
             Portfolio portfolio = createValid("본문", List.of(), links);
 
-            assertThat(portfolio.getExternalLinks()).isSameAs(links);
+            assertThat(portfolio.getExternalLinks()).isEqualTo(links);
+            assertThat(portfolio.getExternalLinks()).isNotSameAs(links);
         }
     }
 
@@ -437,6 +440,76 @@ class PortfolioTest {
                     .isInstanceOf(PortfolioDomainException.class)
                     .extracting("errorCode")
                     .isEqualTo(PortfolioDomainExceptionCodeCluster.HiddenDetailResponse.PORTFOLIO_TAGS_TOO_MANY.getErrorCode());
+        }
+    }
+
+    @Nested
+    @DisplayName("도메인 질의 (소유/가시성/참조이미지/최근수정)")
+    class DomainQueryTest {
+
+        private static Portfolio createWithVisibility(Visibility visibility) {
+            return Portfolio.create(
+                    1L, 100L, null, null, "title", "본문 미리보기", null, 10L, null,
+                    "{\"type\":\"doc\"}", "<p>본문</p>", List.of(), List.of(), List.of(),
+                    CollaborationType.TEAM, visibility
+            );
+        }
+
+        @Test
+        @DisplayName("isOwnedBy: 소유자면 true, 아니면(또는 null) false")
+        void should_report_ownership() {
+            Portfolio portfolio = createWithImages(100L, List.of());
+
+            assertThat(portfolio.isOwnedBy(1L)).isTrue();
+            assertThat(portfolio.isOwnedBy(2L)).isFalse();
+            assertThat(portfolio.isOwnedBy(null)).isFalse();
+        }
+
+        @Test
+        @DisplayName("isViewableBy: PUBLIC 은 누구나(비로그인 포함) 조회 가능하다")
+        void should_be_viewable_by_anyone_when_public() {
+            Portfolio portfolio = createWithVisibility(Visibility.PUBLIC);
+
+            assertThat(portfolio.isViewableBy(2L)).isTrue();
+            assertThat(portfolio.isViewableBy(null)).isTrue();
+        }
+
+        @Test
+        @DisplayName("isViewableBy: 비공개(PRIVATE)는 소유자만 조회 가능하다")
+        void should_be_viewable_only_by_owner_when_private() {
+            Portfolio portfolio = createWithVisibility(Visibility.PRIVATE);
+
+            assertThat(portfolio.isViewableBy(1L)).isTrue();
+            assertThat(portfolio.isViewableBy(2L)).isFalse();
+            assertThat(portfolio.isViewableBy(null)).isFalse();
+        }
+
+        @Test
+        @DisplayName("referencedImageIds: 썸네일과 본문 이미지를 순서 보존·중복 제거로 모은다")
+        void should_collect_referenced_image_ids() {
+            Portfolio portfolio = createWithImages(100L, List.of(10L, 20L));
+
+            assertThat(portfolio.referencedImageIds()).containsExactly(100L, 10L, 20L);
+        }
+
+        @Test
+        @DisplayName("referencedImageIds: 썸네일과 본문에 동일 ID 가 있으면 한 번만 포함한다")
+        void should_deduplicate_referenced_image_ids() {
+            Portfolio portfolio = createWithImages(100L, List.of(100L, 200L));
+
+            assertThat(portfolio.referencedImageIds()).containsExactly(100L, 200L);
+        }
+
+        @Test
+        @DisplayName("latestUpdatedAt: 본체·본문·태그의 수정 시각 중 가장 최근 값을 반환한다")
+        void should_return_latest_updated_at() {
+            Portfolio portfolio = createValid(
+                    "본문 미리보기",
+                    List.of(PortfolioTag.create("백엔드", 0)),
+                    List.of()
+            );
+
+            assertThat(portfolio.latestUpdatedAt()).isNotNull();
         }
     }
 }

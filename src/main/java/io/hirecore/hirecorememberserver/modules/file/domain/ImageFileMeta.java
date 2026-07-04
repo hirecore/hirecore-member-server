@@ -19,48 +19,19 @@ import lombok.Getter;
 
 import java.time.Instant;
 
-/**
- * 이미지 파일의 메타데이터를 관리하는 도메인 집합 루트(Aggregate Root)입니다.
- *
- * <p>이 객체는 스토리지에 업로드된 이미지 파일의 식별 정보, 저장 위치, 물리적 속성(크기, 해상도),
- * 업로드 상태 등 파일과 관련된 모든 메타데이터를 캡슐화하여 관리합니다.</p>
- *
- * <p>주요 책임은 다음과 같습니다.</p>
- * <ul>
- *     <li>이미지 파일의 스토리지 위치 정보 관리 (provider, bucket, objectKey)</li>
- *     <li>파일의 물리적 속성 관리 (파일 크기, 가로/세로 해상도)</li>
- *     <li>파일의 용도 및 소속 도메인 정보 관리</li>
- *     <li>업로드 및 삭제 상태 추적</li>
- *     <li>파일 메타데이터 무결성 보장</li>
- * </ul>
- *
- * <p>주요 활용 목적은 다음과 같습니다.</p>
- * <ul>
- *     <li>업로드된 이미지 파일의 전체 생명주기 관리</li>
- *     <li>스토리지 사용량 계산 및 추적</li>
- *     <li>파일 접근을 위한 위치 정보 제공</li>
- *     <li>고아(orphaned) 파일 식별 및 정리</li>
- *     <li>도메인별 이미지 파일 분류 및 관리</li>
- * </ul>
- */
+// 이미지 파일 메타데이터 애그리거트 루트 (위치/물리속성/업로드 상태 관리)
 @Getter
 public class ImageFileMeta extends AbstractDomainEventPublisher implements DomainAggregateRoot {
     private final Long id;
     private final Long memberAccountId;
-    /** 파일이 소속된 도메인 유형*/
     private final DomainType domainType;
-    /** 헤딩 파일이 사용되는 목적
-     *   세분화 하지 않은 이유: DomainType이 field로 위치해 간략한 정보로도 사용되는 목적이 명확함
-     * */
+    // DomainType 으로 목적이 명확해 세분화하지 않음
     private final Purpose purpose;
-    /** 스토리지 제공 서비스명 */
     private final String storageProvider;
     private final String bucketName;
     private final String objectKey;
     private final String originalFileName;
-    /** MIME TYPE */
     private final MimeType mimeType;
-    /** 파일의 확장자 */
     private final FileExtension fileExtension;
     private final Long fileSizeBytes;
     private final Integer width;
@@ -151,17 +122,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
                 .build();
     }
 
-    /**
-     * 본 이미지를 UPLOADED 로 전이합니다 (업로드 확정).
-     *
-     * <p>PENDING 에서만 UPLOADED 로 전이할 수 있습니다. 이미 UPLOADED 인 경우 멱등 처리되며
-     * (no-op, 이벤트도 재발행하지 않음), 그 외 상태(ORPHANED, DELETED)에서 호출되면
-     * {@link ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse#INVALID_UPLOAD_STATUS_TRANSITION}
-     * 예외가 발생합니다.</p>
-     *
-     * <p>전이 직후 {@link ImageUploadedEvent} 가 등록되어, 사용자 스토리지 사용량 적재 등
-     * 후속 BC 핸들러가 부수효과를 처리할 수 있게 합니다.</p>
-     */
+    // 본 이미지를 UPLOADED 로 전이
     public void markUploaded() {
         if (this.uploadStatus == UploadStatus.UPLOADED) {
             return;
@@ -185,17 +146,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
         ));
     }
 
-    /**
-     * 본 이미지를 ORPHANED 로 전이합니다.
-     *
-     * <p>UPLOADED 에서만 ORPHANED 로 전이할 수 있습니다. 이미 ORPHANED 인 경우 멱등 처리되며
-     * (no-op, 이벤트도 재발행하지 않음), 그 외 상태(PENDING, DELETED)에서 호출되면
-     * {@link ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse#INVALID_UPLOAD_STATUS_TRANSITION}
-     * 예외가 발생합니다.</p>
-     *
-     * <p>전이 직후 {@link ImageOrphanedEvent} 가 등록되어, 사용자 스토리지 사용량 회수 등
-     * 후속 BC 핸들러가 부수효과를 처리할 수 있게 합니다.</p>
-     */
+    // 본 이미지를 ORPHANED 로 전이
     public void markOrphaned() {
         if (this.uploadStatus == UploadStatus.ORPHANED) {
             return;
@@ -219,16 +170,7 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
         ));
     }
 
-    /**
-     * 본 이미지를 DELETED 로 전이합니다 (스토리지 청소 워커가 S3 객체 삭제 후 호출).
-     *
-     * <p>ORPHANED 에서만 DELETED 로 전이할 수 있습니다. 이미 DELETED 면 멱등 처리(no-op),
-     * 그 외 상태(PENDING, UPLOADED)에서 호출되면
-     * {@link ImageFileMetaDomainExceptionCodeCluster.HiddenDetailResponse#INVALID_UPLOAD_STATUS_TRANSITION}
-     * 예외가 발생합니다.</p>
-     *
-     * <p>구독자가 없는 종결 상태 전이이므로 도메인 이벤트는 발행하지 않습니다.</p>
-     */
+    // 본 이미지를 DELETED 로 전이
     public void markDeleted() {
         if (this.uploadStatus == UploadStatus.DELETED) {
             return;
@@ -241,6 +183,21 @@ public class ImageFileMeta extends AbstractDomainEventPublisher implements Domai
 
         this.uploadStatus = UploadStatus.DELETED;
         this.completedDeleteAt = Instant.now();
+    }
+
+    // 주어진 회원이 이 이미지 메타의 소유자인지 여부를 반환
+    public boolean isOwnedBy(Long memberAccountId) {
+        return this.memberAccountId.equals(memberAccountId);
+    }
+
+    // 업로드가 확정되었는지 확인
+    public boolean isUploaded() {
+        return this.uploadStatus == UploadStatus.UPLOADED;
+    }
+
+    // 고아 상태 여부 확인
+    public boolean isOrphaned() {
+        return this.uploadStatus == UploadStatus.ORPHANED;
     }
 
     private static void ensureInvariants(

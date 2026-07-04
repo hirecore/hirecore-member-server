@@ -5,23 +5,15 @@ import io.hirecore.hirecorememberserver.modules.file.application.exception.FileA
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * 이미지 메타 컬렉션에 대한 존재성 / 소유권 검증 헬퍼.
- *
- * <p>여러 UseCase 가 동일한 검증 단계를 반복하기에 정적 메서드로 추출합니다.</p>
- */
+// 이미지 메타 컬렉션 존재성/소유권 검증 헬퍼
 public final class ImageFileMetaVerifier {
 
     private ImageFileMetaVerifier() {}
 
-    /**
-     * 요청한 모든 imageId 가 로드된 메타에 ID 단위로 정확히 매칭됨을 확인합니다.
-     * 누락된 항목이 있으면 {@link FileApplicationExceptionCodeCluster.DetailResponse#IMAGE_NOT_FOUND} 예외를 던집니다.
-     */
+    // 요청 ID 가 모두 로드되었는지 확인, 누락 시 IMAGE_NOT_FOUND
     public static void verifyAllExist(List<Long> requestedIds, List<ImageFileMeta> loadedMetas) {
         Set<Long> loadedIds = loadedMetas.stream()
                 .map(ImageFileMeta::getId)
@@ -34,13 +26,10 @@ public final class ImageFileMetaVerifier {
         }
     }
 
-    /**
-     * 모든 메타가 호출자 소유인지 확인합니다.
-     * 하나라도 다른 소유자라면 {@link FileApplicationExceptionCodeCluster.DetailResponse#IMAGE_OWNERSHIP_VIOLATION} 예외를 던집니다.
-     */
+    // 전부 호출자 소유인지 확인, 위반 시 IMAGE_OWNERSHIP_VIOLATION
     public static void verifyAllOwnedBy(Long memberAccountId, List<ImageFileMeta> imageFileMetas) {
         for (ImageFileMeta imageFileMeta : imageFileMetas) {
-            if (!Objects.equals(memberAccountId, imageFileMeta.getMemberAccountId())) {
+            if (!imageFileMeta.isOwnedBy(memberAccountId)) {
                 throw new FileApplicationException(
                         FileApplicationExceptionCodeCluster.DetailResponse.IMAGE_OWNERSHIP_VIOLATION
                 );

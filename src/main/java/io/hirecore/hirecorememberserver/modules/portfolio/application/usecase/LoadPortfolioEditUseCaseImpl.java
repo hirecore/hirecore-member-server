@@ -48,12 +48,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
         );
     }
 
-    /**
-     * 본문 imageId 들을 publicUrl 과 함께 묶어 응답합니다.
-     * 클라이언트는 이 매핑으로 편집 진입 시 url ↔ imageId 룩업 테이블을 초기화하며,
-     * PUT 요청 시 본문 내 image 노드 src 로부터 imageId 를 역추적합니다.
-     * URL 해석에 실패한 항목은 묶지 못하므로 응답에서 제외합니다.
-     */
+    // 본문 imageId를 publicUrl과 매핑 (URL 해석 실패 항목은 제외)
     private List<Response.ContentImage> resolveContentImages(List<Long> imageIds) {
         if (imageIds == null || imageIds.isEmpty()) {
             return List.of();
@@ -74,7 +69,7 @@ public class LoadPortfolioEditUseCaseImpl implements LoadPortfolioEditUseCase {
     }
 
     private void ensureOwner(Portfolio portfolio, Long viewerId) {
-        if (viewerId == null || !portfolio.getMemberAccountId().equals(viewerId)) {
+        if (!portfolio.isOwnedBy(viewerId)) {
             throw new PortfolioApplicationException(
                     PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN
             );

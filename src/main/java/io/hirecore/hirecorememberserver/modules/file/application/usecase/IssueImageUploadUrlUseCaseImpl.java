@@ -76,17 +76,14 @@ public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCas
         );
     }
 
-    /*
-     * [object key 경로 생성 응답]
-     *      - users/{memberAccountId}/{domainType}/{purpose}/{UUID}.{fileExtension}
-     * */
+    // users/{memberAccountId}/{domainType}/{purpose}/{UUID}.{fileExtension}
     private static String buildObjectKey(Long memberAccountId, ImagePresignedPutUrlCommand command) {
         return String.join("/",
                 "users",
                 String.valueOf(memberAccountId),
                 ImageObjectKeyResolver.pathSegmentOf(command.domainType()),
                 ImageObjectKeyResolver.pathSegmentOf(command.purpose()),
-                UUID.randomUUID() + "." + command.fileExtension().name().toLowerCase()
+                UUID.randomUUID() + "." + command.fileExtension().getValue()
         );
     }
 }

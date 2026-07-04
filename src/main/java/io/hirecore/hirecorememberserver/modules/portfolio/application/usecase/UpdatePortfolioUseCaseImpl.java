@@ -9,6 +9,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.L
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
+import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ReferencedImageIds;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,9 +31,7 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
     private final MarkImagesAsUploadedPort markImagesAsUploadedPort;
     private final ObjectMapper objectMapper;
 
-    /**
-     *  회원 본인 소유의 포트폴리오를 수정합니다.
-     * */
+    // 본인 소유 포트폴리오 수정
     @Override
     @Transactional
     public Long execute(Long portfolioId, Long viewerId, Command command) {
@@ -42,11 +40,11 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND
                 ));
 
-        if(!portfolio.getMemberAccountId().equals(viewerId)) {
+        if (!portfolio.isOwnedBy(viewerId)) {
             throw new PortfolioApplicationException(PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN);
         }
 
-        List<Long> imageIds = aggregateImageIds(command.thumbnailImageId(), command.contentImageIds());
+        List<Long> imageIds = ReferencedImageIds.of(command.thumbnailImageId(), command.contentImageIds()).values();
         markImagesAsUploadedPort.markUploaded(viewerId, imageIds);
 
         Long leafJobCategoryId = loadJobCategoryPort.findIdByCode(command.leafJobCategory().code());
@@ -101,16 +99,5 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
                     PortfolioApplicationExceptionCodeCluster.DetailResponse.CONTENT_JSON_SERIALIZATION_FAILED
             );
         }
-    }
-
-    private static List<Long> aggregateImageIds(Long thumbnailImageId, List<Long> contentImageIds) {
-        List<Long> imageIds = new ArrayList<>();
-        if (thumbnailImageId != null) {
-            imageIds.add(thumbnailImageId);
-        }
-        if (contentImageIds != null && !contentImageIds.isEmpty()) {
-            imageIds.addAll(contentImageIds);
-        }
-        return imageIds;
     }
 }

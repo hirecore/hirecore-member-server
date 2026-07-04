@@ -31,18 +31,7 @@ public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfo
     private final LoadProfileNicknamePort loadProfileNicknamePort;
     private final LoadImageUrlPort loadImageUrlPort;
 
-    /**
-     *  [로직 플로우]
-     *   1. cursor 디코드 (없으면 첫 페이지)
-     *   2. port 호출 — limit = size + 1 (hasNext 판정용 한 개 더)
-     *   3. hasNext 판정 후 size 개로 트림
-     *   4. 응답에 필요한 cross-BC 메타(닉네임, 썸네일 URL, 직무 계층) 합성 + viewer 기준 isOwner 판정
-     *      - 직무 계층은 leaf id 들을 모아 단일 배치 조회
-     *      - 닉네임/썸네일 URL 은 현재 단건 호출 (LoadMyPortfolioSummaries 와 동일 패턴).
-     *        size 가 작아 비용은 제한적이나, 트래픽 증가 시 일괄 조회 port 추가 검토 여지.
-     *      - isOwner: viewerId 가 null (비로그인) 이면 항상 false. {@code Long.equals(null) == false} 로 자연 처리.
-     *   5. nextCursor 인코드 (hasNext = true 인 경우에만)
-     */
+    // 커서 페이징(size+1로 hasNext 판정) 후 cross-BC 메타 합성 및 viewer 기준 isOwner 판정
     @Override
     @Transactional(readOnly = true)
     public Response execute(String cursorToken, int size, Long viewerId) {
@@ -85,7 +74,7 @@ public class LoadPublicPortfolioSummariesUseCaseImpl implements LoadPublicPortfo
                 .toList();
 
         String nickname = loadProfileNicknamePort.findNickname(portfolio.getMemberAccountId()).orElse(null);
-        boolean isOwner = portfolio.getMemberAccountId().equals(viewerId);
+        boolean isOwner = portfolio.isOwnedBy(viewerId);
 
         return new Response.Item(
                 portfolio.getId(),

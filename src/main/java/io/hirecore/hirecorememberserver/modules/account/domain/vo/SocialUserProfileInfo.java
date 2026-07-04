@@ -1,6 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.account.domain.vo;
 
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
+import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberAccountDomainException;
+import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberAccountDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.SocialAccountDomainException;
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.SocialAccountDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
@@ -41,5 +43,20 @@ public record SocialUserProfileInfo(
                 profileNicknameAgreed,
                 SocialAccountDomainExceptionCodeCluster.HiddenDetailResponse.CONSENT_INFO_MISSING,
                 SocialAccountDomainException::new);
+    }
+
+    // 소셜 계정 연동을 위해 이메일·프로필 닉네임 제공에 모두 동의했는지 검증
+    public void ensureConsentedForLink() {
+        AssertionUtils.isTrue(
+                emailAgreed,
+                MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.SOCIAL_LINK_WITHOUT_EMAIL_AGREED,
+                MemberAccountDomainException::new
+        );
+
+        AssertionUtils.isTrue(
+                profileNicknameAgreed,
+                MemberAccountDomainExceptionCodeCluster.HiddenDetailResponse.SOCIAL_LINK_WITHOUT_PROFILE_NICKNAME_AGREED,
+                MemberAccountDomainException::new
+        );
     }
 }

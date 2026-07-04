@@ -3,13 +3,13 @@
 다이어그램을 코드처럼 repo에서 관리합니다. **Mermaid**로 작성해 `.md`에 넣으면 GitHub·IDE가 그대로 렌더하므로, 리뷰어는 파일만 열면 그림을 봅니다(다운로드·플러그인 불필요).
 
 다이어그램 개념은 [DIAGRAM_CONCEPT.md](DIAGRAM_CONCEPT.md), Mermaid 문법은 [MERMAID_CONCEPT.md](MERMAID_CONCEPT.md) 참고.
+프로젝트 전체 아키텍처는 [ARCHITECTURE.md](ARCHITECTURE.md) 참고.
 
 ## 문서 목록
 
 | 문서 | 종류 | 내용 |
 |---|---|---|
-| [portfolio/register-flow.md](portfolio/register-flow.md) | 시퀀스 | 포트폴리오 등록: 계약 플로우 + 내부 처리(실패 분기 포함) |
-| [portfolio/hexagonal.md](portfolio/hexagonal.md) | 컴포넌트 | 포트폴리오 헥사고날 계층 |
+| [portfolio/register-flow.md](portfolio/register-flow.md) | 시퀀스·구조 | 포트폴리오 등록: 계약 플로우 + 내부 처리(실패 분기) + 헥사고날 구조 |
 | [file/image-lifecycle.md](file/image-lifecycle.md) | 상태 | 이미지 업로드 상태 전이 |
 
 ## 구조 & 네이밍

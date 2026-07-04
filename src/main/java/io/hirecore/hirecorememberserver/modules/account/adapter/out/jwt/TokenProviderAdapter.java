@@ -19,12 +19,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-/**
- * JJWT 기반의 JWT 토큰 발급·파싱 어댑터.
- *
- * <p>account BC 내부의 {@link IssueTokenPort}(토큰 발급), {@link ParseTokenPort}(토큰 파싱) 포트를 구현합니다.
- * HMAC-SHA 알고리즘으로 서명된 액세스 토큰과 리프레시 토큰을 생성하고 파싱합니다.</p>
- */
+// JJWT 기반 JWT 토큰 발급·파싱 어댑터 (HMAC-SHA 서명)
 @Slf4j
 @Component
 public class TokenProviderAdapter implements

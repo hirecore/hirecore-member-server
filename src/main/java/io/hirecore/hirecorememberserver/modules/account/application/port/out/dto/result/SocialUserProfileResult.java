@@ -7,13 +7,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 
 import java.time.Instant;
 
-/**
- * 외부 소셜 API로부터 획득한 사용자 프로필 정보를 담는 출력 전용 DTO(Result) 객체입니다.
- * <p>
- * 애플리케이션 계층 내부로 데이터가 유입되기 전(생성 시점)에 필수 값을 검증하여
- * 도메인 계층이 오염되는 것을 방지합니다.
- * </p>
- */
+// 외부 소셜 API 프로필 결과 DTO (유입 전 필수값 검증)
 public record SocialUserProfileResult(
         OAuth2Provider provider,
         String providerId,

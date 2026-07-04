@@ -14,7 +14,7 @@ import java.util.Optional;
 public class SocialAccountQueryService {
     private final LoadSocialAccountPort socialAccountQueryPort;
 
-    // 기존에 가입되어 존재하는(Existing) 계정을 찾습니다.
+    // 기존 가입 계정 조회
     @Transactional(readOnly = true)
     public Optional<SocialAccount> findExistingSocialAccount(OAuth2Provider provider, String providerId) {
         return socialAccountQueryPort.findByProviderAndProviderId(provider, providerId);

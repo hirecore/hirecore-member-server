@@ -16,12 +16,7 @@ import lombok.Getter;
 
 import java.time.Instant;
 
-/**
- * 소셜 계정(Social Account) Aggregate Root.
- *
- * <p>회원({@link MemberAccount})과 연동된 소셜 로그인 계정 정보를 관리합니다.
- * OAuth2 제공자, 제공자 식별자, 이메일, 동의 내역 등을 불변으로 유지합니다.</p>
- */
+// 소셜 계정 Aggregate Root
 @Getter
 public class SocialAccount extends AbstractDomainEventPublisher implements DomainAggregateRoot {
     private final Long id;
@@ -34,11 +29,7 @@ public class SocialAccount extends AbstractDomainEventPublisher implements Domai
     private final Boolean profileNicknameAgreed;
     private final AuditingInfo auditingInfo;
 
-    /**
-     * [복원용 빌더]
-     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
-     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
-     */
+    // 복원용 빌더 (인프라 조회 데이터 → 도메인, 앱계층 호출은 ArchUnit 차단)
     @Builder(access = AccessLevel.PUBLIC)
     private SocialAccount(
             Long id,

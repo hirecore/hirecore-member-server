@@ -31,13 +31,13 @@ public interface LoadMyPortfolioSummariesUseCase {
                 Instant updatedAt
         ) {}
 
-        /** 연결된 이력서의 라벨용 요약. */
+        // 연결 이력서 라벨 요약
         public record LinkedResume(
                 Long id,
                 String title
         ) {}
 
-        /** 연결된 자기소개서의 라벨용 요약. */
+        // 연결 자기소개서 라벨 요약
         public record LinkedCoverLetter(
                 Long id,
                 String title

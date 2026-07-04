@@ -18,13 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * 소셜 로그인 유스케이스 구현체.
- *
- * <p>외부 OAuth2 API 호출(네트워크 I/O)을 트랜잭션 밖에서 먼저 처리한 뒤,
- * {@link org.springframework.transaction.support.TransactionTemplate}으로 DB 작업 범위를 명시적으로 제어합니다.
- * 기존 회원이면 토큰을 즉시 발급하고, 신규 회원이면 가입 처리 후 토큰을 발급합니다.</p>
- */
+// 소셜 로그인 (외부 API 는 트랜잭션 밖에서, DB 작업만 TransactionTemplate 으로)
 @Service
 @RequiredArgsConstructor
 public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {

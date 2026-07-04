@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/**
- * 프로필 조회 관련 {@link ProfileJpaQueryRepository}의 JPA 구현체.
- */
+// ProfileJpaQueryRepository JPA 구현
 @Component
 @RequiredArgsConstructor
 public class ProfileJpaQueryAdapter

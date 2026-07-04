@@ -8,9 +8,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-/**
- * presigned PUT URL 발급 — 단건(이미지 1개) 항목의 web 측 contract.
- */
+// 단건 이미지 presigned PUT URL 발급 web contract
 public class ImagePresignedPutUrlApi {
 
     private ImagePresignedPutUrlApi() {}

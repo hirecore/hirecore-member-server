@@ -8,12 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/**
- * {@link LoadUserProfileSummaryPort}의 JPA 구현체.
- *
- * <p>profile 모듈이 자체 소유하는 {@code profiles} 테이블에서
- * 프로필 요약 정보를 직접 조회합니다.</p>
- */
+// LoadUserProfileSummaryPort JPA 구현 (profiles 테이블 조회)
 @Component
 @RequiredArgsConstructor
 public class UserProfileJpaQueryAdapter implements LoadUserProfileSummaryPort {

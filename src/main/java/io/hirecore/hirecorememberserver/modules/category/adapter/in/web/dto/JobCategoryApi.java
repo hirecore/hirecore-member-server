@@ -3,9 +3,7 @@ package io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.hirecore.hirecorememberserver.common.web.json.TsidId;
 
-/**
- * 직무 카테고리 단건 항목의 web 측 contract.
- */
+// 직무 카테고리 단건 항목 contract
 public class JobCategoryApi {
 
     private JobCategoryApi() {}

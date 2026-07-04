@@ -117,10 +117,7 @@ public class PortfolioJpaEntity extends AbstractPersistableAggregateRoot<Long> {
     @Embedded
     private AuditingJpaInfo auditingInfo;
 
-    /**
-     * 양방향 @OneToOne 관계의 양쪽 참조를 동기화하는 JPA 메커니즘 헬퍼.
-     * cascade/orphanRemoval이 정상 동작하도록 매퍼에서 사용됩니다.
-     */
+    // 양방향 @OneToOne 양쪽 참조 동기화 (cascade/orphanRemoval 위해)
     public void syncPortfolioContent(PortfolioContentJpaEntity newContent) {
         this.portfolioContent = newContent;
         if (newContent != null) {

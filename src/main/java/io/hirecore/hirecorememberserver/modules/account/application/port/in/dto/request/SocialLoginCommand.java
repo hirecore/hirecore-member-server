@@ -9,7 +9,6 @@ public record SocialLoginCommand(
         String authorizationCode
 ) {
     public SocialLoginCommand {
-        // 기존의 DomainException에서 ApplicationException으로 변경 적용
         AssertionUtils.notBlank(
                 provider,
                 SocialAccountApplicationExceptionCodeCluster.DetailResponse.PROVIDER_MISSING,

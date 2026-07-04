@@ -26,11 +26,7 @@ public class Profile extends AbstractDomainEventPublisher implements DomainAggre
     private final String phoneNumber;
     private final AuditingInfo auditingInfo;
 
-    /**
-     * [복원용 빌더]
-     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
-     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
-     */
+    // 복원용 빌더 (인프라 조회 데이터 → 도메인, 앱계층 호출은 ArchUnit 차단)
     @Builder(access = AccessLevel.PUBLIC)
     private Profile(
             Long id,
@@ -61,11 +57,7 @@ public class Profile extends AbstractDomainEventPublisher implements DomainAggre
         this.profileDetail = profileDetail;
     }
 
-    /**
-     * [신규 생성용 팩토리 메서드]
-     * 비즈니스 로직에서 새로운 프로필을 생성할 때 사용됩니다.
-     * 이곳에서 TSID 발급 및 기본값 초기화를 담당합니다.
-     */
+    // 신규 생성 팩토리 (TSID 발급·기본값 초기화)
     public static Profile createUserProfile(
             Long memberAccountId,
             PublicCodeInfo publicCodeInfo,

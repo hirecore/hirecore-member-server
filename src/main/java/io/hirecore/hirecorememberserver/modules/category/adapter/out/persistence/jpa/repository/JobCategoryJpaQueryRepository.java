@@ -29,12 +29,7 @@ public interface JobCategoryJpaQueryRepository extends Repository<JobCategoryJpa
 
     Optional<JobCategoryJpaEntity> findById(Long id);
 
-    /**
-     * 주어진 leaf id 의 카테고리부터 root 까지의 계층 경로를 단일 SQL 로 조회한다.
-     *
-     * <p>{@code WITH RECURSIVE} 로 leaf → root 를 한 번에 펼친 뒤 {@code depth ASC} 로 정렬해
-     * 반환하므로 결과 순서는 root → leaf 다. 깊이 D 와 무관하게 발행 SQL 은 1회로 고정된다.</p>
-     */
+    // leaf → root 계층 경로 단일 SQL 조회 (결과 순서 root → leaf)
     @Query(value = """
             WITH RECURSIVE category_path (
                 id, parent_id, category_code, category_name, depth,
@@ -57,13 +52,7 @@ public interface JobCategoryJpaQueryRepository extends Repository<JobCategoryJpa
             """, nativeQuery = true)
     List<JobCategoryJpaEntity> findHierarchyPathByLeafId(@Param("leafId") Long leafId);
 
-    /**
-     * 주어진 여러 leaf id 들 각각의 카테고리부터 root 까지의 계층 경로를 단일 SQL 로 일괄 조회한다.
-     *
-     * <p>각 행에는 시작 leaf 를 가리키는 {@code start_leaf_id} 컬럼이 동봉되어, 어댑터가 이를
-     * 키로 그룹핑하면 {@code Map<Long, List<...>>} 형태로 변환할 수 있다. 결과는
-     * {@code start_leaf_id, depth ASC} 로 정렬되어 그룹 내 순서가 root → leaf 로 보장된다.</p>
-     */
+    // 여러 leaf 의 계층 경로 일괄 조회 (start_leaf_id 로 그룹핑, 그룹 내 root → leaf)
     @Query(value = """
             WITH RECURSIVE category_path (
                 start_leaf_id, id, parent_id, category_code, category_name, depth,

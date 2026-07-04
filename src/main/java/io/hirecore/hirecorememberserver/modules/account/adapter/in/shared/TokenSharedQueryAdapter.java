@@ -8,13 +8,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPr
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/**
- * common/security 의 필터 등 외부 호출자가 사용하는 sharedkernel 토큰 포트들의 단일 구현.
- *
- * <p>BC 당 단일 어댑터 정책에 따라 account 가 공개하는 sharedkernel 토큰 포트
- * ({@link ResolveTokenPort}, {@link ValidateTokenVersionPort}) 를 한 곳에서 구현한다.
- * 각 메서드는 BC 내부 UseCase 를 경유해 인프라 의존성을 추상화한다.</p>
- */
+// sharedkernel 토큰 포트 단일 구현 (BC당 단일 어댑터, 내부 UseCase 경유)
 @Component
 @RequiredArgsConstructor
 public class TokenSharedQueryAdapter implements

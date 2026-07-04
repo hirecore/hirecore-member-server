@@ -67,11 +67,7 @@ public class UserStorageUsage extends AbstractDomainEventPublisher implements Do
                 .build();
     }
 
-    /**
-     * 사용량에서 양수 {@code bytes} 만큼을 차감한 새 인스턴스를 반환합니다.
-     * 차감 결과가 음수가 되면 {@link UserStorageUsageDomainExceptionCodeCluster.HiddenDetailResponse#USED_QUOTA_BYTES_INSUFFICIENT}
-     * 예외가 발생합니다 — 본 invariant 위반은 데이터 정합성 사고를 의미합니다.
-     */
+    // bytes 만큼 차감한 새 인스턴스 반환 (음수 결과는 정합성 위반 → 예외)
     public UserStorageUsage decrease(Long bytes) {
         AssertionUtils.notNull(
                 bytes,

@@ -16,11 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 인증 관련 엔드포인트를 담당하는 컨트롤러.
- *
- * <p>소셜 로그인과 로그아웃 기능을 제공합니다.</p>
- */
+// 인증 컨트롤러 (소셜 로그인/로그아웃)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor

@@ -7,16 +7,12 @@ import io.hirecore.hirecorememberserver.sharedkernel.adapter.in.web.dto.value.Vi
 
 import java.util.List;
 
-/**
- * GET /api/portfolios/{portfolioId}/edit — 작성자 본인 편집 폼 초기화용 endpoint 의 web 측 contract.
- *
- * <p>본문 image 노드의 src ↔ imageId 매핑을 위한 {@link ContentImage} 룩업 목록이 함께 응답된다.</p>
- */
+// GET /api/portfolios/{portfolioId}/edit — 편집 폼 초기화 web contract
 public class LoadPortfolioEditApi {
 
     private LoadPortfolioEditApi() {}
 
-    /** 본문에서 사용 중인 이미지의 (imageId, url) 매핑. 클라이언트가 PUT 요청 시 본문 image 노드 src 로부터 imageId 를 역추적하는 데 사용. */
+    // 본문 이미지 (imageId, url) 매핑 (PUT 시 src로부터 imageId 역추적용)
     public record ContentImage(
             @TsidId Long imageId,
             String url

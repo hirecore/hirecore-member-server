@@ -30,12 +30,7 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
     private final LoadJobCategoryPort loadJobCategoryPort;
     private final LoadImageUrlPort loadImageUrlPort;
 
-    /**
-     *  [로직 플로우]
-     *   1. 본인이 작성한 모든 포트폴리오를 updatedAt DESC 로 적재
-     *   2. linkedResumeId / linkedCoverLetterId 를 모아 sharedkernel port 로 제목을 bulk 조회 (각 1쿼리)
-     *   3. 포트폴리오별로 썸네일 URL, 직군 계층, 태그, 연결 자원 제목을 합쳐 응답 DTO 로 변환
-     */
+    // 본인 포트폴리오 목록 조회 후 연결 자원 제목 bulk 조회로 합성
     @Override
     @Transactional(readOnly = true)
     public Response execute(Long viewerId) {
@@ -78,10 +73,7 @@ public class LoadMyPortfolioSummariesUseCaseImpl implements LoadMyPortfolioSumma
         );
     }
 
-    /**
-     * 썸네일이 등록되지 않은 포트폴리오는 {@code null} 반환.
-     * 썸네일은 있으나 URL 해소에 실패한 경우 imageId 만 채우고 imageUrl 은 {@code null}.
-     */
+    // 썸네일 없으면 null, URL 해소 실패 시 imageId만 채움
     private SharedResponseDto.Thumbnail buildThumbnail(Long thumbnailImageId) {
         if (thumbnailImageId == null) {
             return null;

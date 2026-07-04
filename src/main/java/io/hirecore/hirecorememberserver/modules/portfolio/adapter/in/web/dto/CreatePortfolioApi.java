@@ -12,12 +12,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-/**
- * POST /api/portfolios — 포트폴리오 등록 endpoint 의 web 측 contract.
- *
- * <p>Request / Response 가 한 컨테이너 안에 함께 거주한다.
- * 본문 / 태그 / 직군 / 외부 링크 등은 sharedkernel 의 공유 record 를 재사용한다.</p>
- */
+// POST /api/portfolios — 포트폴리오 등록 web contract
 public class CreatePortfolioApi {
 
     private CreatePortfolioApi() {}

@@ -10,10 +10,6 @@ public interface LoadImageFileMetaPort {
     List<ImageFileMeta> findAllByIds(List<Long> ids);
     Optional<ImageFileMeta> findById(Long id);
 
-    /**
-     * ORPHANED 상태이면서 {@code orphanedAt} 이 {@code orphanedBefore} 이전인 메타를
-     * {@code orphanedAt} 오름차순으로 최대 {@code limit} 건 조회합니다.
-     * 스토리지 청소 워커의 후보 조회용입니다.
-     */
+    // 청소 워커용: orphanedBefore 이전 ORPHANED 메타를 orphanedAt 오름차순 최대 limit 건
     List<ImageFileMeta> findOrphanedCandidates(Instant orphanedBefore, int limit);
 }

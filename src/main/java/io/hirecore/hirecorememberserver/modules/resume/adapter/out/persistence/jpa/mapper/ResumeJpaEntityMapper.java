@@ -32,13 +32,7 @@ public abstract class ResumeJpaEntityMapper {
     @Mapping(target = "resumeTags", ignore = true)
     public abstract ResumeJpaEntity toJpaEntity(Resume domain);
 
-    /**
-     * 부모 엔티티 변환 직후 자식 그래프를 조립하고 양방향 연관관계를 동기화합니다.
-     *
-     * <p>{@link ResumeJpaEntity#syncResumeContent}, {@link ResumeJpaEntity#syncResumeJobCategory},
-     * {@link ResumeJpaEntity#addResumeTag} 헬퍼를 통해 owning side / inverse side 양쪽 참조가
-     * 한 호출 안에서 일관되게 채워지도록 한다.</p>
-     */
+    // 부모 변환 직후 자식 그래프 조립 및 양방향 연관관계 동기화
     @AfterMapping
     protected void assembleChildren(Resume domain, @MappingTarget ResumeJpaEntity entity) {
         if (domain == null || entity == null) {

@@ -24,11 +24,7 @@ public class JobCategory extends AbstractDomainEventPublisher implements DomainA
     private final Integer sortOrder;
     private final AuditingInfo auditingInfo;
 
-    /**
-     * [복원용 빌더]
-     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
-     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
-     */
+    // 복원 전용 빌더 (인프라 조회 → 도메인, Application 직접 호출은 ArchUnit 차단)
     @Builder(access = AccessLevel.PUBLIC)
     private JobCategory(
         Long id,

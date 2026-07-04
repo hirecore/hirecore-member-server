@@ -23,16 +23,7 @@ public class PortfolioJpaQueryRepositoryImpl implements PortfolioJpaQueryReposit
 
     private final JPAQueryFactory queryFactory;
 
-    /**
-     * 2-step 조회:
-     * <ol>
-     *   <li>Step A — GROUP BY 와 SQL GREATEST 로 (id, effectiveUpdatedAt) 튜플을 정렬·페이지네이션해 가져온다.
-     *       cursor 비교는 HAVING 에 둔다 (effective 가 집계 결과인 MAX 를 포함하므로 WHERE 에선 사용할 수 없다).</li>
-     *   <li>Step B — Step A 에서 얻은 id 들로 PortfolioJpaEntity 를 1:1 sub-aggregate 와 함께 fetch-join 으로 로드.
-     *       1:N 인 portfolio_tags 는 LAZY 로 두고 {@code @BatchSize(100)} 으로 일괄 로딩한다 (Portfolio aggregate 정의 참조).</li>
-     * </ol>
-     * 마지막에 Step A 의 순서대로 재정렬해 반환한다.
-     */
+    // 2-step: (A) GREATEST로 (id, effectiveUpdatedAt) 정렬·페이징 (커서는 집계라 HAVING), (B) id로 fetch-join 로드 후 A 순서로 재정렬
     @Override
     public List<PortfolioWithEffectiveUpdatedAt> findPublicPortfoliosByCursor(
             Instant cursorEffectiveUpdatedAt,

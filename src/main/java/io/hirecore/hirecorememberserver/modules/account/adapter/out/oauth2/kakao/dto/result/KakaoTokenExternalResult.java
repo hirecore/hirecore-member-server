@@ -2,9 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kaka
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * @see <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-token-response-body"> Kakao의 응답데이터 레퍼런스 </a>
- * */
+// 카카오 토큰 응답 (docs: rest-api#request-token-response-body)
 public record KakaoTokenExternalResult(
         @JsonProperty("token_type")
         String tokenType,

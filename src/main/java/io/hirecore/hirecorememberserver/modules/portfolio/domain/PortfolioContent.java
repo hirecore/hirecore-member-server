@@ -13,25 +13,15 @@ import java.util.List;
 
 @Getter
 public class PortfolioContent {
-    /**
-     * Portfolio Aggregate의 식별자와 동일한 값을 사용합니다 (JPA @MapsId 매핑).
-     */
+    // Portfolio 식별자와 동일 (JPA @MapsId)
     private final Long portfolioId;
     private final String contentJson;
     private final String contentHtml;
-    /**
-     * 본문에서 사용 중인 이미지 식별자 집합입니다.
-     * 본문 JSON/HTML 내부에 임베드된 이미지와 일치하는 ID 들만 보관하며,
-     * 포트폴리오 수정 시 차집합 계산을 통해 고아 이미지 회수 트리거에 사용됩니다.
-     */
+    // 본문에 임베드된 이미지 ID 집합 (수정 시 차집합으로 고아 이미지 회수 트리거)
     private final List<Long> imageIds;
     private final AuditingInfo auditingInfo;
 
-    /**
-     * [복원용 빌더]
-     * 데이터베이스 등 외부 인프라에서 조회된 데이터를 도메인 객체로 복원할 때만 사용해야 합니다.
-     * Application 계층에서의 임의 호출은 ArchUnit 테스트에 의해 차단됩니다.
-     */
+    // 복원용 빌더 (인프라 조회 전용, ArchUnit으로 임의 호출 차단)
     @Builder(access = AccessLevel.PUBLIC)
     private PortfolioContent(
             Long portfolioId,

@@ -7,13 +7,7 @@ import io.hirecore.hirecorememberserver.modules.profile.domain.UserProfileDetail
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/**
- * {@link ProfileDetail} 다형성 타입과 {@link ProfileDetailJpaEntity} 다형성 타입 간의 변환을 담당합니다.
- *
- * <p>sealed interface 기반의 도메인 다형성과 JPA 상속 기반의 엔티티 다형성을
- * {@code instanceof} 패턴 매칭으로 연결합니다.
- * 새로운 프로필 타입(AdminProfileDetail 등) 추가 시 이 클래스에만 분기를 추가하면 됩니다.</p>
- */
+// ProfileDetail ↔ JPA 엔티티 다형성 변환 (sealed ↔ JPA 상속, instanceof 분기)
 @Component
 @RequiredArgsConstructor
 public class ProfileDetailJpaEntityMapper {

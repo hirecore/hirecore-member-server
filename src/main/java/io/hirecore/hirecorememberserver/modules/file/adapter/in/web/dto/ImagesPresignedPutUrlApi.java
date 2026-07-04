@@ -4,9 +4,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
-/**
- * POST /api/users/files/images/presigned-put-url — 이미지 다건 presigned PUT URL 발급 endpoint 의 web 측 contract.
- */
+// 이미지 다건 presigned PUT URL 발급 web contract
 public class ImagesPresignedPutUrlApi {
 
     private ImagesPresignedPutUrlApi() {}

@@ -6,9 +6,6 @@ import java.util.Optional;
 
 public interface LoadResumeContentPort {
 
-    /**
-     * 식별자로 이력서의 메타와 본문을 한 번에 적재한다.
-     * 자원이 존재하지 않거나 본문이 비어 있는 경우 {@link Optional#empty()} 를 반환한다.
-     */
+    // 메타 + 본문 단건 적재 (없거나 본문 비면 empty)
     Optional<LoadResumeContentUseCase.Response> findById(Long resumeId);
 }

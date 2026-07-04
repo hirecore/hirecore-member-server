@@ -14,75 +14,32 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
-/**
- * 사용자 스토리지 사용량의 변경 이력을 나타내는 도메인 객체입니다.
- *
- * <p>이 객체는 특정 사용자의 스토리지 사용량이 어떤 행위로 인해 얼마나 변경되었는지와,
- * 변경 전/후 총 사용량을 함께 보관하기 위한 목적을 가집니다.</p>
- *
- * <p>주요 활용 목적은 다음과 같습니다.</p>
- * <ul>
- *     <li>사용량 증가/감소 이력 추적</li>
- *     <li>변경 원인 리소스 식별</li>
- *     <li>변경 전/후 총 사용량 검증</li>
- *     <li>중복 처리 방지를 위한 idempotency 보장</li>
- * </ul>
- */
+// 스토리지 사용량 변경 이력 (증감/전후 총량 보관, 멱등 보장)
 @Getter
 public class UserStorageUsageLog extends AbstractDomainEventPublisher implements DomainAggregateRoot {
 
-    /** 사용량 변경 이력 식별자입니다. */
     private final Long id;
 
-    /** 사용량이 귀속되는 회원 계정 식별자입니다. */
     private final Long memberAccountId;
 
-    /** 사용량 변화를 발생시킨 이유입니다. */
     private final UsageChangeReason usageChangeReason;
 
-    /** 사용량 변경을 발생시킨 리소스(자원) 종류입니다. */
     private final ResourceKind resourceKind;
 
-    /** 사용량 변경 대상 리소스(자원) 식별자입니다. */
     private final Long resourceKindId;
 
-    /**
-     * 이번 변경으로 증감된 사용량(byte)입니다.
-     *
-     * <p>양수는 증가, 음수는 감소를 의미합니다.</p>
-     */
+    // 증감량(byte): 양수 증가, 음수 감소
     private final Long changeBytes;
 
-    /** 변경 반영 직전의 총 사용량(byte)입니다. */
     private final Long beforeUsedQuotaBytes;
 
-    /** 변경 반영 직후의 총 사용량(byte)입니다. */
     private final Long afterUsedQuotaBytes;
 
-    /**
-     * 동일 요청의 중복 반영을 방지하기 위한 멱등 키입니다.
-     *
-     * <p>같은 비즈니스 요청은 동일한 키를 사용해야 합니다.</p>
-     */
+    // 멱등 키: 같은 요청 중복 반영 방지
     private final String idempotencyKey;
 
-    /** 생성/수정 시점 등의 감사 정보입니다. */
     private final AuditingInfo auditingInfo;
 
-    /**
-     * 사용자 스토리지 사용량 변경 이력을 생성합니다.
-     *
-     * @param id 사용량 변경 이력 식별자
-     * @param memberAccountId 사용량이 귀속되는 회원 계정 식별자
-     * @param usageChangeReason 사용량 변경을 발생시킨 행위 유형
-     * @param resourceKind 사용량 변경 대상 리소스 유형
-     * @param resourceKindId 사용량 변경 대상 리소스 식별자
-     * @param changeBytes 이번 변경으로 증감된 사용량(byte)
-     * @param beforeUsedQuotaBytes 변경 반영 직전 총 사용량(byte)
-     * @param afterUsedQuotaBytes 변경 반영 직후 총 사용량(byte)
-     * @param idempotencyKey 동일 요청 중복 반영 방지 키
-     * @param auditingInfo 감사 정보
-     */
     @Builder(access = AccessLevel.PUBLIC)
     private UserStorageUsageLog(
             Long id,
@@ -137,10 +94,7 @@ public class UserStorageUsageLog extends AbstractDomainEventPublisher implements
                 .build();
     }
 
-    /**
-     * 리소스가 회수되어 사용량이 차감되는 이력을 생성합니다.
-     * {@code changeBytes} 는 음수 값으로 전달해야 합니다 (도메인 약속: 양수는 증가, 음수는 감소).
-     */
+    // 사용량 차감 이력: changeBytes 는 음수로 전달
     public static UserStorageUsageLog createForResourceDeletion(
             Long memberAccountId,
             ResourceKind resourceKind,

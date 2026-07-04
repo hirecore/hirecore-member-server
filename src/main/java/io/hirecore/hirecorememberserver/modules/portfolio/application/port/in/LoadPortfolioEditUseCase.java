@@ -25,7 +25,7 @@ public interface LoadPortfolioEditUseCase {
             SharedResponseDto.RichTextContent content
     ) {
 
-        /** 본문에 임베드된 이미지의 식별자 ↔ url 매핑 (편집 화면 룩업용). */
+        // 본문 이미지 id ↔ url 매핑 (편집 화면 룩업용)
         public record ContentImage(
                 Long imageId,
                 String url

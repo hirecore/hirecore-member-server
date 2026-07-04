@@ -49,18 +49,14 @@ public interface LoadPortfolioDetailUseCase {
             ) {}
         }
 
-        /**
-         * 연결된 이력서. 자원이 PRIVATE 이고 viewer 가 자원 소유자가 아니면 {@code content} 가 {@code null}.
-         */
+        // 연결 이력서 (PRIVATE이고 소유자 아니면 content null)
         public record LinkedResume(
                 Long id,
                 String title,
                 SharedResponseDto.RichTextContent content
         ) {}
 
-        /**
-         * 연결된 자기소개서. 자원이 PRIVATE 이고 viewer 가 자원 소유자가 아니면 {@code content} 가 {@code null}.
-         */
+        // 연결 자기소개서 (PRIVATE이고 소유자 아니면 content null)
         public record LinkedCoverLetter(
                 Long id,
                 String title,

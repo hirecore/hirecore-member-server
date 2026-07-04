@@ -39,8 +39,7 @@ public class ReleaseImageStorageUsageUseCaseImpl implements ReleaseImageStorageU
 
         Optional<UserStorageUsage> maybeCurrent = loadUserStorageUsagePort.findByMemberAccountId(memberAccountId);
         if (maybeCurrent.isEmpty()) {
-            // 정상 흐름이라면 발생하지 않습니다 (회수할 사용량 row 가 없음 = 정합성 사고).
-            // 사용자 흐름을 막지 않기 위해 흡수하고 경고 로그만 남깁니다.
+            // 사용량 row 없음 = 정합성 사고, 흐름 막지 않고 경고만
             log.warn(
                     "회수할 사용량 row 가 없습니다 — skip. memberAccountId={}, imageFileMetaId={}",
                     memberAccountId, imageFileMetaId

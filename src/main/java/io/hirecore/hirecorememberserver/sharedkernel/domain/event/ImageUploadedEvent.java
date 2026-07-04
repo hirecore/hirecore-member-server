@@ -8,15 +8,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 
 import java.time.Instant;
 
-/**
- * 이미지 파일 메타가 PENDING 상태에서 UPLOADED 상태로 전이되었을 때 발행되는 도메인 이벤트입니다.
- *
- * <p>{@code ImageFileMeta} Aggregate Root가 업로드 확정 시점에 생성하며,
- * 사용자 스토리지 사용량 갱신 등 후속 BC 핸들러가 구독하여 부수효과를 처리할 수 있게 합니다.</p>
- *
- * <p>{@code domainType} 과 {@code purpose} 는 publisher 측 도메인 분류 정보로, consumer 가
- * 자체 분류 체계(예: storage BC 의 {@code ResourceKind})로 해석할 때 사용합니다.</p>
- */
+// 이미지 PENDING→UPLOADED 전이 시 발행 (스토리지 사용량 갱신 등)
 public record ImageUploadedEvent(
         Long imageFileMetaId,
         Long memberAccountId,

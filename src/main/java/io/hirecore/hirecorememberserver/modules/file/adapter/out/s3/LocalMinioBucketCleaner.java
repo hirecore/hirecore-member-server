@@ -18,15 +18,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.util.List;
 
-/**
- * 로컬 환경에서 애플리케이션 재시작 시 MinIO bucket 안에 잔존하는 객체들을 일괄 삭제합니다.
- *
- * <p>로컬 개발 사이클에서 이전 실행이 만든 업로드 파일이 다음 실행까지 남아 있어 발생하는
- * 데이터 불일치(예: DB 는 `create-drop` 으로 비워졌으나 storage 는 남아 있음)를 방지하기 위함입니다.</p>
- *
- * <p>dev/prod 환경에서는 본 빈이 등록되지 않으므로 데이터가 안전합니다.
- * bucket 이 아직 만들어지지 않았거나 MinIO 가 미가동인 경우 경고 로그만 남기고 진행을 계속합니다.</p>
- */
+// 로컬 재시작 시 MinIO 잔존 객체 정리 (DB create-drop 과 storage 불일치 방지)
 @Slf4j
 @Component
 @Profile({"local", "local-docker"})

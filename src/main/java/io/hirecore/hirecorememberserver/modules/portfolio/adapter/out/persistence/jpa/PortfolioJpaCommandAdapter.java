@@ -18,11 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
-/**
- * 도메인 POJO 의 이벤트를 JPA 엔티티로 이전(Event Bridge) 한 뒤
- * {@code repository.save()} 호출 시 Spring Data 가 {@code @DomainEvents} 를 통해
- * 자동으로 이벤트를 발행하도록 위임한다.
- */
+// 도메인 이벤트를 JPA 엔티티로 브리지하여 save 시 @DomainEvents 자동 발행에 위임
 @Component
 @RequiredArgsConstructor
 public class PortfolioJpaCommandAdapter implements
@@ -63,10 +59,7 @@ public class PortfolioJpaCommandAdapter implements
         portfolioRepository.decrementCachedInterestCountById(portfolioId);
     }
 
-    /**
-     * 도메인 변경분을 새 JPA 엔티티 그래프로 변환한 뒤 {@code markPersisted()} 로 기존 영속 객체임을 표시하고
-     * {@code save()} 의 merge 경로로 진입시킵니다. cascade + orphanRemoval 로 자식 컬렉션은 자동 동기화됩니다.
-     */
+    // markPersisted로 merge 경로 진입, cascade+orphanRemoval로 자식 동기화
     @Override
     public void update(Portfolio portfolio) {
         PortfolioJpaEntity portfolioEntity = portfolioMapper.toJpaEntity(portfolio);
@@ -75,15 +68,7 @@ public class PortfolioJpaCommandAdapter implements
         portfolioRepository.save(portfolioEntity);
     }
 
-    /**
-     * 포트폴리오 본체 + cascade 자식(contents/job_categories/tags) 영구 삭제 전에,
-     * AR 매핑에서 분리되어 cascade 가 끊긴 두 자식 테이블
-     * ({@code portfolio_member_interests}, {@code portfolio_member_views}) 의
-     * 잔존 행을 명시적으로 cleanup 한다.
-     *
-     * <p>{@code Portfolio.delete()} 가 발행한 도메인 이벤트는 use case 가 {@code PublishDomainEventsPort} 로
-     * 명시 발행하므로, 본 메서드는 영속화 책임에만 집중한다.</p>
-     */
+    // 삭제 전 cascade 끊긴 자식(interests/views) 잔존 행을 명시 cleanup
     @Override
     public void delete(Portfolio portfolio) {
         Long portfolioId = portfolio.getId();

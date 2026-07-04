@@ -12,12 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 인증된 사용자의 프로필 관련 조회 엔드포인트를 담당하는 컨트롤러.
- *
- * <p>프론트엔드에서 페이지 진입 시 로그인 상태 및 사용자 기본 정보를
- * 확인하는 데 사용됩니다.</p>
- */
+// 인증 사용자 프로필 조회 컨트롤러
 @RestController
 @RequestMapping("/api/users/profile")
 @RequiredArgsConstructor

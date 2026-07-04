@@ -12,10 +12,7 @@ public abstract class JobCategoryJpaEntityMapper {
     public abstract JobCategoryJpaEntity toJpaEntity(JobCategory domain);
     public abstract JobCategory toDomain(JobCategoryJpaEntity jpaEntity);
 
-    /**
-     * 다중 leaf 직무 계층 일괄 조회의 Recursive CTE 결과 행({@link JobCategoryHierarchyRow}) 을
-     * 도메인 객체로 복원한다.
-     */
+    // CTE 결과 행 → 도메인 복원
     public JobCategory toDomain(JobCategoryHierarchyRow row) {
         return JobCategory.builder()
                 .id(row.getId())

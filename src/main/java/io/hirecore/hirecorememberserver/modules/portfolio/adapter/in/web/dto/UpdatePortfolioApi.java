@@ -12,11 +12,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-/**
- * PUT /api/portfolios/{portfolioId} — 포트폴리오 수정 endpoint 의 web 측 contract.
- *
- * <p>전체 교체(PUT) 시맨틱. 편집 화면에서 사용자가 변경한 내용을 일괄 반영할 때 호출된다.</p>
- */
+// PUT /api/portfolios/{portfolioId} — 포트폴리오 수정 web contract (전체 교체 시맨틱)
 public class UpdatePortfolioApi {
 
     private UpdatePortfolioApi() {}

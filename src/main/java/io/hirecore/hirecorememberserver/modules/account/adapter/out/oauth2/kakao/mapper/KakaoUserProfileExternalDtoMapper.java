@@ -9,10 +9,7 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "spring")
 public abstract class KakaoUserProfileExternalDtoMapper {
 
-    /**
-     * 카카오 동의항목의 "동의가 필요한가?" 기준을 우리 시스템의 "동의했는가?" 기준으로 역치환합니다.
-     * (예: {@code emailNeedsAgreement = true} → {@code emailAgreed = false})
-     */
+    // 카카오 "동의 필요" 기준을 "동의함" 기준으로 역치환 (needsAgreement=true → agreed=false)
     @Mappings({
             @Mapping(target = "provider", constant = "KAKAO"),
             @Mapping(target = "providerId", source = "id"),

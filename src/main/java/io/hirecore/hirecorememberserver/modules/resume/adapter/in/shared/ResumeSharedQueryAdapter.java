@@ -12,12 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * 다른 BC 가 이력서를 조회하기 위해 사용하는 sharedkernel out port 들의 단일 구현.
- *
- * <p>BC 당 단일 어댑터 정책에 따라 sharedkernel 의 resume 관련 포트들을 한 곳에서 구현한다.
- * 각 메서드는 BC 내부 UseCase 를 경유해 트랜잭션 경계와 헥사고날 in/out 경계를 보존한다.</p>
- */
+// 타 BC 의 이력서 조회용 sharedkernel out port 단일 구현
 @Component
 @RequiredArgsConstructor
 public class ResumeSharedQueryAdapter implements

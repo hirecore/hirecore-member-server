@@ -15,10 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 
-/**
- * 카카오 OAuth2 서버와 통신하여 정보를 조회하는 어댑터입니다.<br/>
- * [의의] RestClient를 사용하여 동기식으로 동작하며, 가상 스레드 환경에서 최상의 효율을 냅니다.
- */
+// 카카오 OAuth2 통신 어댑터 (RestClient 동기, 가상 스레드에 최적)
 @Component
 @RequiredArgsConstructor
 public class FetchKakaoUserProfileAdapter implements FetchSocialUserProfilePort {
@@ -28,9 +25,7 @@ public class FetchKakaoUserProfileAdapter implements FetchSocialUserProfilePort 
     private final KakaoOAuth2Properties kakaoProperties;
     private final KakaoUserProfileExternalDtoMapper kakaoUserProfileExternalDtoMapper;
 
-    /**
-     * 카카오 인증 프로세스를 오케스트레이션합니다.
-     */
+    // 카카오 인증 프로세스 오케스트레이션
     @Override
     public SocialUserProfileResult fetchByAuthorizationCode(String authorizationCode) {
         KakaoTokenExternalResult tokenResult = exchangeAuthorizationCodeForToken(authorizationCode);
@@ -38,9 +33,7 @@ public class FetchKakaoUserProfileAdapter implements FetchSocialUserProfilePort 
         return kakaoUserProfileExternalDtoMapper.toSocialUserProfileResult(profileResult);
     }
 
-    /**
-     * 카카오 인증 서버(kauth)로부터 토큰을 발급받습니다.
-     */
+    // 토큰 발급 (kauth 인증 서버)
     private KakaoTokenExternalResult exchangeAuthorizationCodeForToken(String authorizationCode) {
         return kakaoTokenIssueRestClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -56,9 +49,7 @@ public class FetchKakaoUserProfileAdapter implements FetchSocialUserProfilePort 
                 .body(KakaoTokenExternalResult.class);
     }
 
-    /**
-     * 카카오 API 서버(kapi)로부터 사용자 프로필을 요청합니다.
-     */
+    // 사용자 프로필 조회 (kapi API 서버)
     private KakaoUserProfileExternalResult fetchProfileFromKakao(String accessToken) {
         return kakaoUserInfoRestClient.get()
                 .header("Authorization", "Bearer " + accessToken)
@@ -73,9 +64,7 @@ public class FetchKakaoUserProfileAdapter implements FetchSocialUserProfilePort 
                 .body(KakaoUserProfileExternalResult.class);
     }
 
-    /**
-     * 토큰 요청을 위한 폼 데이터를 구축합니다.
-     */
+    // 토큰 요청 폼 데이터 구성
     private MultiValueMap<String, String> buildTokenRequestForm(String authorizationCode) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", kakaoProperties.grantType());

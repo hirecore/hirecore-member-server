@@ -113,10 +113,7 @@ public class CoverLetterJpaEntity extends AbstractPersistableAggregateRoot<Long>
     @Embedded
     private AuditingJpaInfo auditingInfo;
 
-    /**
-     * 양방향 @OneToOne 관계의 양쪽 참조를 동기화하는 JPA 메커니즘 헬퍼.
-     * cascade/orphanRemoval 이 정상 동작하도록 매퍼에서 사용됩니다.
-     */
+    // 양방향 연관관계 동기화 (cascade/orphanRemoval 정상 동작용)
     public void syncCoverLetterContent(CoverLetterContentJpaEntity newContent) {
         this.coverLetterContent = newContent;
         if (newContent != null) {

@@ -17,13 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * S3 {@code DeleteObjects} 배치 호출로 객체들을 일괄 삭제합니다.
- *
- * <p>한 호출에 최대 1000개 객체까지 처리할 수 있으므로 호출자가 사전 청크 분할을 책임집니다.
- * 부분 실패 시 응답의 {@code errors()} 에 있는 키는 결과에서 제외하여 호출자가 영속 반영
- * 대상에서 빼고 다음 주기에 재시도할 수 있게 합니다.</p>
- */
+// S3 DeleteObjects 배치 삭제 (최대 1000개/호출, 실패 키는 결과에서 제외)
 @Slf4j
 @Component
 @RequiredArgsConstructor

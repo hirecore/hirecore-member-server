@@ -3,12 +3,7 @@ package io.hirecore.hirecorememberserver.modules.file.application.util;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 
-/**
- * 분류 VO 값으로부터 S3 Object Key 의 path segment 를 합성합니다.
- *
- * <p>{@code DomainType} / {@code Purpose} 가 sharedkernel 로 이전되면서, S3 경로 합성이라는
- * file BC 고유 관심사를 분류 VO 자체에서 분리하기 위해 도입한 매핑 함수입니다.</p>
- */
+// 분류 VO 로부터 S3 Object Key path segment 합성 (file BC 고유 관심사 분리)
 public final class ImageObjectKeyResolver {
 
     private ImageObjectKeyResolver() {}

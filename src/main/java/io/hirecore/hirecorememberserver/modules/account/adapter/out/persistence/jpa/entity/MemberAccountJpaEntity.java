@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 
 import org.hibernate.annotations.Comment;
 
-/**
- * <h3>Aggregate Root</h3>
- */
+// Aggregate Root
 @Entity
 @Table(name="member_accounts")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)

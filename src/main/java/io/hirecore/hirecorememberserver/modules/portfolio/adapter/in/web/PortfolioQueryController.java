@@ -34,10 +34,7 @@ public class PortfolioQueryController {
     private final LoadPublicPortfolioSummariesUseCase loadPublicPortfolioSummariesUseCase;
     private final PortfolioWebMapper portfolioWebMapper;
 
-    /**
-     * 비로그인 사용자도 접근 가능한 상세 조회입니다. 작성자 본인 호출 시 viewCount/interestCount 등 통계는 변하지 않습니다.
-     * {@code authPrincipal} 은 비로그인 호출에서 {@code null} 일 수 있습니다.
-     */
+    // 상세 조회 (비로그인 허용, authPrincipal null 가능)
     @GetMapping("{portfolioId}")
     public ResponseEntity<LoadPortfolioDetailApi.Response> loadPortfolioDetail(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
@@ -49,10 +46,7 @@ public class PortfolioQueryController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 작성자 본인만 접근 가능한 편집 폼 초기화 데이터입니다.
-     * SecurityConfig 에서 {@code authenticated} 로 보호되므로 {@code authPrincipal} 은 항상 non-null 입니다.
-     */
+    // 편집 폼 초기화 데이터 (작성자 본인 전용)
     @GetMapping("{portfolioId}/edit")
     public ResponseEntity<LoadPortfolioEditApi.Response> loadPortfolioEdit(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
@@ -63,11 +57,7 @@ public class PortfolioQueryController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 작성자 본인이 보유한 모든 포트폴리오를 마지막 수정 시각 내림차순으로 한 번에 반환합니다.
-     * 페이징 없이 전체를 반환하며, 연결된 이력서/자기소개서가 없는 경우 각 필드는 {@code null} 입니다.
-     * SecurityConfig 에서 {@code authenticated} 로 보호되므로 {@code authPrincipal} 은 항상 non-null 입니다.
-     */
+    // 본인 보유 포트폴리오 전체 목록 (수정 시각 내림차순, 페이징 없음)
     @GetMapping("summaries/mine")
     public ResponseEntity<LoadMyPortfolioSummariesApi.Response> loadMyPortfolioSummaries(
             @AuthenticationPrincipal AuthPrincipal authPrincipal
@@ -77,11 +67,7 @@ public class PortfolioQueryController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 비로그인 사용자도 접근 가능한 공개 포트폴리오 요약 목록(무한 스크롤)입니다.
-     * effective updatedAt (Portfolio/PortfolioContent/PortfolioJobCategory.connectedAt/PortfolioTag 의 GREATEST) 내림차순으로 정렬됩니다.
-     * {@code authPrincipal} 은 비로그인 호출에서 {@code null} 일 수 있으며, 각 항목의 {@code isOwner} 판정에만 사용됩니다.
-     */
+    // 공개 포트폴리오 요약 목록 무한 스크롤 (비로그인 허용, authPrincipal은 isOwner 판정용)
     @GetMapping("summaries/public")
     public ResponseEntity<LoadPublicPortfolioSummariesApi.Response> loadPublicPortfolioSummaries(
             @AuthenticationPrincipal AuthPrincipal authPrincipal,

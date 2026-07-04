@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.account.application.MemberAccountCommandService;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.IncrementTokenVersionPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ class LogoutUseCaseImplTest {
     private LogoutUseCaseImpl logoutUseCase;
 
     @Mock
-    private MemberAccountCommandService memberAccountCommandService;
+    private IncrementTokenVersionPort incrementTokenVersionPort;
 
     @Test
     @DisplayName("회원의 토큰 버전을 증가시켜 기존 토큰을 무효화한다")
@@ -30,6 +30,6 @@ class LogoutUseCaseImplTest {
         logoutUseCase.execute(memberId);
 
         // then
-        verify(memberAccountCommandService).incrementTokenVersion(memberId);
+        verify(incrementTokenVersionPort).incrementTokenVersion(memberId);
     }
 }

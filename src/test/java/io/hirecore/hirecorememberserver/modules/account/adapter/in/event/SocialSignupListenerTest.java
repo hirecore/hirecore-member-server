@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.in.event;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import io.hirecore.hirecorememberserver.modules.account.application.SocialAccountCommandService;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveSocialAccountPort;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberSocialSignedUpEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
@@ -30,7 +30,7 @@ class SocialSignupListenerTest {
     private SocialSignupListener listener;
 
     @Mock
-    private SocialAccountCommandService socialAccountCommandService;
+    private SaveSocialAccountPort saveSocialAccountPort;
 
     @Captor
     private ArgumentCaptor<SocialAccount> socialAccountCaptor;
@@ -43,14 +43,14 @@ class SocialSignupListenerTest {
                 .set("provider", OAuth2Provider.KAKAO)
                 .sample();
 
-        given(socialAccountCommandService.saveSocialAccount(any(SocialAccount.class)))
+        given(saveSocialAccountPort.save(any(SocialAccount.class)))
                 .willReturn(fm.giveMeOne(SocialAccount.class));
 
         // when
         listener.handleSocialSignup(event);
 
         // then — 이벤트 필드가 SocialAccount에 정확히 매핑되었는지 검증
-        then(socialAccountCommandService).should().saveSocialAccount(socialAccountCaptor.capture());
+        then(saveSocialAccountPort).should().save(socialAccountCaptor.capture());
 
         SocialAccount captured = socialAccountCaptor.getValue();
         assertThat(captured.getMemberAccountId()).isEqualTo(event.memberAccountId());

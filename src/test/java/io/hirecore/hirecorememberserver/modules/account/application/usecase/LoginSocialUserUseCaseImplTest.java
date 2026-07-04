@@ -1,13 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.account.application.usecase;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import io.hirecore.hirecorememberserver.modules.account.application.MemberAccountCommandService;
-import io.hirecore.hirecorememberserver.modules.account.application.MemberAccountQueryService;
-import io.hirecore.hirecorememberserver.modules.account.application.SocialAccountQueryService;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadMemberAccountPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialAccountPort;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveMemberAccountPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.application.mapper.SocialUserProfileInfoMapper;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
@@ -43,18 +43,18 @@ class LoginSocialUserUseCaseImplTest {
 
     @Mock private FetchSocialUserProfilePort fetchSocialUserProfilePort;
     @Mock private IssueTokenPort tokenUtilsPort;
-    @Mock private SocialAccountQueryService socialAccountQueryService;
-    @Mock private MemberAccountQueryService memberAccountQueryService;
-    @Mock private MemberAccountCommandService memberAccountCommandService;
+    @Mock private LoadSocialAccountPort loadSocialAccountPort;
+    @Mock private LoadMemberAccountPort loadMemberAccountPort;
+    @Mock private SaveMemberAccountPort saveMemberAccountPort;
     @Mock private TransactionTemplate transactionTemplate;
     @Mock private SocialUserProfileInfoMapper socialUserProfileInfoMapper;
 
     @BeforeEach
     void setUp() {
         loginSocialUserUseCaseImpl = new LoginSocialUserUseCaseImpl(
-                socialAccountQueryService,
-                memberAccountQueryService,
-                memberAccountCommandService,
+                loadSocialAccountPort,
+                loadMemberAccountPort,
+                saveMemberAccountPort,
                 fetchSocialUserProfilePort,
                 tokenUtilsPort,
                 transactionTemplate,
@@ -82,9 +82,9 @@ class LoginSocialUserUseCaseImplTest {
             PairTokenResponse expectedTokens = fm.giveMeOne(PairTokenResponse.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
-            given(socialAccountQueryService.findExistingSocialAccount(profile.provider(), profile.providerId()))
+            given(loadSocialAccountPort.findByProviderAndProviderId(profile.provider(), profile.providerId()))
                     .willReturn(Optional.of(socialAccount));
-            given(memberAccountQueryService.findById(socialAccount.getMemberAccountId())).willReturn(member);
+            given(loadMemberAccountPort.findById(socialAccount.getMemberAccountId())).willReturn(member);
             given(tokenUtilsPort.issueTokenPair(any())).willReturn(expectedTokens);
 
             // when
@@ -92,7 +92,7 @@ class LoginSocialUserUseCaseImplTest {
 
             // then
             assertThat(result).isSameAs(expectedTokens);
-            then(memberAccountCommandService).shouldHaveNoInteractions();
+            then(saveMemberAccountPort).shouldHaveNoInteractions();
         }
     }
 
@@ -114,10 +114,10 @@ class LoginSocialUserUseCaseImplTest {
             PairTokenResponse expectedTokens = fm.giveMeOne(PairTokenResponse.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
-            given(socialAccountQueryService.findExistingSocialAccount(profile.provider(), profile.providerId()))
+            given(loadSocialAccountPort.findByProviderAndProviderId(profile.provider(), profile.providerId()))
                     .willReturn(Optional.empty());
             given(socialUserProfileInfoMapper.toSocialUserProfileInfo(profile)).willReturn(socialInfo);
-            given(memberAccountCommandService.saveMemberAccount(any(MemberAccount.class))).willReturn(savedMember);
+            given(saveMemberAccountPort.save(any(MemberAccount.class))).willReturn(savedMember);
             given(tokenUtilsPort.issueTokenPair(any())).willReturn(expectedTokens);
 
             // when
@@ -125,7 +125,7 @@ class LoginSocialUserUseCaseImplTest {
 
             // then
             assertThat(result).isSameAs(expectedTokens);
-            then(memberAccountCommandService).should().saveMemberAccount(any(MemberAccount.class));
+            then(saveMemberAccountPort).should().save(any(MemberAccount.class));
         }
     }
 
@@ -147,7 +147,7 @@ class LoginSocialUserUseCaseImplTest {
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("카카오 API 호출 실패");
 
-            then(socialAccountQueryService).shouldHaveNoInteractions();
+            then(loadSocialAccountPort).shouldHaveNoInteractions();
             then(tokenUtilsPort).shouldHaveNoInteractions();
         }
 
@@ -160,9 +160,9 @@ class LoginSocialUserUseCaseImplTest {
             SocialAccount socialAccount = fm.giveMeOne(SocialAccount.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
-            given(socialAccountQueryService.findExistingSocialAccount(profile.provider(), profile.providerId()))
+            given(loadSocialAccountPort.findByProviderAndProviderId(profile.provider(), profile.providerId()))
                     .willReturn(Optional.of(socialAccount));
-            given(memberAccountQueryService.findById(socialAccount.getMemberAccountId()))
+            given(loadMemberAccountPort.findById(socialAccount.getMemberAccountId()))
                     .willThrow(new RuntimeException("데이터 정합성 오류"));
 
             // when & then
@@ -183,9 +183,9 @@ class LoginSocialUserUseCaseImplTest {
             MemberAccount member = fm.giveMeOne(MemberAccount.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
-            given(socialAccountQueryService.findExistingSocialAccount(profile.provider(), profile.providerId()))
+            given(loadSocialAccountPort.findByProviderAndProviderId(profile.provider(), profile.providerId()))
                     .willReturn(Optional.of(socialAccount));
-            given(memberAccountQueryService.findById(socialAccount.getMemberAccountId())).willReturn(member);
+            given(loadMemberAccountPort.findById(socialAccount.getMemberAccountId())).willReturn(member);
             given(tokenUtilsPort.issueTokenPair(any()))
                     .willThrow(new RuntimeException("토큰 생성 실패"));
 
@@ -207,10 +207,10 @@ class LoginSocialUserUseCaseImplTest {
                     .sample();
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
-            given(socialAccountQueryService.findExistingSocialAccount(profile.provider(), profile.providerId()))
+            given(loadSocialAccountPort.findByProviderAndProviderId(profile.provider(), profile.providerId()))
                     .willReturn(Optional.empty());
             given(socialUserProfileInfoMapper.toSocialUserProfileInfo(profile)).willReturn(socialInfo);
-            given(memberAccountCommandService.saveMemberAccount(any(MemberAccount.class)))
+            given(saveMemberAccountPort.save(any(MemberAccount.class)))
                     .willThrow(new RuntimeException("DB 저장 실패"));
 
             // when & then

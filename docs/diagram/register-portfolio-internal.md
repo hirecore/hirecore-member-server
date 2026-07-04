@@ -66,13 +66,33 @@ sequenceDiagram
 
     Client->>Ctrl: POST /api/portfolios
     Ctrl->>UC: execute(memberId, command)
-    UC->>Img: markUploaded() · PENDING→UPLOADED
-    Note right of Img: ImageUploadedEvent 등록
-    UC->>UC: loadJobCategoryPort.findIdByCode(code)
-    UC->>Domain: create() · status=PUBLISHED
-    UC->>Repo: save(portfolio)
-    Repo-->>UC: portfolioId
-    UC-->>Ctrl: portfolioId
-    Ctrl-->>Client: 201 Created (Location 헤더)
-    Note over UC: 커밋 후 ImageUploadedEvent 발행 → 저장 용량 사용량 반영
+
+    UC->>Img: markUploaded() 시도 (존재·소유·상태 검증)
+    alt 이미지 존재하지 않음
+        Img-->>Ctrl: IMAGE_NOT_FOUND
+        Ctrl-->>Client: 404 Not Found (이미지를 찾을 수 없음)
+    else 소유자 불일치
+        Img-->>Ctrl: IMAGE_OWNERSHIP_VIOLATION
+        Ctrl-->>Client: 403 Forbidden (이미지 소유권자 아님)
+    else 잘못된 상태 전이
+        Img-->>Ctrl: INVALID_UPLOAD_STATUS_TRANSITION
+        Ctrl-->>Client: 409 Conflict (현재 상태에서 불가)
+    else 검증 통과
+        Img-->>UC: PENDING→UPLOADED 확정
+        Note right of Img: ImageUploadedEvent 등록
+        UC->>UC: loadJobCategoryPort.findIdByCode(code)
+        alt 카테고리 코드 없음/비활성
+            UC-->>Ctrl: JOB_CATEGORY_CODE_NOT_FOUND
+            Ctrl-->>Client: 404 Not Found (유효하지 않은 카테고리 코드)
+        else 코드 유효
+            UC->>Domain: create() · status=PUBLISHED
+            UC->>Repo: save(portfolio)
+            Repo-->>UC: portfolioId
+            UC-->>Ctrl: portfolioId
+            Ctrl-->>Client: 201 Created (Location 헤더)
+        end
+    end
+    Note over UC: 성공 시 커밋 후 ImageUploadedEvent 발행 → 저장 용량 사용량 반영
 ```
+
+> 위 분기 외에, 본문(content) JSON 직렬화가 실패하면 `CONTENT_JSON_SERIALIZATION_FAILED` → **500 Internal Server Error**(기술적 오류)로 응답합니다.

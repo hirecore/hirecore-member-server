@@ -34,6 +34,7 @@
 | `loop` | loop | 반복 실행 |
 | `par` | parallel | 병렬 실행 |
 | `break` | break | 조건 시 이후 흐름 중단 |
+| `critical` | critical region | 중간에 끊기면 안 되는 필수 구간 (`option`으로 예외 처리) |
 
 ```
 alt 용량 초과        %% if
@@ -42,3 +43,5 @@ else 용량 충분       %% else
     ... 200 응답
 end                 %% 분기 끝
 ```
+
+> UML의 `ref`(다른 상호작용 다이어그램을 참조)는 Mermaid가 지원하지 않는다. 대신 해당 문서로의 링크로 대체한다.

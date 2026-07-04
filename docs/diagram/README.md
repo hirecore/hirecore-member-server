@@ -10,7 +10,7 @@
 | 문서 | 종류 | 내용 |
 |---|---|---|
 | [portfolio/register-flow.md](portfolio/register-flow.md) | 시퀀스·구조 | 포트폴리오 등록: 계약 플로우 + 내부 처리(실패 분기) + 헥사고날 구조 |
-| [file/image-lifecycle.md](file/image-lifecycle.md) | 상태 | 이미지 업로드 상태 전이 |
+| [file/image-lifecycle.md](file/image-lifecycle.md) | 상태·시퀀스 | file 도메인 흐름: 생명주기(PENDING→UPLOADED→ORPHANED→DELETED) + 확정·고아화·정리 |
 
 ## 구조 & 네이밍
 

@@ -67,8 +67,10 @@ src/main/generated/
 /docker/dev/.env.dev.mysql
 
 ## ==========================================
-## [docs]: 로컬 작업용 문서, 원격 추적 제외
+## [docs]: 로컬 스크래치는 제외, 공유 대상(문서·다이어그램)만 화이트리스트로 추적
 ## ==========================================
-/docs/
+/docs/*
+!/docs/README.md
+!/docs/diagram/
 
 /docker/prod/.env.prod

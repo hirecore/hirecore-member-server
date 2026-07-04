@@ -21,12 +21,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 
-@DisplayName("ImageOrphanedEventListener 단위 테스트")
+@DisplayName("ImageOrphanedListener 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class ImageOrphanedEventListenerTest {
+class ImageOrphanedListenerTest {
 
     @InjectMocks
-    private ImageOrphanedEventListener listener;
+    private ImageOrphanedListener listener;
 
     @Mock
     private ReleaseImageStorageUsageUseCase releaseImageStorageUsageUseCase;
@@ -40,7 +40,7 @@ class ImageOrphanedEventListenerTest {
     void should_resolve_portfolio_content() {
         ImageOrphanedEvent event = eventFor(DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE);
 
-        listener.on(event);
+        listener.handleImageOrphaned(event);
 
         then(releaseImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.PORTFOLIO_CONTENT, 1_048_576L);
@@ -51,7 +51,7 @@ class ImageOrphanedEventListenerTest {
     void should_resolve_portfolio_thumbnail() {
         ImageOrphanedEvent event = eventFor(DomainType.PORTFOLIO, Purpose.THUMBNAIL_IMAGE);
 
-        listener.on(event);
+        listener.handleImageOrphaned(event);
 
         then(releaseImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.PORTFOLIO_THUMBNAIL, 1_048_576L);
@@ -62,7 +62,7 @@ class ImageOrphanedEventListenerTest {
     void should_resolve_resume_content() {
         ImageOrphanedEvent event = eventFor(DomainType.RESUME, Purpose.CONTENT_IMAGE);
 
-        listener.on(event);
+        listener.handleImageOrphaned(event);
 
         then(releaseImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.RESUME_CONTENT, 1_048_576L);
@@ -73,7 +73,7 @@ class ImageOrphanedEventListenerTest {
     void should_resolve_resume_attachment() {
         ImageOrphanedEvent event = eventFor(DomainType.RESUME, Purpose.THUMBNAIL_IMAGE);
 
-        listener.on(event);
+        listener.handleImageOrphaned(event);
 
         then(releaseImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.RESUME_ATTACHMENT, 1_048_576L);
@@ -87,6 +87,6 @@ class ImageOrphanedEventListenerTest {
                 .given(releaseImageStorageUsageUseCase)
                 .execute(anyLong(), anyLong(), any(ResourceKind.class), anyLong());
 
-        assertThatCode(() -> listener.on(event)).doesNotThrowAnyException();
+        assertThatCode(() -> listener.handleImageOrphaned(event)).doesNotThrowAnyException();
     }
 }

@@ -13,26 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-/**
- * {@link PortfolioViewedEvent}를 구독하여 {@code PortfolioMemberView} 생성·저장 및
- * 포트폴리오 캐시 조회수 증가를 처리하는 이벤트 핸들러입니다.
- *
- * <p>발행 측 트랜잭션이 readOnly 이므로 {@link TransactionPhase#AFTER_COMMIT} 단계에서
- * {@link Propagation#REQUIRES_NEW} 로 별도 쓰기 트랜잭션을 띄워 영구화한다.
- * 정책 판단(소유자 제외 / 첫 조회만 카운트)은 이미 {@code Portfolio.markViewedBy} 에서
- * 결정되어 본 이벤트로 통과한 사건이므로, 핸들러는 영구화에만 집중한다.</p>
- */
+// 조회 이벤트로 view 저장+조회수 증가 (발행 측 readOnly라 AFTER_COMMIT + REQUIRES_NEW로 쓰기)
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PortfolioViewedMemberViewHandler {
+public class PortfolioViewedListener {
 
     private final SavePortfolioMemberViewPort savePortfolioMemberViewPort;
     private final IncrementPortfolioViewCountPort incrementPortfolioViewCountPort;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handlePortfolioMemberViewCreation(PortfolioViewedEvent event) {
+    public void handlePortfolioViewed(PortfolioViewedEvent event) {
         try {
             PortfolioMemberView view = PortfolioMemberView.create(event.viewerMemberAccountId());
             savePortfolioMemberViewPort.save(event.portfolioId(), view);

@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.modules.profile.application.ProfileComma
 import io.hirecore.hirecorememberserver.modules.profile.application.ProfileQueryService;
 import io.hirecore.hirecorememberserver.modules.profile.domain.Profile;
 import io.hirecore.hirecorememberserver.modules.profile.domain.vo.PublicCodeInfo;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountProfileCreatedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -19,7 +19,7 @@ public class MemberSignupListener {
     private final ProfileQueryService profileQueryService;
 
     @EventListener
-    public void handleMemberSignUp(MemberAccountProfileCreatedEvent event) {
+    public void handleMemberSignup(MemberAccountCreatedEvent event) {
         String nickname = event.email().split("@")[0];
         PublicCodeInfo publicCodeInfo;
         do{

@@ -21,12 +21,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 
-@DisplayName("ImageUploadedEventListener 단위 테스트")
+@DisplayName("ImageUploadedListener 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class ImageUploadedEventListenerTest {
+class ImageUploadedListenerTest {
 
     @InjectMocks
-    private ImageUploadedEventListener listener;
+    private ImageUploadedListener listener;
 
     @Mock
     private RecordImageStorageUsageUseCase recordImageStorageUsageUseCase;
@@ -40,7 +40,7 @@ class ImageUploadedEventListenerTest {
     void should_resolve_portfolio_content() {
         ImageUploadedEvent event = eventFor(DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE);
 
-        listener.on(event);
+        listener.handleImageUploaded(event);
 
         then(recordImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.PORTFOLIO_CONTENT, 1_048_576L);
@@ -51,7 +51,7 @@ class ImageUploadedEventListenerTest {
     void should_resolve_portfolio_thumbnail() {
         ImageUploadedEvent event = eventFor(DomainType.PORTFOLIO, Purpose.THUMBNAIL_IMAGE);
 
-        listener.on(event);
+        listener.handleImageUploaded(event);
 
         then(recordImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.PORTFOLIO_THUMBNAIL, 1_048_576L);
@@ -62,7 +62,7 @@ class ImageUploadedEventListenerTest {
     void should_resolve_resume_content() {
         ImageUploadedEvent event = eventFor(DomainType.RESUME, Purpose.CONTENT_IMAGE);
 
-        listener.on(event);
+        listener.handleImageUploaded(event);
 
         then(recordImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.RESUME_CONTENT, 1_048_576L);
@@ -73,7 +73,7 @@ class ImageUploadedEventListenerTest {
     void should_resolve_resume_attachment() {
         ImageUploadedEvent event = eventFor(DomainType.RESUME, Purpose.THUMBNAIL_IMAGE);
 
-        listener.on(event);
+        listener.handleImageUploaded(event);
 
         then(recordImageStorageUsageUseCase).should()
                 .execute(1L, 100L, ResourceKind.RESUME_ATTACHMENT, 1_048_576L);
@@ -87,6 +87,6 @@ class ImageUploadedEventListenerTest {
                 .given(recordImageStorageUsageUseCase)
                 .execute(anyLong(), anyLong(), any(ResourceKind.class), anyLong());
 
-        assertThatCode(() -> listener.on(event)).doesNotThrowAnyException();
+        assertThatCode(() -> listener.handleImageUploaded(event)).doesNotThrowAnyException();
     }
 }

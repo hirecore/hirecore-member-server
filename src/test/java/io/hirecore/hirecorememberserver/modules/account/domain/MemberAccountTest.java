@@ -4,8 +4,8 @@ import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberA
 import io.hirecore.hirecorememberserver.modules.account.domain.exception.MemberAccountDomainExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.SocialUserProfileInfo;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountProfileCreatedEvent;
-import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountSocialAccountCreatedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberAccountCreatedEvent;
+import io.hirecore.hirecorememberserver.sharedkernel.domain.event.MemberSocialSignedUpEvent;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -112,8 +112,8 @@ class MemberAccountTest {
             // then — 소셜 계정 생성과 프로필 생성 이벤트가 각각 등록된다
             assertThat(account.pollAllEvents())
                     .hasSize(2)
-                    .hasAtLeastOneElementOfType(MemberAccountSocialAccountCreatedEvent.class)
-                    .hasAtLeastOneElementOfType(MemberAccountProfileCreatedEvent.class);
+                    .hasAtLeastOneElementOfType(MemberSocialSignedUpEvent.class)
+                    .hasAtLeastOneElementOfType(MemberAccountCreatedEvent.class);
         }
 
         @Test

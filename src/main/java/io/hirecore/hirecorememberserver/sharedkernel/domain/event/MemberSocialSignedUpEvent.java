@@ -7,7 +7,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 
 import java.time.Instant;
 
-public record MemberAccountSocialAccountCreatedEvent(
+public record MemberSocialSignedUpEvent(
          Long memberAccountId,
          OAuth2Provider provider,
          String providerId,
@@ -16,7 +16,7 @@ public record MemberAccountSocialAccountCreatedEvent(
          boolean socialEmailAgreed,
          boolean socialNicknameAgreed
 ) {
-    public MemberAccountSocialAccountCreatedEvent {
+    public MemberSocialSignedUpEvent {
         AssertionUtils.notNull(memberAccountId, SharedKernelExceptionCodeCluster.HiddenDetailResponse.MEMBER_ACCOUNT_ID_MISSING, SharedKernelException::new);
         AssertionUtils.notNull(provider, SharedKernelExceptionCodeCluster.HiddenDetailResponse.PROVIDER_MISSING, SharedKernelException::new);
         AssertionUtils.notBlank(providerId, SharedKernelExceptionCodeCluster.HiddenDetailResponse.PROVIDER_ID_MISSING, SharedKernelException::new);

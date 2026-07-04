@@ -15,10 +15,10 @@ import static org.mockito.BDDMockito.then;
 
 @DisplayName("PortfolioImagesUnlinkedImageOrphaningHandler 단위 테스트")
 @ExtendWith(MockitoExtension.class)
-class PortfolioImagesUnlinkedImageOrphaningHandlerTest {
+class PortfolioDeleteListenerTest {
 
     @InjectMocks
-    private PortfolioImagesUnlinkedImageOrphaningHandler handler;
+    private PortfolioDeleteListener handler;
 
     @Mock
     private MarkImageFileMetasAsOrphanedUseCase markImageFileMetasAsOrphanedUseCase;
@@ -34,7 +34,7 @@ class PortfolioImagesUnlinkedImageOrphaningHandlerTest {
         );
 
         // when
-        handler.on(event);
+        handler.handlePortfolioDelete(event);
 
         // then
         then(markImageFileMetasAsOrphanedUseCase).should()

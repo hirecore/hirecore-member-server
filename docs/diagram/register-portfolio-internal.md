@@ -21,17 +21,22 @@ sequenceDiagram
     Client->>Ctrl: POST /files/images/presigned-put-url
     Ctrl->>UC: execute(memberId, commandList)
     UC->>UC: verifyUserStorageCapacityPort.verifyCapacityFor()
-    loop 요청된 파일마다
-        UC->>S3Adapter: generate(objectKey, contentType, size)
-        S3Adapter->>S3: presignPutObject()
-        S3-->>S3Adapter: presignedUrl
-        S3Adapter-->>UC: PresignedPutUrl(presignedUrl, publicUrl)
-        UC->>Meta: create() · status=PENDING
-        UC->>Repo: save(imageFileMeta)
-        Repo-->>UC: imageFileMetaId
+    alt 용량 초과 (업로드요청 + 사용중 > 한도)
+        UC-->>Ctrl: STORAGE_QUOTA_EXCEEDED 예외
+        Ctrl-->>Client: 400 Bad Request (저장 공간 부족)
+    else 용량 충분
+        loop 요청된 파일마다
+            UC->>S3Adapter: generate(objectKey, contentType, size)
+            S3Adapter->>S3: presignPutObject()
+            S3-->>S3Adapter: presignedUrl
+            S3Adapter-->>UC: PresignedPutUrl(presignedUrl, publicUrl)
+            UC->>Meta: create() · status=PENDING
+            UC->>Repo: save(imageFileMeta)
+            Repo-->>UC: imageFileMetaId
+        end
+        UC-->>Ctrl: responses
+        Ctrl-->>Client: 200 OK (presignedUrl, publicUrl, imageFileMetaId)
     end
-    UC-->>Ctrl: responses
-    Ctrl-->>Client: 200 OK (presignedUrl, publicUrl, imageFileMetaId)
 ```
 
 ## 2) S3 직접 업로드

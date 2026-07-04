@@ -1,12 +1,36 @@
-# 포트폴리오 등록 — 내부 시퀀스 (온보딩용)
+# 포트폴리오 등록 플로우
 
-> 독자: 신규 입사자 / 내부 구현을 이해해야 하는 개발자
-> FE용 계약 플로우(인터랙션 고도)는 [../README.md](../README.md#5-계약-플로우-fe--backend) 참고.
-
-`Presigned URL 발급 → S3 직접 업로드 → 포트폴리오 등록` 한 사이클을 내부 계층까지 보여줍니다.
+`Presigned URL 발급 → S3 직접 업로드 → 포트폴리오 등록` 한 사이클입니다.
 `file` 모듈과 `portfolio` 모듈 두 BC에 걸쳐 있습니다.
 
-## 1) Presigned URL 발급
+## 계약 플로우 (Client ↔ Backend)
+
+> 클라이언트 관점의 호출 순서. 내부 어댑터는 감춘 인터랙션 고도.
+
+```mermaid
+sequenceDiagram
+    actor Client as Client (FE)
+    participant API as Member Server
+    participant S3
+
+    Note over Client,S3: 1) Presigned URL 발급
+    Client->>API: POST /api/users/files/images/presigned-put-url
+    API-->>Client: presignedUrl, publicUrl, imageFileMetaId (상태=PENDING)
+
+    Note over Client,S3: 2) S3 직접 업로드 (서버 미경유)
+    Client->>S3: PUT presignedUrl (binary)
+    S3-->>Client: 200 OK
+
+    Note over Client,S3: 3) 포트폴리오 등록
+    Client->>API: POST /api/portfolios (imageFileMetaId 들 포함)
+    API-->>Client: 201 Created (portfolioId) · 이미지 PENDING→UPLOADED 확정
+```
+
+## 내부 처리 흐름
+
+> 백엔드 개발자가 참조하는 실제 계층 흐름과 실패 분기.
+
+### 1) Presigned URL 발급
 
 ```mermaid
 sequenceDiagram
@@ -39,7 +63,7 @@ sequenceDiagram
     end
 ```
 
-## 2) S3 직접 업로드
+### 2) S3 직접 업로드
 
 서버를 거치지 않습니다. 이 시점에도 서버가 아는 상태는 여전히 `PENDING` 입니다.
 
@@ -51,7 +75,7 @@ sequenceDiagram
     S3-->>Client: 200 OK
 ```
 
-## 3) 포트폴리오 등록
+### 3) 포트폴리오 등록
 
 참조된 이미지를 `PENDING → UPLOADED` 로 확정한 뒤 포트폴리오를 저장합니다.
 

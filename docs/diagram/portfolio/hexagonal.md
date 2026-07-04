@@ -1,6 +1,5 @@
 # 포트폴리오 등록 — 헥사고날 계층
 
-> 독자: 설계 리뷰 / 아키텍처 이해
 > 의존 방향: `adapter.in → application(port) → domain`, 그리고 `application(port) ← adapter.out`.
 > 애플리케이션은 **포트(interface)에만** 의존하고, 어댑터가 이를 구현합니다.
 

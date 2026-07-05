@@ -54,7 +54,7 @@ sequenceDiagram
     participant PF as Portfolio
     participant L as PortfolioInterestListener
 
-    rect rgb(0, 0, 0)
+    rect rgba(33, 150, 243, 0.12)
     Note over Client,L: 관심 등록
     Client->>Ctrl: POST /api/portfolios/{id}/interest
     Ctrl->>UC: execute(portfolioId, memberId)
@@ -67,7 +67,7 @@ sequenceDiagram
     Ctrl-->>Client: 성공
     end
 
-    rect rgb(0, 0, 0)
+    rect rgba(244, 67, 54, 0.10)
     Note over Client,L: 관심 해제
     Client->>Ctrl: DELETE /api/portfolios/{id}/interest
     Ctrl->>UC: execute(portfolioId, memberId)

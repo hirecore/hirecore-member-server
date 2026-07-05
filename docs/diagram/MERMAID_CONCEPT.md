@@ -160,7 +160,7 @@ sequenceDiagram
     autonumber
     participant C as Client
     participant S as Server
-    rect rgb(230, 240, 255)
+    rect rgba(33, 150, 243, 0.12)
     Note over C,S: 인증 구간
     C->>S: 로그인
     S-->>C: 토큰

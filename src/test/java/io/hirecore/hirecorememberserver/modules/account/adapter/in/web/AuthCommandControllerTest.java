@@ -11,8 +11,6 @@ import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapper;
 import io.hirecore.hirecorememberserver.common.security.utils.AuthCookieUtils;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapperImpl;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.fixture.PairTokenResponseFixture;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.ApplicationExceptionCode;
@@ -99,7 +97,8 @@ class AuthCommandControllerTest {
             requestMap.put("authorizationCode", "real_auth_code_123");
             String requestBody = objectMapper.writeValueAsString(requestMap);
 
-            PairTokenResponse fakeTokens = PairTokenResponseFixture.createValidResponse();
+            LoginSocialUserUseCase.Response fakeTokens =
+                    new LoginSocialUserUseCase.Response("test-access-token", "test-refresh-token");
 
             given(loginSocialUserUseCase.execute(
                     argThat(req -> req.authorizationCode().equals("real_auth_code_123"))

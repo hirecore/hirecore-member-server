@@ -6,7 +6,6 @@ import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.Socia
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapper;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LogoutUseCase;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +31,7 @@ public class AuthCommandController {
             @Valid @RequestBody SocialLoginApi.Request request
     ) {
         LoginSocialUserUseCase.Command command = socialLoginWebMapper.toSocialLoginCommand(provider, request);
-        PairTokenResponse pairTokenResponse = loginSocialUserUseCase.execute(command);
+        LoginSocialUserUseCase.Response pairTokenResponse = loginSocialUserUseCase.execute(command);
 
         ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(pairTokenResponse.accessToken());
         ResponseCookie refreshTokenCookie = authCookieUtils.createRefreshTokenCookie(pairTokenResponse.refreshToken());

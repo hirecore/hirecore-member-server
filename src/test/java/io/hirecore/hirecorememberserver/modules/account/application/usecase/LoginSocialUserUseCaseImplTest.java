@@ -2,7 +2,6 @@ package io.hirecore.hirecorememberserver.modules.account.application.usecase;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadMemberAccountPort;
@@ -78,7 +77,7 @@ class LoginSocialUserUseCaseImplTest {
             FetchSocialUserProfilePort.Result profile = fm.giveMeOne(FetchSocialUserProfilePort.Result.class);
             SocialAccount socialAccount = fm.giveMeOne(SocialAccount.class);
             MemberAccount member = fm.giveMeOne(MemberAccount.class);
-            PairTokenResponse expectedTokens = fm.giveMeOne(PairTokenResponse.class);
+            IssueTokenPort.Result expectedTokens = fm.giveMeOne(IssueTokenPort.Result.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
             given(loadSocialAccountPort.findByProviderAndProviderId(profile.provider(), profile.providerId()))
@@ -87,10 +86,11 @@ class LoginSocialUserUseCaseImplTest {
             given(tokenUtilsPort.issueTokenPair(any())).willReturn(expectedTokens);
 
             // when
-            PairTokenResponse result = loginSocialUserUseCaseImpl.execute(command);
+            LoginSocialUserUseCase.Response result = loginSocialUserUseCaseImpl.execute(command);
 
             // then
-            assertThat(result).isSameAs(expectedTokens);
+            assertThat(result.accessToken()).isEqualTo(expectedTokens.accessToken());
+            assertThat(result.refreshToken()).isEqualTo(expectedTokens.refreshToken());
             then(saveMemberAccountPort).shouldHaveNoInteractions();
         }
     }
@@ -110,7 +110,7 @@ class LoginSocialUserUseCaseImplTest {
                     .set("profileNicknameAgreed", true)
                     .sample();
             MemberAccount savedMember = fm.giveMeOne(MemberAccount.class);
-            PairTokenResponse expectedTokens = fm.giveMeOne(PairTokenResponse.class);
+            IssueTokenPort.Result expectedTokens = fm.giveMeOne(IssueTokenPort.Result.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
             given(loadSocialAccountPort.findByProviderAndProviderId(profile.provider(), profile.providerId()))
@@ -120,10 +120,11 @@ class LoginSocialUserUseCaseImplTest {
             given(tokenUtilsPort.issueTokenPair(any())).willReturn(expectedTokens);
 
             // when
-            PairTokenResponse result = loginSocialUserUseCaseImpl.execute(command);
+            LoginSocialUserUseCase.Response result = loginSocialUserUseCaseImpl.execute(command);
 
             // then
-            assertThat(result).isSameAs(expectedTokens);
+            assertThat(result.accessToken()).isEqualTo(expectedTokens.accessToken());
+            assertThat(result.refreshToken()).isEqualTo(expectedTokens.refreshToken());
             then(saveMemberAccountPort).should().save(any(MemberAccount.class));
         }
     }

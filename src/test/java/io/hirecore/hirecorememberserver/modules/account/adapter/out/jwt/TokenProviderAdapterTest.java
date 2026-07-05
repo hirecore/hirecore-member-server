@@ -2,7 +2,6 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.out.jwt;
 
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.common.security.properties.JwtProperties;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,7 +36,7 @@ class TokenProviderAdapterTest {
         @Test
         @DisplayName("유효한 클레임으로 액세스·리프레시 토큰 쌍을 발급한다")
         void should_issue_access_and_refresh_token() {
-            PairTokenResponse pair = adapter.issueTokenPair(validClaims);
+            IssueTokenPort.Result pair = adapter.issueTokenPair(validClaims);
 
             assertThat(pair.accessToken()).isNotBlank();
             assertThat(pair.refreshToken()).isNotBlank();
@@ -46,7 +45,7 @@ class TokenProviderAdapterTest {
         @Test
         @DisplayName("액세스 토큰과 리프레시 토큰은 서로 다른 값이다")
         void should_issue_distinct_access_and_refresh_tokens() {
-            PairTokenResponse pair = adapter.issueTokenPair(validClaims);
+            IssueTokenPort.Result pair = adapter.issueTokenPair(validClaims);
 
             assertThat(pair.accessToken()).isNotEqualTo(pair.refreshToken());
         }
@@ -56,7 +55,7 @@ class TokenProviderAdapterTest {
         void should_issue_token_for_all_roles() {
             for (MemberRole role : MemberRole.values()) {
                 IssueTokenPort.Request claims = new IssueTokenPort.Request(1L, "e@test.com", role, 0);
-                PairTokenResponse pair = adapter.issueTokenPair(claims);
+                IssueTokenPort.Result pair = adapter.issueTokenPair(claims);
 
                 assertThat(pair.accessToken()).isNotBlank();
             }
@@ -70,7 +69,7 @@ class TokenProviderAdapterTest {
         @Test
         @DisplayName("발급한 액세스 토큰에서 클레임(id, email, role)을 정확하게 파싱한다")
         void should_parse_claims_from_access_token() {
-            PairTokenResponse pair = adapter.issueTokenPair(validClaims);
+            IssueTokenPort.Result pair = adapter.issueTokenPair(validClaims);
 
             AuthPrincipal principal = adapter.parseToken(pair.accessToken());
 
@@ -83,7 +82,7 @@ class TokenProviderAdapterTest {
         @Test
         @DisplayName("발급한 리프레시 토큰에서도 클레임을 정확하게 파싱한다")
         void should_parse_claims_from_refresh_token() {
-            PairTokenResponse pair = adapter.issueTokenPair(validClaims);
+            IssueTokenPort.Result pair = adapter.issueTokenPair(validClaims);
 
             AuthPrincipal principal = adapter.parseToken(pair.refreshToken());
 
@@ -98,7 +97,7 @@ class TokenProviderAdapterTest {
             TokenProviderAdapter shortLivedAdapter = new TokenProviderAdapter(
                     new JwtProperties(SECRET, 0L, 0L)
             );
-            PairTokenResponse pair = shortLivedAdapter.issueTokenPair(validClaims);
+            IssueTokenPort.Result pair = shortLivedAdapter.issueTokenPair(validClaims);
 
             // when & then
             assertThatThrownBy(() -> adapter.parseToken(pair.accessToken()))
@@ -119,7 +118,7 @@ class TokenProviderAdapterTest {
             TokenProviderAdapter otherAdapter = new TokenProviderAdapter(
                     new JwtProperties("completely-different-secret-key-for-test-32bytes!!", ACCESS_MILLIS, REFRESH_MILLIS)
             );
-            PairTokenResponse pair = otherAdapter.issueTokenPair(validClaims);
+            IssueTokenPort.Result pair = otherAdapter.issueTokenPair(validClaims);
 
             // when & then — 현재 어댑터(다른 키)로 검증하면 실패
             assertThatThrownBy(() -> adapter.parseToken(pair.accessToken()))

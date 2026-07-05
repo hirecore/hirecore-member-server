@@ -1,7 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadMemberAccountPort;
@@ -29,12 +28,13 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
     private final SocialUserProfileInfoMapper socialUserProfileInfoMapper;
 
     @Override
-    public PairTokenResponse execute(LoginSocialUserUseCase.Command command) {
+    public LoginSocialUserUseCase.Response execute(LoginSocialUserUseCase.Command command) {
         FetchSocialUserProfilePort.Result profile = fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode());
-        return transactionTemplate.execute(status -> processLoginOrRegistration(profile));
+        IssueTokenPort.Result tokens = transactionTemplate.execute(status -> processLoginOrRegistration(profile));
+        return new LoginSocialUserUseCase.Response(tokens.accessToken(), tokens.refreshToken());
     }
 
-    private PairTokenResponse processLoginOrRegistration(FetchSocialUserProfilePort.Result profile) {
+    private IssueTokenPort.Result processLoginOrRegistration(FetchSocialUserProfilePort.Result profile) {
         return loadSocialAccountPort
                 .findByProviderAndProviderId(profile.provider(), profile.providerId())
                 .map(social -> loadMemberAccountPort.findById(social.getMemberAccountId()))
@@ -42,7 +42,7 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
                 .orElseGet(() -> issueToken(registerNewMember(profile)));
     }
 
-    private PairTokenResponse issueToken(MemberAccount memberAccount) {
+    private IssueTokenPort.Result issueToken(MemberAccount memberAccount) {
         return tokenUtilsPort.issueTokenPair(new IssueTokenPort.Request(
                 memberAccount.getId(),
                 memberAccount.getEmail(),

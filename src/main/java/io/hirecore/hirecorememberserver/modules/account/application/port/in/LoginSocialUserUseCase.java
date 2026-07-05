@@ -2,11 +2,10 @@ package io.hirecore.hirecorememberserver.modules.account.application.port.in;
 
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 
 public interface LoginSocialUserUseCase {
-    PairTokenResponse execute(Command command);
+    Response execute(Command command);
 
     record Command(
             String provider,
@@ -25,5 +24,12 @@ public interface LoginSocialUserUseCase {
                     SocialAccountApplicationException::new
             );
         }
+    }
+
+    // 로그인 결과 토큰 쌍
+    record Response(
+            String accessToken,
+            String refreshToken
+    ) {
     }
 }

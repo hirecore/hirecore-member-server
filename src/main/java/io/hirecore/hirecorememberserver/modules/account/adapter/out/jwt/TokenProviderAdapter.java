@@ -3,7 +3,6 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.out.jwt;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.common.security.properties.JwtProperties;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.ParseTokenPort;
 import io.jsonwebtoken.*;
@@ -42,13 +41,13 @@ public class TokenProviderAdapter implements
     }
 
     @Override
-    public PairTokenResponse issueTokenPair(IssueTokenPort.Request tokenClaims) {
+    public IssueTokenPort.Result issueTokenPair(IssueTokenPort.Request tokenClaims) {
         Instant now = Instant.now();
 
         String accessToken = generateToken(tokenClaims, now, accessTokenExpirationMills);
         String refreshToken = generateToken(tokenClaims, now, refreshTokenExpirationMills);
 
-        return new PairTokenResponse(accessToken, refreshToken);
+        return new IssueTokenPort.Result(accessToken, refreshToken);
     }
 
     @Override

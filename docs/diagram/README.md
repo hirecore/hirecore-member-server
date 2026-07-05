@@ -9,8 +9,12 @@
 
 | 문서 | 종류 | 내용 |
 |---|---|---|
+| [account/auth-flow.md](account/auth-flow.md) | 시퀀스·구조 | 소셜 로그인·인증: OAuth2 로그인 + JWT 쿠키 인증(횡단) + 로그아웃 + 프로필·소셜계정 자동 생성 이벤트 |
 | [portfolio/register-flow.md](portfolio/register-flow.md) | 시퀀스·구조 | 포트폴리오 등록: 계약 플로우 + 내부 처리(실패 분기) + 헥사고날 구조 |
+| [portfolio/view-and-interest-flow.md](portfolio/view-and-interest-flow.md) | 시퀀스 | 포트폴리오 조회·관심·조회수: 조회수(AFTER_COMMIT·REQUIRES_NEW) + 관심 등록/해제(동기) |
 | [file/image-lifecycle.md](file/image-lifecycle.md) | 상태·시퀀스 | file 도메인 흐름: 생명주기(PENDING→UPLOADED→ORPHANED→DELETED) + 확정·고아화·정리 |
+| [storage/storage-usage.md](storage/storage-usage.md) | 시퀀스 | 스토리지 용량: 할당량(membership)·사용량(storage)·발급 전 용량 검증·이미지 이벤트 연동 |
+| [category/job-category-hierarchy.md](category/job-category-hierarchy.md) | 시퀀스·구조 | 직무 카테고리 계층: 트리 조회(공개 API) + 계층 경로 조회(공용 포트·재귀 CTE) |
 
 ## 구조 & 네이밍
 

@@ -2,17 +2,20 @@
 
 회원에게 부여된 **멤버십 권리**를 관리한다. 부여 시점의 정책을 **스냅샷**으로 보관해 이후 정책 변경에 영향받지 않는다. 할당량 사용 흐름은 [../storage/storage-usage.md](../storage/storage-usage.md) 참고.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[membership.domain]
-        E["UserMembershipEntitlement<br/>storageQuotaBytesSnapshot · status"]
-        MS{{"MembershipStatus · VO"}}
-        AR{{"AssignmentReason · VO"}}
-    end
-    policy(["policy · UserMembershipPolicy"]) -. 부여 시점 스냅샷 .-> E
+classDiagram
+    class UserMembershipEntitlement {
+        <<Aggregate Root>>
+    }
+    class UserMembershipPolicy {
+        <<Aggregate Root>>
+    }
+    UserMembershipEntitlement --> UserMembershipPolicy : userMembershipPolicyId (스냅샷)
 ```
+
+> 공통 `AuditingInfo` 는 생략한다.
 
 ## 애그리거트
 

@@ -2,20 +2,19 @@
 
 자기소개서 작업물을 관리한다. `resume` 와 동일한 구조이며 **조회/관심 추적·도메인 이벤트가 없다**.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[coverletter.domain]
-        CL["CoverLetter · 루트"]
-        C["CoverLetterContent<br/>본문 JSON/HTML"]
-        T["CoverLetterTag"]
-        JC["CoverLetterJobCategory"]
-        CL -->|1:1| C
-        CL -->|1:N| T
-        CL -->|1:1| JC
-    end
+classDiagram
+    class CoverLetter {
+        <<Aggregate Root>>
+    }
+    CoverLetter "1" *-- "1" CoverLetterContent
+    CoverLetter "1" *-- "1" CoverLetterJobCategory
+    CoverLetter "1" *-- "0..*" CoverLetterTag
 ```
+
+> 공통 `AuditingInfo` 는 생략한다.
 
 ## 애그리거트 · 불변식
 

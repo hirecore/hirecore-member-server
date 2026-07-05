@@ -2,14 +2,13 @@
 
 멤버십 **정책(상품) 정의**를 보관한다. 회원에게 권리를 부여할 때 참고하는 원본이다.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[policy.domain]
-        P["UserMembershipPolicy<br/>code · name · amount · storageQuotaBytes · active"]
-    end
-    P -. 부여 시 참조 .-> ent(["membership · UserMembershipEntitlement"])
+classDiagram
+    class UserMembershipPolicy {
+        <<Aggregate Root>>
+    }
 ```
 
 ## 애그리거트

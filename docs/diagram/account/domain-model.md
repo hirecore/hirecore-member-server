@@ -3,17 +3,17 @@
 인증·회원 계정을 담당한다. 두 애그리거트(`MemberAccount`·`SocialAccount`)는 부모-자식이 아니라 **독립 루트**이며, `SocialAccount` 가 `memberAccountId` 로 회원을 가리킨다.
 로그인·인증 흐름은 [auth-flow.md](auth-flow.md) 참고.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[account.domain]
-        MA["MemberAccount<br/>회원 계정 · role · tokenVersion"]
-        SA["SocialAccount<br/>소셜 연동 (memberAccountId)"]
-        MR{{"MemberRole · VO"}}
-        SI{{"SocialUserProfileInfo · VO"}}
-        MA -. memberAccountId .-> SA
-    end
+classDiagram
+    class MemberAccount {
+        <<Aggregate Root>>
+    }
+    class SocialAccount {
+        <<Aggregate Root>>
+    }
+    SocialAccount --> MemberAccount : memberAccountId
 ```
 
 ## 애그리거트 · 불변식

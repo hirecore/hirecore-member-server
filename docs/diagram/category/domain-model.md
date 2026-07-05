@@ -2,14 +2,14 @@
 
 직무 분류를 **self-join 트리**로 보관한다. 계층 경로 조립·조회 흐름은 [job-category-hierarchy.md](job-category-hierarchy.md) 참고.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[category.domain]
-        JC["JobCategory<br/>직무 노드 · depth · categoryCode"]
-        JC -->|parentId · self-join| JC
-    end
+classDiagram
+    class JobCategory {
+        <<Aggregate Root>>
+    }
+    JobCategory --> JobCategory : parentId (self-join)
 ```
 
 ## 애그리거트 · 규칙

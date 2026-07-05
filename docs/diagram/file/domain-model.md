@@ -2,17 +2,16 @@
 
 이미지 파일 메타를 관리하는 애그리거트. **상태 머신**이 핵심이다. 상태 생애주기와 전이 흐름(확정·고아화·정리)은 [image-lifecycle.md](image-lifecycle.md) 참고.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[file.domain]
-        M["ImageFileMeta · 루트<br/>위치 · 크기 · uploadStatus"]
-        US{{"UploadStatus · VO"}}
-        FE{{"FileExtension · VO"}}
-        MT{{"MimeType · VO"}}
-    end
+classDiagram
+    class ImageFileMeta {
+        <<Aggregate Root>>
+    }
 ```
+
+> 공통 `AuditingInfo` 는 생략한다.
 
 ## 애그리거트 · 상태 전이
 

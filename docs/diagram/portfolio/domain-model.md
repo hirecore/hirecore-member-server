@@ -3,26 +3,21 @@
 포트폴리오 작업물과 그 상호작용(조회·관심) 기록을 관리하는 애그리거트다.
 등록 흐름은 [register-flow.md](register-flow.md), 조회·관심 흐름은 [view-and-interest-flow.md](view-and-interest-flow.md) 참고.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[portfolio.domain]
-        PF["Portfolio · 루트<br/>cachedViewCount · cachedInterestCount"]
-        C["PortfolioContent<br/>본문 JSON/HTML · imageIds"]
-        T["PortfolioTag"]
-        JCat["PortfolioJobCategory<br/>leafJobCategoryId · userInput"]
-        V["PortfolioMemberView"]
-        I["PortfolioMemberInterest"]
-        ST{{"PortfolioStatus · VO"}}
-        RI{{"ReferencedImageIds · VO"}}
-        PF -->|1:1| C
-        PF -->|1:N| T
-        PF -->|1:1| JCat
-        PF -->|1:N| V
-        PF -->|1:N| I
-    end
+classDiagram
+    class Portfolio {
+        <<Aggregate Root>>
+    }
+    Portfolio "1" *-- "1" PortfolioContent
+    Portfolio "1" *-- "1" PortfolioJobCategory
+    Portfolio "1" *-- "0..*" PortfolioTag
+    Portfolio "1" *-- "0..*" PortfolioMemberView
+    Portfolio "1" *-- "0..*" PortfolioMemberInterest
 ```
+
+> 공통 `AuditingInfo` 는 생략한다.
 
 ## 애그리거트 · 불변식
 

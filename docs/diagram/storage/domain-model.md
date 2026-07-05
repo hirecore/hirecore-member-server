@@ -2,20 +2,21 @@
 
 회원의 스토리지 **사용량**과 그 **변경 이력**을 관리한다. 용량 산정·검증 흐름은 [storage-usage.md](storage-usage.md) 참고.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[storage.domain]
-        U["UserStorageUsage<br/>현재 사용량 usedQuotaBytes"]
-        L["UserStorageUsageLog<br/>변경 이력 · idempotencyKey"]
-        RK{{"ResourceKind · VO"}}
-        CR{{"UsageChangeReason · VO"}}
-        U -. 이력 추적 .-> L
-    end
+classDiagram
+    class UserStorageUsage {
+        <<Aggregate Root>>
+    }
+    class UserStorageUsageLog {
+        <<Aggregate Root>>
+    }
 ```
 
-> `UserStorageUsage` ↔ `UserStorageUsageLog` 는 코드상 명시적 1:N 연관이 아니라, 로그를 **조회**해 사용량을 추적하는 관계다.
+> 공통 `AuditingInfo` 는 생략한다.
+
+> 두 애그리거트는 **서로를 참조하지 않는 독립 루트**다 — 도메인 클래스 사이에 관계가 없다. "사용량 갱신 + 로그 기록"은 `Record`/`ReleaseImageStorageUsageUseCase`(application 레이어)가 조율한다.
 
 ## 애그리거트 · 불변식
 

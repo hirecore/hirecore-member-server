@@ -2,20 +2,21 @@
 
 회원 프로필(닉네임·공개코드·프로필 이미지)을 관리한다. `account` 의 `MemberAccountCreatedEvent` 를 받아 생성된다([../account/auth-flow.md](../account/auth-flow.md)).
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[profile.domain]
-        P["Profile<br/>프로필 마스터 (회원별 1)"]
-        PD{{"ProfileDetail · sealed"}}
-        UPD["UserProfileDetail<br/>marketingEmail"]
-        IMG{{"ProfileImageInfo · VO"}}
-        PC{{"PublicCodeInfo · VO"}}
-        P -->|1:1| PD
-        PD -. 구현 .-> UPD
-    end
+classDiagram
+    class Profile {
+        <<Aggregate Root>>
+    }
+    class ProfileDetail {
+        <<sealed>>
+    }
+    Profile "1" *-- "1" ProfileDetail
+    ProfileDetail <|.. UserProfileDetail
 ```
+
+> 공통 `AuditingInfo` 는 생략한다.
 
 ## 애그리거트 · 불변식
 

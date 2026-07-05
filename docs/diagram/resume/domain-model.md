@@ -2,20 +2,19 @@
 
 이력서 작업물을 관리한다. 구조는 `portfolio` 와 유사하되 **조회/관심 추적과 도메인 이벤트가 없다**.
 
-## 구성
+## 구성 (클래스 다이어그램)
 
 ```mermaid
-flowchart TB
-    subgraph d[resume.domain]
-        R["Resume · 루트"]
-        C["ResumeContent<br/>본문 JSON/HTML"]
-        T["ResumeTag"]
-        JC["ResumeJobCategory"]
-        R -->|1:1| C
-        R -->|1:N| T
-        R -->|1:1| JC
-    end
+classDiagram
+    class Resume {
+        <<Aggregate Root>>
+    }
+    Resume "1" *-- "1" ResumeContent
+    Resume "1" *-- "1" ResumeJobCategory
+    Resume "1" *-- "0..*" ResumeTag
 ```
+
+> 공통 `AuditingInfo` 는 생략한다.
 
 ## 애그리거트 · 불변식
 

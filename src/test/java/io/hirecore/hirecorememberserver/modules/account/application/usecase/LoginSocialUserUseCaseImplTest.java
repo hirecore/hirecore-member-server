@@ -1,14 +1,13 @@
 package io.hirecore.hirecorememberserver.modules.account.application.usecase;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
+import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadMemberAccountPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialAccountPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveMemberAccountPort;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.application.mapper.SocialUserProfileInfoMapper;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 import io.hirecore.hirecorememberserver.modules.account.domain.SocialAccount;
@@ -75,8 +74,8 @@ class LoginSocialUserUseCaseImplTest {
         @DisplayName("기존 소셜 계정과 연결된 MemberAccount를 조회하여 토큰을 발급한다")
         void should_issue_token_for_existing_member() {
             // given
-            SocialLoginCommand command = fm.giveMeOne(SocialLoginCommand.class);
-            SocialUserProfileResult profile = fm.giveMeOne(SocialUserProfileResult.class);
+            LoginSocialUserUseCase.Command command = fm.giveMeOne(LoginSocialUserUseCase.Command.class);
+            FetchSocialUserProfilePort.Result profile = fm.giveMeOne(FetchSocialUserProfilePort.Result.class);
             SocialAccount socialAccount = fm.giveMeOne(SocialAccount.class);
             MemberAccount member = fm.giveMeOne(MemberAccount.class);
             PairTokenResponse expectedTokens = fm.giveMeOne(PairTokenResponse.class);
@@ -104,8 +103,8 @@ class LoginSocialUserUseCaseImplTest {
         @DisplayName("MemberAccount를 생성·저장한 뒤 토큰을 발급한다")
         void should_create_member_and_save_then_issue_token() {
             // given
-            SocialLoginCommand command = fm.giveMeOne(SocialLoginCommand.class);
-            SocialUserProfileResult profile = fm.giveMeOne(SocialUserProfileResult.class);
+            LoginSocialUserUseCase.Command command = fm.giveMeOne(LoginSocialUserUseCase.Command.class);
+            FetchSocialUserProfilePort.Result profile = fm.giveMeOne(FetchSocialUserProfilePort.Result.class);
             SocialUserProfileInfo socialInfo = fm.giveMeBuilder(SocialUserProfileInfo.class)
                     .set("emailAgreed", true)
                     .set("profileNicknameAgreed", true)
@@ -137,7 +136,7 @@ class LoginSocialUserUseCaseImplTest {
         @DisplayName("소셜 프로필 로딩 실패 시 예외가 그대로 전파된다")
         void should_propagate_exception_when_profile_loading_fails() {
             // given
-            SocialLoginCommand command = fm.giveMeOne(SocialLoginCommand.class);
+            LoginSocialUserUseCase.Command command = fm.giveMeOne(LoginSocialUserUseCase.Command.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode()))
                     .willThrow(new RuntimeException("카카오 API 호출 실패"));
@@ -155,8 +154,8 @@ class LoginSocialUserUseCaseImplTest {
         @DisplayName("기존 회원 조회 실패 시 예외가 그대로 전파된다")
         void should_propagate_exception_when_member_loading_fails() {
             // given
-            SocialLoginCommand command = fm.giveMeOne(SocialLoginCommand.class);
-            SocialUserProfileResult profile = fm.giveMeOne(SocialUserProfileResult.class);
+            LoginSocialUserUseCase.Command command = fm.giveMeOne(LoginSocialUserUseCase.Command.class);
+            FetchSocialUserProfilePort.Result profile = fm.giveMeOne(FetchSocialUserProfilePort.Result.class);
             SocialAccount socialAccount = fm.giveMeOne(SocialAccount.class);
 
             given(fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode())).willReturn(profile);
@@ -177,8 +176,8 @@ class LoginSocialUserUseCaseImplTest {
         @DisplayName("토큰 발급 실패 시 예외가 그대로 전파된다")
         void should_propagate_exception_when_token_issuance_fails() {
             // given
-            SocialLoginCommand command = fm.giveMeOne(SocialLoginCommand.class);
-            SocialUserProfileResult profile = fm.giveMeOne(SocialUserProfileResult.class);
+            LoginSocialUserUseCase.Command command = fm.giveMeOne(LoginSocialUserUseCase.Command.class);
+            FetchSocialUserProfilePort.Result profile = fm.giveMeOne(FetchSocialUserProfilePort.Result.class);
             SocialAccount socialAccount = fm.giveMeOne(SocialAccount.class);
             MemberAccount member = fm.giveMeOne(MemberAccount.class);
 
@@ -199,8 +198,8 @@ class LoginSocialUserUseCaseImplTest {
         @DisplayName("신규 회원 저장 실패 시 토큰 발급이 수행되지 않는다")
         void should_not_issue_token_when_member_save_fails() {
             // given
-            SocialLoginCommand command = fm.giveMeOne(SocialLoginCommand.class);
-            SocialUserProfileResult profile = fm.giveMeOne(SocialUserProfileResult.class);
+            LoginSocialUserUseCase.Command command = fm.giveMeOne(LoginSocialUserUseCase.Command.class);
+            FetchSocialUserProfilePort.Result profile = fm.giveMeOne(FetchSocialUserProfilePort.Result.class);
             SocialUserProfileInfo socialInfo = fm.giveMeBuilder(SocialUserProfileInfo.class)
                     .set("emailAgreed", true)
                     .set("profileNicknameAgreed", true)

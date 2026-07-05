@@ -1,6 +1,6 @@
 package io.hirecore.hirecorememberserver.modules.account.application.mapper;
 
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.SocialUserProfileInfo;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import org.junit.jupiter.api.DisplayName;
@@ -23,11 +23,11 @@ class SocialUserProfileDetailInfoMapperTest {
     private SocialUserProfileInfoMapper mapper;
 
     @Test
-    @DisplayName("SocialUserProfileResult의 공통 필드가 SocialUserProfileInfo로 정확하게 매핑된다")
+    @DisplayName("FetchSocialUserProfilePort.Result의 공통 필드가 SocialUserProfileInfo로 정확하게 매핑된다")
     void should_map_common_fields_correctly() {
         // given
         Instant connectedAt = Instant.now();
-        SocialUserProfileResult result = new SocialUserProfileResult(
+        FetchSocialUserProfilePort.Result result = new FetchSocialUserProfilePort.Result(
                 OAuth2Provider.KAKAO,
                 "kakao-12345",
                 "user@kakao.com",
@@ -52,8 +52,8 @@ class SocialUserProfileDetailInfoMapperTest {
     @Test
     @DisplayName("source의 nickname 필드는 target에 존재하지 않으므로 무시된다")
     void should_drop_nickname_field_from_source() {
-        // given — SocialUserProfileResult는 nickname을 가지지만, SocialUserProfileInfo는 갖지 않음
-        SocialUserProfileResult result = new SocialUserProfileResult(
+        // given — FetchSocialUserProfilePort.Result는 nickname을 가지지만, SocialUserProfileInfo는 갖지 않음
+        FetchSocialUserProfilePort.Result result = new FetchSocialUserProfilePort.Result(
                 OAuth2Provider.KAKAO, "pid", "e@test.com", "anyNickname",
                 Instant.now(), true, true
         );
@@ -70,7 +70,7 @@ class SocialUserProfileDetailInfoMapperTest {
     @DisplayName("emailAgreed=false, profileNicknameAgreed=false인 경우에도 정확하게 매핑된다")
     void should_map_false_consent_values_correctly() {
         // given
-        SocialUserProfileResult result = new SocialUserProfileResult(
+        FetchSocialUserProfilePort.Result result = new FetchSocialUserProfilePort.Result(
                 OAuth2Provider.KAKAO, "pid", "e@test.com", "nick",
                 Instant.now(), false, false
         );

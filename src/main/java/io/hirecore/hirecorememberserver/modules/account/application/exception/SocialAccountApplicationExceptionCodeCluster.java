@@ -12,12 +12,12 @@ public class SocialAccountApplicationExceptionCodeCluster {
         // 4XX
         PROVIDER_MISSING(
                 HttpStatus.BAD_REQUEST,
-                "SocialLoginCommand 생성 실패: provider 값이 공백이거나 누락되었습니다.",
+                "LoginSocialUserUseCase.Command 생성 실패: provider 값이 공백이거나 누락되었습니다.",
                 "소셜 플랫폼 정보의 값이 공백이거나 누락되었습니다."),
 
         AUTHORIZATION_CODE_MISSING(
                 HttpStatus.BAD_REQUEST,
-                "SocialLoginCommand 생성 실패: authorizationCode 값이 공백이거나 누락되었습니다.",
+                "LoginSocialUserUseCase.Command 생성 실패: authorizationCode 값이 공백이거나 누락되었습니다.",
                 "소셜 인가 코드의 값이 공백이거나 누락되었습니다."),
 
         // 5XX

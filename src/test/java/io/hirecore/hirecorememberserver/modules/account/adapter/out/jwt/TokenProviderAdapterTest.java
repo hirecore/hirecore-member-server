@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.out.jwt;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import io.hirecore.hirecorememberserver.common.security.properties.JwtProperties;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -26,7 +26,7 @@ class TokenProviderAdapterTest {
             new JwtProperties(SECRET, ACCESS_MILLIS, REFRESH_MILLIS)
     );
 
-    private final TokenClaimsRequest validClaims = new TokenClaimsRequest(
+    private final IssueTokenPort.Request validClaims = new IssueTokenPort.Request(
             42L, "user@test.com", MemberRole.USER, 0
     );
 
@@ -55,7 +55,7 @@ class TokenProviderAdapterTest {
         @DisplayName("모든 MemberRole에 대해 토큰을 발급할 수 있다")
         void should_issue_token_for_all_roles() {
             for (MemberRole role : MemberRole.values()) {
-                TokenClaimsRequest claims = new TokenClaimsRequest(1L, "e@test.com", role, 0);
+                IssueTokenPort.Request claims = new IssueTokenPort.Request(1L, "e@test.com", role, 0);
                 PairTokenResponse pair = adapter.issueTokenPair(claims);
 
                 assertThat(pair.accessToken()).isNotBlank();

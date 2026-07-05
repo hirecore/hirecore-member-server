@@ -11,7 +11,6 @@ import io.hirecore.hirecorememberserver.common.security.WebMvcSecuritySupport;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapper;
 import io.hirecore.hirecorememberserver.common.security.utils.AuthCookieUtils;
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapperImpl;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.fixture.PairTokenResponseFixture;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;
@@ -274,7 +273,7 @@ class AuthCommandControllerTest {
             requestMap.put("authorizationCode", "code");
             String requestBody = objectMapper.writeValueAsString(requestMap);
 
-            given(loginSocialUserUseCase.execute(any(SocialLoginCommand.class)))
+            given(loginSocialUserUseCase.execute(any(LoginSocialUserUseCase.Command.class)))
                     .willThrow(new SocialAccountDomainException(
                             SocialAccountDomainExceptionCodeCluster.DetailResponse.PROVIDER_INVALID));
 
@@ -303,7 +302,7 @@ class AuthCommandControllerTest {
 
             ApplicationExceptionCode applicationError = SocialAccountApplicationExceptionCodeCluster.DetailResponse.USER_PROFILE_EMAIL_MISSING;
 
-            given(loginSocialUserUseCase.execute(any(SocialLoginCommand.class)))
+            given(loginSocialUserUseCase.execute(any(LoginSocialUserUseCase.Command.class)))
                     .willThrow(new SocialAccountApplicationException(applicationError));
 
             // when & then

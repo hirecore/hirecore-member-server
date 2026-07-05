@@ -3,7 +3,6 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kaka
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.exception.KakaoApiException;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.mapper.KakaoUserProfileExternalDtoMapper;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.properties.KakaoOAuth2Properties;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.dto.result.KakaoTokenExternalResult;
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.dto.result.KakaoUserProfileExternalResult;
@@ -27,7 +26,7 @@ public class FetchKakaoUserProfileAdapter implements FetchSocialUserProfilePort 
 
     // 카카오 인증 프로세스 오케스트레이션
     @Override
-    public SocialUserProfileResult fetchByAuthorizationCode(String authorizationCode) {
+    public FetchSocialUserProfilePort.Result fetchByAuthorizationCode(String authorizationCode) {
         KakaoTokenExternalResult tokenResult = exchangeAuthorizationCodeForToken(authorizationCode);
         KakaoUserProfileExternalResult profileResult = fetchProfileFromKakao(tokenResult.accessToken());
         return kakaoUserProfileExternalDtoMapper.toSocialUserProfileResult(profileResult);

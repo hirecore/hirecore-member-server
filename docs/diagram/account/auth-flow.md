@@ -17,8 +17,11 @@ sequenceDiagram
     Client->>API: POST /api/auth/login/user/{provider} (authorizationCode)
     API->>Social: 인가코드로 토큰·프로필 조회
     Social-->>API: 사용자 프로필(providerId·email·닉네임·동의)
+    alt 신규회원
+        API->>API: 프로필·소셜계정 자동 생성
+    end
     API-->>Client: 200 OK · Set-Cookie(accessToken, refreshToken)
-    Note right of API: 신규면 프로필·소셜계정 자동 생성
+    
 
     Note over Client,Social: 2) 인증된 요청
     Client->>API: 임의 API (accessToken 쿠키 동봉)
@@ -44,7 +47,8 @@ sequenceDiagram
     participant Kakao as Kakao OAuth2
     participant Member as MemberAccount
     participant Token as IssueTokenPort
-    participant L as 리스너 (profile · account)
+    participant PL as MemberSignupListener (profile)
+    participant AL as SocialSignupListener (account)
 
     Client->>Ctrl: POST /api/auth/login/user/{provider}<br/>authorizationCode
     Ctrl->>UC: execute(SocialLoginCommand)
@@ -57,10 +61,13 @@ sequenceDiagram
         UC->>UC: LoadSocialAccountPort · LoadMemberAccountPort
     else 신규 회원
         UC->>Member: createWithSocial()
-        Note right of Member: MemberAccountCreatedEvent · MemberSocialSignedUpEvent 등록
+        Note right of Member: 도메인 이벤트 2건 등록<br/>(MemberAccountCreated · MemberSocialSignedUp)
         UC->>UC: SaveMemberAccountPort.save()
-        Member-->>L: MemberAccountCreatedEvent · (동기) 프로필 자동 생성
-        Member-->>L: MemberSocialSignedUpEvent · (동기) SocialAccount 저장
+        Note over UC,AL: 저장 시 이벤트 발행 → 리스너 동기 실행 (같은 트랜잭션)
+        UC->>PL: MemberAccountCreatedEvent
+        PL->>PL: 프로필 생성·저장
+        UC->>AL: MemberSocialSignedUpEvent
+        AL->>AL: SocialAccount 생성·저장
     end
 
     UC->>Token: issueTokenPair(TokenClaimsRequest)

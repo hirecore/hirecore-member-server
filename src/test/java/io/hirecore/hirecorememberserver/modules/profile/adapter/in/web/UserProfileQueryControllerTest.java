@@ -9,7 +9,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.exc
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.UserProfileSummaryApi;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileWebMapper;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.LoadUserProfileSummaryUseCase;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -82,7 +81,7 @@ class UserProfileQueryControllerTest {
         @DisplayName("[200 OK] 인증된 사용자가 요청하면 프로필 요약 정보를 반환한다")
         void should_return_profile_summary_when_authenticated() throws Exception {
             // given
-            UserProfileSummaryResponse response = new UserProfileSummaryResponse(
+            LoadUserProfileSummaryUseCase.Response response = new LoadUserProfileSummaryUseCase.Response(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, PROFILE_IMAGE_URL
             );
             UserProfileSummaryApi.Response apiResponse = new UserProfileSummaryApi.Response(
@@ -152,7 +151,7 @@ class UserProfileQueryControllerTest {
         @DisplayName("[200 OK] 프로필 이미지가 없는 사용자도 정상 응답한다 (profileImageUrl=null)")
         void should_return_null_profile_image_when_not_set() throws Exception {
             // given
-            UserProfileSummaryResponse response = new UserProfileSummaryResponse(
+            LoadUserProfileSummaryUseCase.Response response = new LoadUserProfileSummaryUseCase.Response(
                     String.valueOf(MEMBER_ID), EMAIL, PUBLIC_CODE, NICKNAME, null
             );
             UserProfileSummaryApi.Response apiResponse = new UserProfileSummaryApi.Response(

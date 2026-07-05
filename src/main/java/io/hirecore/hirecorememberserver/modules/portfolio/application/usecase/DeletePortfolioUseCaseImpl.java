@@ -18,7 +18,7 @@ public class DeletePortfolioUseCaseImpl implements DeletePortfolioUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
     private final DeletePortfolioPort deletePortfolioPort;
-    private final PublishDomainEventsSharedPort publishDomainEventsPort;
+    private final PublishDomainEventsSharedPort publishDomainEventsSharedPort;
 
     @Override
     @Transactional
@@ -29,6 +29,6 @@ public class DeletePortfolioUseCaseImpl implements DeletePortfolioUseCase {
                 ));
         portfolio.delete(viewerId);
         deletePortfolioPort.delete(portfolio);
-        publishDomainEventsPort.publishAll(portfolio);
+        publishDomainEventsSharedPort.publishAll(portfolio);
     }
 }

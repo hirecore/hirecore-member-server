@@ -49,21 +49,21 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
     private LoadPublicPortfolioSummaryPort loadPublicPortfolioSummaryPort;
 
     @Mock
-    private LoadJobCategorySharedPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategorySharedPort;
 
     @Mock
-    private LoadProfileNicknameSharedPort loadProfileNicknamePort;
+    private LoadProfileNicknameSharedPort loadProfileNicknameSharedPort;
 
     @Mock
-    private LoadImageUrlSharedPort loadImageUrlPort;
+    private LoadImageUrlSharedPort loadImageUrlSharedPort;
 
     // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
     @BeforeEach
     void setUp() {
         PublicPortfolioSummariesAssembler assembler = new PublicPortfolioSummariesAssembler(
-                loadJobCategoryPort,
-                loadProfileNicknamePort,
-                loadImageUrlPort
+                loadJobCategorySharedPort,
+                loadProfileNicknameSharedPort,
+                loadImageUrlSharedPort
         );
         sut = new LoadPublicPortfolioSummariesUseCaseImpl(loadPublicPortfolioSummaryPort, assembler);
     }
@@ -140,8 +140,8 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             assertThat(response.items()).isEmpty();
             assertThat(response.pagination().hasNext()).isFalse();
             assertThat(response.pagination().nextCursor()).isNull();
-            then(loadProfileNicknamePort).should(never()).findNickname(anyLong());
-            then(loadImageUrlPort).should(never()).findUrlById(anyLong());
+            then(loadProfileNicknameSharedPort).should(never()).findNickname(anyLong());
+            then(loadImageUrlSharedPort).should(never()).findUrlById(anyLong());
         }
 
         @Test
@@ -152,9 +152,9 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(p1, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any()))
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any()))
                     .willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(101L)).willReturn(Optional.of("euncheol"));
+            given(loadProfileNicknameSharedPort.findNickname(101L)).willReturn(Optional.of("euncheol"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -183,8 +183,8 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
                             rowOf(p2, effective2),
                             rowOf(p3, effective3Discarded)
                     ));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, size, null);
@@ -288,8 +288,8 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(portfolio, effectiveFromPort)));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("euncheol"));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("euncheol"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -306,15 +306,15 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(noThumbnail, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
 
             // then
             assertThat(response.items().getFirst().thumbnail()).isNull();
-            then(loadImageUrlPort).should(never()).findUrlById(anyLong());
+            then(loadImageUrlSharedPort).should(never()).findUrlById(anyLong());
         }
 
         @Test
@@ -326,9 +326,9 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(withThumbnail, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
-            given(loadImageUrlPort.findUrlById(thumbnailImageId)).willReturn(Optional.empty());
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadImageUrlSharedPort.findUrlById(thumbnailImageId)).willReturn(Optional.empty());
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -347,8 +347,8 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(portfolio, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(101L)).willReturn(Optional.empty());
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(101L)).willReturn(Optional.empty());
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -370,8 +370,8 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
                             rowOf(mine, Instant.parse("2026-06-10T15:00:00Z")),
                             rowOf(others, Instant.parse("2026-06-10T14:00:00Z"))
                     ));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, viewerId);
@@ -390,8 +390,8 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
             given(loadPublicPortfolioSummaryPort
                     .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
                     .willReturn(List.of(rowOf(anyPortfolio, Instant.parse("2026-06-10T15:00:00Z"))));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
-            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
@@ -412,19 +412,19 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
                             rowOf(p1, Instant.parse("2026-06-10T15:00:00Z")),
                             rowOf(p2, Instant.parse("2026-06-10T14:00:00Z"))
                     ));
-            given(loadJobCategoryPort.findJobCategoryHierarchies(any()))
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any()))
                     .willReturn(Map.of(JOB_CATEGORY_ID, List.of(
                             new PortfolioJobCategoryHierarchyResult(1001L, 1L, "DEV", "개발"),
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
                     )));
-            given(loadProfileNicknamePort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
 
             // then — 단일 호출로 끝남
-            then(loadJobCategoryPort).should().findJobCategoryHierarchies(any());
-            then(loadJobCategoryPort).should(never()).findJobCategoryHierarchy(anyLong());
+            then(loadJobCategorySharedPort).should().findJobCategoryHierarchies(any());
+            then(loadJobCategorySharedPort).should(never()).findJobCategoryHierarchy(anyLong());
             assertThat(response.items()).allSatisfy(item ->
                     assertThat(item.jobCategories())
                             .extracting("categoryCode")

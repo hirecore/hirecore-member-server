@@ -23,8 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
-    private final MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
-    private final LoadJobCategorySharedPort loadJobCategoryPort;
+    private final MarkImagesAsUploadedSharedPort markImagesAsUploadedSharedPort;
+    private final LoadJobCategorySharedPort loadJobCategorySharedPort;
     private final SavePortfolioPort savePortfolioPort;
     private final ObjectMapper objectMapper;
 
@@ -34,9 +34,9 @@ public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
     public Long execute(Long memberId, Command command) {
         List<Long> imageIds = ReferencedImageIds.of(command.thumbnailImageId(), command.contentImageIds()).values();
 
-        markImagesAsUploadedPort.markUploaded(memberId, imageIds);
+        markImagesAsUploadedSharedPort.markUploaded(memberId, imageIds);
 
-        Long jobCategoryId = loadJobCategoryPort.findIdByCode(command.leafJobCategory().code());
+        Long jobCategoryId = loadJobCategorySharedPort.findIdByCode(command.leafJobCategory().code());
         Portfolio portfolio = buildPortfolio(memberId, command, jobCategoryId);
 
         return savePortfolioPort.save(portfolio).getId();

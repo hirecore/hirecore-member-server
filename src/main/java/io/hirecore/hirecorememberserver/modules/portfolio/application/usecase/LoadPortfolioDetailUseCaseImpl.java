@@ -19,10 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final LoadProfileNicknameSharedPort loadProfileNicknamePort;
+    private final LoadProfileNicknameSharedPort loadProfileNicknameSharedPort;
     private final ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
     private final ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
-    private final PublishDomainEventsSharedPort publishDomainEventsPort;
+    private final PublishDomainEventsSharedPort publishDomainEventsSharedPort;
     private final PortfolioDetailAssembler portfolioDetailAssembler;
 
     @Override
@@ -32,7 +32,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         boolean isOwner = portfolio.isOwnedBy(viewerId);
         ensureAccessible(portfolio, viewerId);
 
-        String publisherNickname = loadProfileNicknamePort.findNickname(portfolio.getMemberAccountId())
+        String publisherNickname = loadProfileNicknameSharedPort.findNickname(portfolio.getMemberAccountId())
                 .orElseThrow(() -> new PortfolioApplicationException(
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NICKNAME_NOT_FOUND
                 ));
@@ -70,7 +70,7 @@ public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCas
         if (!recorded) {
             return cachedViewCount;
         }
-        publishDomainEventsPort.publishAll(portfolio);
+        publishDomainEventsSharedPort.publishAll(portfolio);
         return cachedViewCount + 1;
     }
 

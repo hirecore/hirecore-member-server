@@ -53,10 +53,10 @@ class UpdatePortfolioUseCaseImplTest {
     private UpdatePortfolioPort updatePortfolioPort;
 
     @Mock
-    private LoadJobCategorySharedPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategorySharedPort;
 
     @Mock
-    private MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
+    private MarkImagesAsUploadedSharedPort markImagesAsUploadedSharedPort;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -117,15 +117,15 @@ class UpdatePortfolioUseCaseImplTest {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
-            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
 
             // when
             Long result = sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand());
 
             // then
             assertThat(result).isEqualTo(loaded.getId());
-            then(markImagesAsUploadedPort).should().markUploaded(eq(OWNER_ID), any());
-            then(loadJobCategoryPort).should().findIdByCode("DEV_BACKEND");
+            then(markImagesAsUploadedSharedPort).should().markUploaded(eq(OWNER_ID), any());
+            then(loadJobCategorySharedPort).should().findIdByCode("DEV_BACKEND");
             then(updatePortfolioPort).should().update(loaded);
         }
 
@@ -136,14 +136,14 @@ class UpdatePortfolioUseCaseImplTest {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
 
             // when
             sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand());
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(markImagesAsUploadedPort).should()
+            then(markImagesAsUploadedSharedPort).should()
                     .markUploaded(eq(OWNER_ID), captor.capture());
             assertThat(captor.getValue()).containsExactly(THUMBNAIL_IMAGE_ID, 101L, 102L);
         }
@@ -154,7 +154,7 @@ class UpdatePortfolioUseCaseImplTest {
             // given
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
 
             // when
             sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand());
@@ -183,8 +183,8 @@ class UpdatePortfolioUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND.getErrorCode());
 
-            then(markImagesAsUploadedPort).should(never()).markUploaded(anyLong(), any());
-            then(loadJobCategoryPort).should(never()).findIdByCode(anyString());
+            then(markImagesAsUploadedSharedPort).should(never()).markUploaded(anyLong(), any());
+            then(loadJobCategorySharedPort).should(never()).findIdByCode(anyString());
             then(updatePortfolioPort).should(never()).update(any());
         }
 
@@ -201,8 +201,8 @@ class UpdatePortfolioUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_FORBIDDEN.getErrorCode());
 
-            then(markImagesAsUploadedPort).should(never()).markUploaded(anyLong(), any());
-            then(loadJobCategoryPort).should(never()).findIdByCode(anyString());
+            then(markImagesAsUploadedSharedPort).should(never()).markUploaded(anyLong(), any());
+            then(loadJobCategorySharedPort).should(never()).findIdByCode(anyString());
             then(updatePortfolioPort).should(never()).update(any());
         }
 
@@ -227,14 +227,14 @@ class UpdatePortfolioUseCaseImplTest {
             Portfolio loaded = existingPortfolio(OWNER_ID);
             given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(loaded));
             doThrow(new RuntimeException("simulated"))
-                    .when(markImagesAsUploadedPort)
+                    .when(markImagesAsUploadedSharedPort)
                     .markUploaded(eq(OWNER_ID), any());
 
             // when & then
             assertThatThrownBy(() -> sut.execute(PORTFOLIO_ID, OWNER_ID, validUpdateCommand()))
                     .isInstanceOf(RuntimeException.class);
 
-            then(loadJobCategoryPort).should(never()).findIdByCode(anyString());
+            then(loadJobCategorySharedPort).should(never()).findIdByCode(anyString());
             then(updatePortfolioPort).should(never()).update(any());
         }
     }

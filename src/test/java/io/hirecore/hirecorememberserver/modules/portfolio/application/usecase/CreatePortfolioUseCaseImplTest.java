@@ -43,10 +43,10 @@ class CreatePortfolioUseCaseImplTest {
     private CreatePortfolioUseCaseImpl sut;
 
     @Mock
-    private MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
+    private MarkImagesAsUploadedSharedPort markImagesAsUploadedSharedPort;
 
     @Mock
-    private LoadJobCategorySharedPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategorySharedPort;
 
     @Mock
     private SavePortfolioPort savePortfolioPort;
@@ -92,7 +92,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_orchestrate_steps_and_return_saved_id() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -101,8 +101,8 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             assertThat(result).isNotNull();
-            then(markImagesAsUploadedPort).should().markUploaded(eq(MEMBER_ACCOUNT_ID), any());
-            then(loadJobCategoryPort).should().findIdByCode("DEV_BACKEND");
+            then(markImagesAsUploadedSharedPort).should().markUploaded(eq(MEMBER_ACCOUNT_ID), any());
+            then(loadJobCategorySharedPort).should().findIdByCode("DEV_BACKEND");
             then(savePortfolioPort).should().save(any(Portfolio.class));
         }
 
@@ -112,7 +112,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_pass_thumbnail_and_content_image_ids_to_mark_uploaded() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -121,7 +121,7 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(markImagesAsUploadedPort).should()
+            then(markImagesAsUploadedSharedPort).should()
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), captor.capture());
 
             assertThat(captor.getValue())
@@ -140,7 +140,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -149,7 +149,7 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(markImagesAsUploadedPort).should()
+            then(markImagesAsUploadedSharedPort).should()
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), captor.capture());
 
             assertThat(captor.getValue()).containsExactly(101L, 102L);
@@ -167,7 +167,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -176,7 +176,7 @@ class CreatePortfolioUseCaseImplTest {
 
             // then
             ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-            then(markImagesAsUploadedPort).should()
+            then(markImagesAsUploadedSharedPort).should()
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), captor.capture());
 
             assertThat(captor.getValue()).isEmpty();
@@ -187,7 +187,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_build_portfolio_with_correct_fields() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode("DEV_BACKEND")).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -225,7 +225,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>본문</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -243,7 +243,7 @@ class CreatePortfolioUseCaseImplTest {
         void should_map_tag_commands_to_portfolio_tags_with_sort_order() {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -272,7 +272,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -296,7 +296,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -321,7 +321,7 @@ class CreatePortfolioUseCaseImplTest {
                     new SharedCommandDto.RichTextContent(Map.of("type", "doc"), "<p>x</p>"),
                     null, null
             );
-            given(loadJobCategoryPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
+            given(loadJobCategorySharedPort.findIdByCode(anyString())).willReturn(JOB_CATEGORY_ID);
             willAnswer(invocation -> invocation.<Portfolio>getArgument(0))
                     .given(savePortfolioPort).save(any(Portfolio.class));
 
@@ -346,14 +346,14 @@ class CreatePortfolioUseCaseImplTest {
             // given
             CreatePortfolioUseCase.Command command = createCommand();
             doThrow(new RuntimeException("simulated"))
-                    .when(markImagesAsUploadedPort)
+                    .when(markImagesAsUploadedSharedPort)
                     .markUploaded(eq(MEMBER_ACCOUNT_ID), any());
 
             // when & then
             assertThatThrownBy(() -> sut.execute(MEMBER_ACCOUNT_ID, command))
                     .isInstanceOf(RuntimeException.class);
 
-            then(loadJobCategoryPort).should(never()).findIdByCode(anyString());
+            then(loadJobCategorySharedPort).should(never()).findIdByCode(anyString());
             then(savePortfolioPort).should(never()).save(any());
         }
     }

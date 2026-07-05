@@ -36,7 +36,7 @@ class CancelPortfolioInterestUseCaseImplTest {
     private LoadPortfolioPort loadPortfolioPort;
 
     @Mock
-    private PublishDomainEventsSharedPort publishDomainEventsPort;
+    private PublishDomainEventsSharedPort publishDomainEventsSharedPort;
 
     private static final Long OWNER_ID = 1L;
     private static final Long MEMBER_ACCOUNT_ID = 2L;
@@ -81,7 +81,7 @@ class CancelPortfolioInterestUseCaseImplTest {
             sut.execute(PORTFOLIO_ID, MEMBER_ACCOUNT_ID);
 
             // then
-            then(publishDomainEventsPort).should().publishAll(loaded);
+            then(publishDomainEventsSharedPort).should().publishAll(loaded);
         }
     }
 
@@ -101,7 +101,7 @@ class CancelPortfolioInterestUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
 
-            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
+            then(publishDomainEventsSharedPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
     }
 }

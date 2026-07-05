@@ -37,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
     private static final String EXCEPTION_ATTRIBUTE = "exception";
 
-    private final ResolveTokenSharedPort tokenResolverPort;
-    private final ValidateTokenVersionSharedPort tokenVersionValidationPort;
+    private final ResolveTokenSharedPort tokenResolverSharedPort;
+    private final ValidateTokenVersionSharedPort tokenVersionValidationSharedPort;
 
     /**
      * JWT 토큰 검증 및 인증 처리를 수행합니다.
@@ -59,9 +59,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(token)) {
             try {
-                AuthPrincipal principal = tokenResolverPort.resolveToken(token);
+                AuthPrincipal principal = tokenResolverSharedPort.resolveToken(token);
 
-                if (!tokenVersionValidationPort.isValidTokenVersion(principal.id(), principal.tokenVersion())) {
+                if (!tokenVersionValidationSharedPort.isValidTokenVersion(principal.id(), principal.tokenVersion())) {
                     log.debug("Invalidated JWT token detected (token version mismatch) for user: '{}'", principal.id());
                     SecurityContextHolder.clearContext();
                     filterChain.doFilter(request, response);

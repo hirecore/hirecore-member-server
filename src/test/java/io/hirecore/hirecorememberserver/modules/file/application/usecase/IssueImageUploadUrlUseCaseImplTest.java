@@ -40,7 +40,7 @@ class IssueImageUploadUrlUseCaseImplTest {
     private IssueImageUploadUrlUseCaseImpl sut;
 
     @Mock
-    private VerifyUserStorageCapacitySharedPort verifyUserStorageCapacityPort;
+    private VerifyUserStorageCapacitySharedPort verifyUserStorageCapacitySharedPort;
 
     @Mock
     private GeneratePresignedPutUrlPort generatePresignedPutUrlPort;
@@ -194,7 +194,7 @@ class IssueImageUploadUrlUseCaseImplTest {
 
             // then
             assertThat(responses).hasSize(2);
-            then(verifyUserStorageCapacityPort).should().verifyCapacityFor(MEMBER_ACCOUNT_ID, 3145728L);
+            then(verifyUserStorageCapacitySharedPort).should().verifyCapacityFor(MEMBER_ACCOUNT_ID, 3145728L);
         }
     }
 
@@ -209,7 +209,7 @@ class IssueImageUploadUrlUseCaseImplTest {
             ImagePresignedPutUrlCommand command = createCommand(10485760L);
             RuntimeException capacityError = new RuntimeException("storage quota exceeded");
             willThrow(capacityError)
-                    .given(verifyUserStorageCapacityPort)
+                    .given(verifyUserStorageCapacitySharedPort)
                     .verifyCapacityFor(eq(MEMBER_ACCOUNT_ID), anyLong());
 
             // when & then

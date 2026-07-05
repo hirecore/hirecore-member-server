@@ -24,13 +24,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PublicPortfolioSummariesAssembler {
 
-    private final LoadJobCategorySharedPort loadJobCategoryPort;
-    private final LoadProfileNicknameSharedPort loadProfileNicknamePort;
-    private final LoadImageUrlSharedPort loadImageUrlPort;
+    private final LoadJobCategorySharedPort loadJobCategorySharedPort;
+    private final LoadProfileNicknameSharedPort loadProfileNicknameSharedPort;
+    private final LoadImageUrlSharedPort loadImageUrlSharedPort;
 
     public List<Response.Item> buildItems(List<PublicPortfolioRow> pageRows, Long viewerId) {
         Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
-                loadJobCategoryPort.findJobCategoryHierarchies(collectLeafIds(pageRows));
+                loadJobCategorySharedPort.findJobCategoryHierarchies(collectLeafIds(pageRows));
 
         return pageRows.stream()
                 .map(row -> toItem(row, hierarchiesByLeafId, viewerId))
@@ -49,7 +49,7 @@ public class PublicPortfolioSummariesAssembler {
                 .map(h -> new SharedResponseDto.JobCategory(h.id(), h.depth(), h.categoryCode(), h.name()))
                 .toList();
 
-        String nickname = loadProfileNicknamePort.findNickname(portfolio.getMemberAccountId()).orElse(null);
+        String nickname = loadProfileNicknameSharedPort.findNickname(portfolio.getMemberAccountId()).orElse(null);
         boolean isOwner = portfolio.isOwnedBy(viewerId);
 
         return new Response.Item(
@@ -73,7 +73,7 @@ public class PublicPortfolioSummariesAssembler {
         if (thumbnailImageId == null) {
             return null;
         }
-        String imageUrl = loadImageUrlPort.findUrlById(thumbnailImageId).orElse(null);
+        String imageUrl = loadImageUrlSharedPort.findUrlById(thumbnailImageId).orElse(null);
         return new SharedResponseDto.Thumbnail(thumbnailImageId, imageUrl);
     }
 

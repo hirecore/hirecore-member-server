@@ -53,10 +53,10 @@ class GlobalExceptionHandlerTest {
     // JwtAuthenticationFilter(@Component)가 @WebMvcTest 스캔 대상에 포함되므로
     // 해당 필터의 의존성인 ResolveTokenSharedPort, TokenBlacklistPort를 모킹하여 컨텍스트 로딩을 허용한다.
     @MockitoBean
-    private ResolveTokenSharedPort tokenResolverPort;
+    private ResolveTokenSharedPort tokenResolverSharedPort;
 
     @MockitoBean
-    private ValidateTokenVersionSharedPort tokenVersionValidationPort;
+    private ValidateTokenVersionSharedPort tokenVersionValidationSharedPort;
 
     // =========================================================================
     // 테스트 전용 예외 코드 (계층 경계 위반 방지 — modules 패키지 임포트 금지)

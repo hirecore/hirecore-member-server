@@ -43,7 +43,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
     private ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
 
     @Mock
-    private PublishDomainEventsSharedPort publishDomainEventsPort;
+    private PublishDomainEventsSharedPort publishDomainEventsSharedPort;
 
     private static final Long OWNER_ID = 1L;
     private static final Long VIEWER_ID = 2L;
@@ -89,7 +89,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
             sut.execute(PORTFOLIO_ID, VIEWER_ID);
 
             // then
-            then(publishDomainEventsPort).should().publishAll(loaded);
+            then(publishDomainEventsSharedPort).should().publishAll(loaded);
         }
 
         @Test
@@ -104,7 +104,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
             sut.execute(PORTFOLIO_ID, VIEWER_ID);
 
             // then — 멱등 경로에서도 publishAll 은 호출됨. 도메인 객체의 이벤트 컬렉션이 비어있어 실제 발행은 없음.
-            then(publishDomainEventsPort).should().publishAll(loaded);
+            then(publishDomainEventsSharedPort).should().publishAll(loaded);
         }
     }
 
@@ -125,7 +125,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND.getErrorCode());
 
             then(existsPortfolioMemberInterestPort).should(never()).exists(anyLong(), anyLong());
-            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
+            then(publishDomainEventsSharedPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
 
         @Test
@@ -142,7 +142,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_OWNER_NOT_ALLOWED.getErrorCode());
 
-            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
+            then(publishDomainEventsSharedPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
 
         @Test
@@ -159,7 +159,7 @@ class RegisterPortfolioInterestUseCaseImplTest {
                     .extracting("errorCode")
                     .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_FORBIDDEN.getErrorCode());
 
-            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
+            then(publishDomainEventsSharedPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
     }
 }

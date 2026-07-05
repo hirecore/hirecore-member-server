@@ -44,29 +44,29 @@ class LoadPortfolioDetailUseCaseImplTest {
     private LoadPortfolioDetailUseCaseImpl sut;
 
     @Mock private LoadPortfolioPort loadPortfolioPort;
-    @Mock private LoadProfileNicknameSharedPort loadProfileNicknamePort;
-    @Mock private LoadJobCategorySharedPort loadJobCategoryPort;
-    @Mock private LoadResumeContentSharedPort loadResumeContentPort;
-    @Mock private LoadCoverLetterContentSharedPort loadCoverLetterContentPort;
+    @Mock private LoadProfileNicknameSharedPort loadProfileNicknameSharedPort;
+    @Mock private LoadJobCategorySharedPort loadJobCategorySharedPort;
+    @Mock private LoadResumeContentSharedPort loadResumeContentSharedPort;
+    @Mock private LoadCoverLetterContentSharedPort loadCoverLetterContentSharedPort;
     @Mock private ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
     @Mock private ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
-    @Mock private PublishDomainEventsSharedPort publishDomainEventsPort;
+    @Mock private PublishDomainEventsSharedPort publishDomainEventsSharedPort;
 
     // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
     @BeforeEach
     void setUp() {
         PortfolioDetailAssembler portfolioDetailAssembler = new PortfolioDetailAssembler(
                 loadPortfolioPort,
-                loadJobCategoryPort,
-                loadResumeContentPort,
-                loadCoverLetterContentPort
+                loadJobCategorySharedPort,
+                loadResumeContentSharedPort,
+                loadCoverLetterContentSharedPort
         );
         sut = new LoadPortfolioDetailUseCaseImpl(
                 loadPortfolioPort,
-                loadProfileNicknamePort,
+                loadProfileNicknameSharedPort,
                 existsPortfolioMemberViewPort,
                 existsPortfolioMemberInterestPort,
-                publishDomainEventsPort,
+                publishDomainEventsSharedPort,
                 portfolioDetailAssembler
         );
     }
@@ -106,8 +106,8 @@ class LoadPortfolioDetailUseCaseImplTest {
     }
 
     private void stubCommonPorts() {
-        given(loadProfileNicknamePort.findNickname(OWNER_ID)).willReturn(Optional.of(NICKNAME));
-        given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
+        given(loadProfileNicknameSharedPort.findNickname(OWNER_ID)).willReturn(Optional.of(NICKNAME));
+        given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                 .willReturn(List.of(new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")));
     }
 
@@ -124,11 +124,11 @@ class LoadPortfolioDetailUseCaseImplTest {
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
-            given(loadResumeContentPort.findById(RESUME_ID))
+            given(loadResumeContentSharedPort.findById(RESUME_ID))
                     .willReturn(Optional.of(new ResumeContentResult(
                             RESUME_ID, "이력서 제목", OWNER_ID, Visibility.PUBLIC, "{\"r\":1}", "<p>이력서</p>"
                     )));
-            given(loadCoverLetterContentPort.findById(COVER_LETTER_ID))
+            given(loadCoverLetterContentSharedPort.findById(COVER_LETTER_ID))
                     .willReturn(Optional.of(new CoverLetterContentResult(
                             COVER_LETTER_ID, "자소서 제목", OWNER_ID, Visibility.PUBLIC, "{\"c\":1}", "<p>자소서</p>"
                     )));
@@ -154,11 +154,11 @@ class LoadPortfolioDetailUseCaseImplTest {
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
-            given(loadResumeContentPort.findById(RESUME_ID))
+            given(loadResumeContentSharedPort.findById(RESUME_ID))
                     .willReturn(Optional.of(new ResumeContentResult(
                             RESUME_ID, "이력서 제목", OWNER_ID, Visibility.PRIVATE, "{\"r\":1}", "<p>이력서</p>"
                     )));
-            given(loadCoverLetterContentPort.findById(COVER_LETTER_ID))
+            given(loadCoverLetterContentSharedPort.findById(COVER_LETTER_ID))
                     .willReturn(Optional.of(new CoverLetterContentResult(
                             COVER_LETTER_ID, "자소서 제목", OWNER_ID, Visibility.PRIVATE, "{\"c\":1}", "<p>자소서</p>"
                     )));
@@ -183,11 +183,11 @@ class LoadPortfolioDetailUseCaseImplTest {
             given(loadPortfolioPort.findById(PORTFOLIO_ID)).willReturn(Optional.of(portfolio));
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OWNER_ID)).willReturn(true);
-            given(loadResumeContentPort.findById(RESUME_ID))
+            given(loadResumeContentSharedPort.findById(RESUME_ID))
                     .willReturn(Optional.of(new ResumeContentResult(
                             RESUME_ID, "이력서 제목", OWNER_ID, Visibility.PRIVATE, "{\"r\":1}", "<p>이력서</p>"
                     )));
-            given(loadCoverLetterContentPort.findById(COVER_LETTER_ID))
+            given(loadCoverLetterContentSharedPort.findById(COVER_LETTER_ID))
                     .willReturn(Optional.of(new CoverLetterContentResult(
                             COVER_LETTER_ID, "자소서 제목", OWNER_ID, Visibility.PRIVATE, "{\"c\":1}", "<p>자소서</p>"
                     )));
@@ -218,8 +218,8 @@ class LoadPortfolioDetailUseCaseImplTest {
             // then
             assertThat(response.linkedResume()).isNull();
             assertThat(response.linkedCoverLetter()).isNull();
-            then(loadResumeContentPort).should(never()).findById(anyLong());
-            then(loadCoverLetterContentPort).should(never()).findById(anyLong());
+            then(loadResumeContentSharedPort).should(never()).findById(anyLong());
+            then(loadCoverLetterContentSharedPort).should(never()).findById(anyLong());
         }
 
         @Test
@@ -231,8 +231,8 @@ class LoadPortfolioDetailUseCaseImplTest {
             stubCommonPorts();
             given(existsPortfolioMemberViewPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(true);
             given(existsPortfolioMemberInterestPort.exists(portfolio.getId(), OTHER_VIEWER_ID)).willReturn(false);
-            given(loadResumeContentPort.findById(RESUME_ID)).willReturn(Optional.empty());
-            given(loadCoverLetterContentPort.findById(COVER_LETTER_ID)).willReturn(Optional.empty());
+            given(loadResumeContentSharedPort.findById(RESUME_ID)).willReturn(Optional.empty());
+            given(loadCoverLetterContentSharedPort.findById(COVER_LETTER_ID)).willReturn(Optional.empty());
 
             // when
             LoadPortfolioDetailUseCase.Response response = sut.execute(PORTFOLIO_ID, OTHER_VIEWER_ID);
@@ -262,7 +262,7 @@ class LoadPortfolioDetailUseCaseImplTest {
                     .findAllPublicByMemberAccountIdExcludingOrderByUpdatedAtDesc(OWNER_ID, portfolio.getId()))
                     .willReturn(List.of(other1, other2));
             // 다른 K개 포트폴리오의 직무 계층은 단일 일괄 호출로 가져온다
-            given(loadJobCategoryPort.findJobCategoryHierarchies(List.of(JOB_CATEGORY_ID, JOB_CATEGORY_ID)))
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(List.of(JOB_CATEGORY_ID, JOB_CATEGORY_ID)))
                     .willReturn(Map.of(JOB_CATEGORY_ID, List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     )));

@@ -15,12 +15,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @TestConfiguration
 public class WebMvcSecuritySupport {
     @Bean
-    public ResolveTokenSharedPort tokenResolverPort() {
+    public ResolveTokenSharedPort tokenResolverSharedPort() {
         return Mockito.mock(ResolveTokenSharedPort.class);
     }
 
     @Bean
-    public ValidateTokenVersionSharedPort tokenVersionValidationPort() {
+    public ValidateTokenVersionSharedPort tokenVersionValidationSharedPort() {
         return Mockito.mock(ValidateTokenVersionSharedPort.class);
     }
 

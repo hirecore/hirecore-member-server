@@ -41,25 +41,25 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
     private LoadPortfolioPort loadPortfolioPort;
 
     @Mock
-    private LoadResumeTitleSharedPort loadResumeTitlePort;
+    private LoadResumeTitleSharedPort loadResumeTitleSharedPort;
 
     @Mock
-    private LoadCoverLetterTitleSharedPort loadCoverLetterTitlePort;
+    private LoadCoverLetterTitleSharedPort loadCoverLetterTitleSharedPort;
 
     @Mock
-    private LoadJobCategorySharedPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategorySharedPort;
 
     @Mock
-    private LoadImageUrlSharedPort loadImageUrlPort;
+    private LoadImageUrlSharedPort loadImageUrlSharedPort;
 
     // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
     @BeforeEach
     void setUp() {
         MyPortfolioSummariesAssembler assembler = new MyPortfolioSummariesAssembler(
-                loadResumeTitlePort,
-                loadCoverLetterTitlePort,
-                loadJobCategoryPort,
-                loadImageUrlPort
+                loadResumeTitleSharedPort,
+                loadCoverLetterTitleSharedPort,
+                loadJobCategorySharedPort,
+                loadImageUrlSharedPort
         );
         sut = new LoadMyPortfolioSummariesUseCaseImpl(loadPortfolioPort, assembler);
     }
@@ -108,10 +108,10 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
             // then
             assertThat(response.items()).isEmpty();
-            then(loadResumeTitlePort).should(never()).findTitleMapByIds(any());
-            then(loadCoverLetterTitlePort).should(never()).findTitleMapByIds(any());
-            then(loadJobCategoryPort).should(never()).findJobCategoryHierarchy(anyLong());
-            then(loadImageUrlPort).should(never()).findUrlById(anyLong());
+            then(loadResumeTitleSharedPort).should(never()).findTitleMapByIds(any());
+            then(loadCoverLetterTitleSharedPort).should(never()).findTitleMapByIds(any());
+            then(loadJobCategorySharedPort).should(never()).findJobCategoryHierarchy(anyLong());
+            then(loadImageUrlSharedPort).should(never()).findUrlById(anyLong());
         }
 
         @Test
@@ -125,16 +125,16 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
             given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(loaded));
-            given(loadResumeTitlePort.findTitleMapByIds(Set.of(resumeId)))
+            given(loadResumeTitleSharedPort.findTitleMapByIds(Set.of(resumeId)))
                     .willReturn(Map.of(resumeId, "백엔드 신입 이력서"));
-            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of(coverLetterId)))
+            given(loadCoverLetterTitleSharedPort.findTitleMapByIds(Set.of(coverLetterId)))
                     .willReturn(Map.of(coverLetterId, "B사 지원용 자소서"));
-            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(1001L, 1L, "DEV", "개발"),
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
                     ));
-            given(loadImageUrlPort.findUrlById(thumbnailImageId))
+            given(loadImageUrlSharedPort.findUrlById(thumbnailImageId))
                     .willReturn(Optional.of("https://cdn.example.com/portfolio/thumbnail/abc.webp"));
 
             // when
@@ -162,9 +162,9 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
             given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(loaded));
-            given(loadResumeTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
-            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
-            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadResumeTitleSharedPort.findTitleMapByIds(Set.of())).willReturn(Map.of());
+            given(loadCoverLetterTitleSharedPort.findTitleMapByIds(Set.of())).willReturn(Map.of());
+            given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
@@ -177,7 +177,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             assertThat(item.linkedResume()).isNull();
             assertThat(item.linkedCoverLetter()).isNull();
             assertThat(item.thumbnail()).isNull();
-            then(loadImageUrlPort).should(never()).findUrlById(anyLong());
+            then(loadImageUrlSharedPort).should(never()).findUrlById(anyLong());
         }
 
         @Test
@@ -189,9 +189,9 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
             given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(loaded));
-            given(loadResumeTitlePort.findTitleMapByIds(Set.of(resumeId))).willReturn(Map.of());
-            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
-            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadResumeTitleSharedPort.findTitleMapByIds(Set.of(resumeId))).willReturn(Map.of());
+            given(loadCoverLetterTitleSharedPort.findTitleMapByIds(Set.of())).willReturn(Map.of());
+            given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
@@ -215,16 +215,16 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
 
             given(loadPortfolioPort.findAllByMemberAccountIdOrderByUpdatedAtDesc(VIEWER_ID))
                     .willReturn(List.of(first, second, third));
-            given(loadJobCategoryPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
+            given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
                             new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
-            given(loadResumeTitlePort.findTitleMapByIds(Set.of(sharedResumeId, otherResumeId)))
+            given(loadResumeTitleSharedPort.findTitleMapByIds(Set.of(sharedResumeId, otherResumeId)))
                     .willReturn(Map.of(
                             sharedResumeId, "공통 이력서",
                             otherResumeId, "다른 이력서"
                     ));
-            given(loadCoverLetterTitlePort.findTitleMapByIds(Set.of())).willReturn(Map.of());
+            given(loadCoverLetterTitleSharedPort.findTitleMapByIds(Set.of())).willReturn(Map.of());
 
             // when
             LoadMyPortfolioSummariesUseCase.Response response = sut.execute(VIEWER_ID);

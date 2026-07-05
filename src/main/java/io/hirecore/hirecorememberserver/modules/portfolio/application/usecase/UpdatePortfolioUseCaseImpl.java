@@ -27,8 +27,8 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
     private final UpdatePortfolioPort updatePortfolioPort;
-    private final LoadJobCategorySharedPort loadJobCategoryPort;
-    private final MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
+    private final LoadJobCategorySharedPort loadJobCategorySharedPort;
+    private final MarkImagesAsUploadedSharedPort markImagesAsUploadedSharedPort;
     private final ObjectMapper objectMapper;
 
     // 본인 소유 포트폴리오 수정
@@ -45,9 +45,9 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
         }
 
         List<Long> imageIds = ReferencedImageIds.of(command.thumbnailImageId(), command.contentImageIds()).values();
-        markImagesAsUploadedPort.markUploaded(viewerId, imageIds);
+        markImagesAsUploadedSharedPort.markUploaded(viewerId, imageIds);
 
-        Long leafJobCategoryId = loadJobCategoryPort.findIdByCode(command.leafJobCategory().code());
+        Long leafJobCategoryId = loadJobCategorySharedPort.findIdByCode(command.leafJobCategory().code());
 
         SharedCommandDto.RichTextContent content = command.content();
         portfolio.modify(

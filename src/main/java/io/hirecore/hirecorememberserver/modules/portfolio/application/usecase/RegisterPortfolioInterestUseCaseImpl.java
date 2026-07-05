@@ -17,7 +17,7 @@ public class RegisterPortfolioInterestUseCaseImpl implements RegisterPortfolioIn
 
     private final LoadPortfolioPort loadPortfolioPort;
     private final ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
-    private final PublishDomainEventsSharedPort publishDomainEventsPort;
+    private final PublishDomainEventsSharedPort publishDomainEventsSharedPort;
 
     @Override
     @Transactional
@@ -28,6 +28,6 @@ public class RegisterPortfolioInterestUseCaseImpl implements RegisterPortfolioIn
                 ));
         boolean alreadyInterested = existsPortfolioMemberInterestPort.exists(portfolioId, memberAccountId);
         portfolio.registerInterestBy(memberAccountId, alreadyInterested);
-        publishDomainEventsPort.publishAll(portfolio);
+        publishDomainEventsSharedPort.publishAll(portfolio);
     }
 }

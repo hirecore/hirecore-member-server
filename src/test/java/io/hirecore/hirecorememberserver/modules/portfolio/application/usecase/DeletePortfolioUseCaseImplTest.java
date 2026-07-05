@@ -42,7 +42,7 @@ class DeletePortfolioUseCaseImplTest {
     private DeletePortfolioPort deletePortfolioPort;
 
     @Mock
-    private PublishDomainEventsSharedPort publishDomainEventsPort;
+    private PublishDomainEventsSharedPort publishDomainEventsSharedPort;
 
     private static final Long OWNER_ID = 1L;
     private static final Long OTHER_USER_ID = 2L;
@@ -88,7 +88,7 @@ class DeletePortfolioUseCaseImplTest {
 
             // then
             then(deletePortfolioPort).should().delete(loaded);
-            then(publishDomainEventsPort).should().publishAll(loaded);
+            then(publishDomainEventsSharedPort).should().publishAll(loaded);
         }
     }
 
@@ -109,7 +109,7 @@ class DeletePortfolioUseCaseImplTest {
                     .isEqualTo(PortfolioApplicationExceptionCodeCluster.DetailResponse.PORTFOLIO_NOT_FOUND.getErrorCode());
 
             then(deletePortfolioPort).should(never()).delete(any());
-            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
+            then(publishDomainEventsSharedPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
 
         @Test
@@ -126,7 +126,7 @@ class DeletePortfolioUseCaseImplTest {
                     .isEqualTo(PortfolioDomainExceptionCodeCluster.DetailResponse.PORTFOLIO_DELETE_DENIED.getErrorCode());
 
             then(deletePortfolioPort).should(never()).delete(any());
-            then(publishDomainEventsPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
+            then(publishDomainEventsSharedPort).should(never()).publishAll(any(AbstractDomainEventPublisher.class));
         }
     }
 }

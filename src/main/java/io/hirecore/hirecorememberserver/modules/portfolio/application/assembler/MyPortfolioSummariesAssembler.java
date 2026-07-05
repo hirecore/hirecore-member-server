@@ -24,15 +24,15 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class MyPortfolioSummariesAssembler {
 
-    private final LoadResumeTitleSharedPort loadResumeTitlePort;
-    private final LoadCoverLetterTitleSharedPort loadCoverLetterTitlePort;
-    private final LoadJobCategorySharedPort loadJobCategoryPort;
-    private final LoadImageUrlSharedPort loadImageUrlPort;
+    private final LoadResumeTitleSharedPort loadResumeTitleSharedPort;
+    private final LoadCoverLetterTitleSharedPort loadCoverLetterTitleSharedPort;
+    private final LoadJobCategorySharedPort loadJobCategorySharedPort;
+    private final LoadImageUrlSharedPort loadImageUrlSharedPort;
 
     public List<Response.Item> buildItems(List<Portfolio> portfolios) {
-        Map<Long, String> resumeTitles = loadResumeTitlePort
+        Map<Long, String> resumeTitles = loadResumeTitleSharedPort
                 .findTitleMapByIds(collectIds(portfolios, Portfolio::getResumeId));
-        Map<Long, String> coverLetterTitles = loadCoverLetterTitlePort
+        Map<Long, String> coverLetterTitles = loadCoverLetterTitleSharedPort
                 .findTitleMapByIds(collectIds(portfolios, Portfolio::getCoverLetterId));
 
         return portfolios.stream()
@@ -67,7 +67,7 @@ public class MyPortfolioSummariesAssembler {
         if (thumbnailImageId == null) {
             return null;
         }
-        String imageUrl = loadImageUrlPort.findUrlById(thumbnailImageId).orElse(null);
+        String imageUrl = loadImageUrlSharedPort.findUrlById(thumbnailImageId).orElse(null);
         return new SharedResponseDto.Thumbnail(thumbnailImageId, imageUrl);
     }
 
@@ -117,7 +117,7 @@ public class MyPortfolioSummariesAssembler {
         if (portfolioJobCategory == null) {
             return List.of();
         }
-        return loadJobCategoryPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
+        return loadJobCategorySharedPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
                 .stream()
                 .filter(Objects::nonNull)
                 .map(hierarchy -> new SharedResponseDto.JobCategory(

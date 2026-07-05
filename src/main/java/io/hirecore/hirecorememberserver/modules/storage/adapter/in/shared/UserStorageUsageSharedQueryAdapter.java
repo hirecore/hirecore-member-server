@@ -15,12 +15,12 @@ public class UserStorageUsageSharedQueryAdapter implements VerifyUserStorageCapa
 {
 
     private final LoadUserStorageUsageUseCase loadUserStorageUsageUseCase;
-    private final LoadUserStorageLimitSharedPort loadUserStorageLimitPort;
+    private final LoadUserStorageLimitSharedPort loadUserStorageLimitSharedPort;
 
 
     @Override
     public void verifyCapacityFor(Long memberAccountId, Long uploadFileSizeBytes) {
-        Long storageSnapshotBytes = loadUserStorageLimitPort.findStorageLimitBytes(memberAccountId);
+        Long storageSnapshotBytes = loadUserStorageLimitSharedPort.findStorageLimitBytes(memberAccountId);
         Long usedStorageBytes = loadUserStorageUsageUseCase.execute(memberAccountId);
 
         if (uploadFileSizeBytes + usedStorageBytes > storageSnapshotBytes) {

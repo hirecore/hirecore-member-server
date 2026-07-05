@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCase {
 
-    private final VerifyUserStorageCapacitySharedPort verifyUserStorageCapacityPort;
+    private final VerifyUserStorageCapacitySharedPort verifyUserStorageCapacitySharedPort;
     private final GeneratePresignedPutUrlPort generatePresignedPutUrlPort;
     private final SaveImageFileMetaPort saveImageFileMetaPort;
 
@@ -32,7 +32,7 @@ public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCas
                 .mapToLong(ImagePresignedPutUrlCommand::fileSizeBytes)
                 .sum();
 
-        verifyUserStorageCapacityPort.verifyCapacityFor(memberAccountId, requestBytesSum);
+        verifyUserStorageCapacitySharedPort.verifyCapacityFor(memberAccountId, requestBytesSum);
 
         return commandList.stream()
                 .map(command -> issueUploadUrl(memberAccountId, command))

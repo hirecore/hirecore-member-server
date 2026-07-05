@@ -29,9 +29,9 @@ import java.util.Map;
 public class PortfolioDetailAssembler {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final LoadJobCategorySharedPort loadJobCategoryPort;
-    private final LoadResumeContentSharedPort loadResumeContentPort;
-    private final LoadCoverLetterContentSharedPort loadCoverLetterContentPort;
+    private final LoadJobCategorySharedPort loadJobCategorySharedPort;
+    private final LoadResumeContentSharedPort loadResumeContentSharedPort;
+    private final LoadCoverLetterContentSharedPort loadCoverLetterContentSharedPort;
 
     public Response.Body buildBody(Portfolio portfolio) {
         return new Response.Body(
@@ -67,7 +67,7 @@ public class PortfolioDetailAssembler {
                 })
                 .toList();
         Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
-                loadJobCategoryPort.findJobCategoryHierarchies(otherLeafIds);
+                loadJobCategorySharedPort.findJobCategoryHierarchies(otherLeafIds);
 
         List<Response.Publisher.OtherPortfolioSummary> otherPortfolios = otherPublicPortfolios.stream()
                 .map(other -> toOtherPortfolioSummary(other, hierarchiesByLeafId))
@@ -80,7 +80,7 @@ public class PortfolioDetailAssembler {
         if (resumeId == null) {
             return null;
         }
-        ResumeContentResult result = loadResumeContentPort.findById(resumeId).orElse(null);
+        ResumeContentResult result = loadResumeContentSharedPort.findById(resumeId).orElse(null);
         if (result == null) {
             return null;
         }
@@ -94,7 +94,7 @@ public class PortfolioDetailAssembler {
         if (coverLetterId == null) {
             return null;
         }
-        CoverLetterContentResult result = loadCoverLetterContentPort.findById(coverLetterId).orElse(null);
+        CoverLetterContentResult result = loadCoverLetterContentSharedPort.findById(coverLetterId).orElse(null);
         if (result == null) {
             return null;
         }
@@ -155,7 +155,7 @@ public class PortfolioDetailAssembler {
                 PortfolioApplicationException::new
         );
 
-        return loadJobCategoryPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
+        return loadJobCategorySharedPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
                 .stream()
                 .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),

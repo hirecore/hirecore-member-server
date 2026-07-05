@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CancelPortfolioInterestUseCaseImpl implements CancelPortfolioInterestUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final PublishDomainEventsSharedPort publishDomainEventsPort;
+    private final PublishDomainEventsSharedPort publishDomainEventsSharedPort;
 
     @Override
     @Transactional
@@ -25,6 +25,6 @@ public class CancelPortfolioInterestUseCaseImpl implements CancelPortfolioIntere
                         PortfolioApplicationExceptionCodeCluster.DetailResponse.INTEREST_PORTFOLIO_NOT_FOUND
                 ));
         portfolio.cancelInterestBy(memberAccountId);
-        publishDomainEventsPort.publishAll(portfolio);
+        publishDomainEventsSharedPort.publishAll(portfolio);
     }
 }

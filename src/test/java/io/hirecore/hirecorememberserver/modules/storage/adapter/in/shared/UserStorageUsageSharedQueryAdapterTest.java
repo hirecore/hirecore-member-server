@@ -28,7 +28,7 @@ class UserStorageUsageSharedQueryAdapterTest {
     private LoadUserStorageUsageUseCase loadUserStorageUsageUseCase;
 
     @Mock
-    private LoadUserStorageLimitSharedPort loadUserStorageLimitPort;
+    private LoadUserStorageLimitSharedPort loadUserStorageLimitSharedPort;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
     private static final Long STORAGE_QUOTA_BYTES = 10_000L;
@@ -40,7 +40,7 @@ class UserStorageUsageSharedQueryAdapterTest {
         @Test
         @DisplayName("사용량 + 업로드 크기가 할당량 이내면 예외가 발생하지 않는다")
         void should_pass_when_within_capacity() {
-            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(STORAGE_QUOTA_BYTES);
+            given(loadUserStorageLimitSharedPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(STORAGE_QUOTA_BYTES);
             given(loadUserStorageUsageUseCase.execute(MEMBER_ACCOUNT_ID)).willReturn(3_000L);
 
             assertThatCode(() -> sut.verifyCapacityFor(MEMBER_ACCOUNT_ID, 5_000L))
@@ -50,7 +50,7 @@ class UserStorageUsageSharedQueryAdapterTest {
         @Test
         @DisplayName("사용량 + 업로드 크기가 할당량과 정확히 같으면 예외가 발생하지 않는다 (경계)")
         void should_pass_when_exactly_at_limit() {
-            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(STORAGE_QUOTA_BYTES);
+            given(loadUserStorageLimitSharedPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(STORAGE_QUOTA_BYTES);
             given(loadUserStorageUsageUseCase.execute(MEMBER_ACCOUNT_ID)).willReturn(3_000L);
 
             assertThatCode(() -> sut.verifyCapacityFor(MEMBER_ACCOUNT_ID, 7_000L))
@@ -60,7 +60,7 @@ class UserStorageUsageSharedQueryAdapterTest {
         @Test
         @DisplayName("사용량 + 업로드 크기가 할당량을 초과하면 STORAGE_QUOTA_EXCEEDED 예외가 발생한다")
         void should_throw_when_exceeds_capacity() {
-            given(loadUserStorageLimitPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(STORAGE_QUOTA_BYTES);
+            given(loadUserStorageLimitSharedPort.findStorageLimitBytes(MEMBER_ACCOUNT_ID)).willReturn(STORAGE_QUOTA_BYTES);
             given(loadUserStorageUsageUseCase.execute(MEMBER_ACCOUNT_ID)).willReturn(3_000L);
 
             assertThatThrownBy(() -> sut.verifyCapacityFor(MEMBER_ACCOUNT_ID, 7_001L))

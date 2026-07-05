@@ -22,11 +22,11 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PortfolioEditAssembler {
 
-    private final LoadJobCategorySharedPort loadJobCategoryPort;
-    private final LoadImageUrlSharedPort loadImageUrlPort;
+    private final LoadJobCategorySharedPort loadJobCategorySharedPort;
+    private final LoadImageUrlSharedPort loadImageUrlSharedPort;
 
     public Response buildResponse(Portfolio portfolio) {
-        String thumbnailImageUrl = loadImageUrlPort.findUrlById(portfolio.getThumbnailImageId())
+        String thumbnailImageUrl = loadImageUrlSharedPort.findUrlById(portfolio.getThumbnailImageId())
                 .orElse(null);
         List<Response.ContentImage> contentImages = resolveContentImages(
                 portfolio.getPortfolioContent().getImageIds()
@@ -58,7 +58,7 @@ public class PortfolioEditAssembler {
             return List.of();
         }
         return imageIds.stream()
-                .map(imageId -> loadImageUrlPort.findUrlById(imageId)
+                .map(imageId -> loadImageUrlSharedPort.findUrlById(imageId)
                         .map(url -> new Response.ContentImage(imageId, url))
                         .orElse(null))
                 .filter(Objects::nonNull)
@@ -90,7 +90,7 @@ public class PortfolioEditAssembler {
                 PortfolioApplicationException::new
         );
 
-        return loadJobCategoryPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
+        return loadJobCategorySharedPort.findJobCategoryHierarchy(portfolioJobCategory.getLeafJobCategoryId())
                 .stream()
                 .map(hierarchy -> new SharedResponseDto.JobCategory(
                         hierarchy.id(),

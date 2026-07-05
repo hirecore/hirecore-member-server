@@ -29,6 +29,7 @@ public interface LoadPublicPortfolioSummariesUseCase {
                 Long viewCount,
                 Long interestCount,
                 Boolean isOwner,
+                Boolean isInterested,
                 Instant updatedAt
         ) {}
 

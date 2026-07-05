@@ -3,7 +3,6 @@ package io.hirecore.hirecorememberserver.modules.file.adapter.out.s3;
 import io.hirecore.hirecorememberserver.modules.file.adapter.out.cloudfront.properties.CloudFrontProperties;
 import io.hirecore.hirecorememberserver.modules.file.adapter.out.s3.properties.S3Properties;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.GeneratePresignedPutUrlPort;
-import io.hirecore.hirecorememberserver.modules.file.application.port.out.dto.PresignedPutUrl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -21,7 +20,7 @@ public class S3PresignedPutUrlAdapter implements GeneratePresignedPutUrlPort {
     private final CloudFrontProperties cloudFrontProperties;
 
     @Override
-    public PresignedPutUrl generate(String objectKey, String contentType, long contentLength) {
+    public GeneratePresignedPutUrlPort.Result generate(String objectKey, String contentType, long contentLength) {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(s3Properties.bucket())
                 .key(objectKey)
@@ -37,6 +36,6 @@ public class S3PresignedPutUrlAdapter implements GeneratePresignedPutUrlPort {
         String presignedUrl = s3Presigner.presignPutObject(presignRequest).url().toString();
         String publicUrl = cloudFrontProperties.publicBaseUrl() + "/" + objectKey;
 
-        return new PresignedPutUrl(presignedUrl, publicUrl, s3Properties.bucket());
+        return new GeneratePresignedPutUrlPort.Result(presignedUrl, publicUrl, s3Properties.bucket());
     }
 }

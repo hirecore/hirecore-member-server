@@ -10,7 +10,6 @@ import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.Image
 import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationException;
 import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.IssueImageUploadUrlUseCase;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -103,7 +102,7 @@ class UserFileCommandControllerTest {
             // given
             String requestBody = createValidRequestBody();
 
-            ImagePresignedPutUrlResponse useCaseResponse = new ImagePresignedPutUrlResponse(
+            IssueImageUploadUrlUseCase.Response useCaseResponse = new IssueImageUploadUrlUseCase.Response(
                     1L,
                     100L,
                     "https://s3.ap-northeast-2.amazonaws.com/test-bucket/users/1/portfolio/content-image/uuid.webp?X-Amz-Signature=...",

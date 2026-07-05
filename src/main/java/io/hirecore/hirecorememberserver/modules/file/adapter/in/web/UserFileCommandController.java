@@ -5,8 +5,6 @@ import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.ImagesPr
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.dto.ImagePresignedPutUrlApi;
 import io.hirecore.hirecorememberserver.modules.file.adapter.in.web.mapper.ImagePresignedPutUrlWebMapper;
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.IssueImageUploadUrlUseCase;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.request.ImagePresignedPutUrlCommand;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +29,8 @@ public class UserFileCommandController {
             @AuthenticationPrincipal AuthPrincipal authPrincipal,
             @Valid @RequestBody ImagesPresignedPutUrlApi.Request request
     ) {
-        List<ImagePresignedPutUrlCommand> commandList = imagePresignedPutUrlWebMapper.toCommandList(request.files());
-        List<ImagePresignedPutUrlResponse> applicationResponseList = issueImageUploadUrlUseCase.execute(authPrincipal.id(), commandList);
+        List<IssueImageUploadUrlUseCase.Command> commandList = imagePresignedPutUrlWebMapper.toCommandList(request.files());
+        List<IssueImageUploadUrlUseCase.Response> applicationResponseList = issueImageUploadUrlUseCase.execute(authPrincipal.id(), commandList);
         List<ImagePresignedPutUrlApi.Response> apiResponseList = imagePresignedPutUrlWebMapper.toResponseList(applicationResponseList);
 
         return ResponseEntity.ok().body(new ImagesPresignedPutUrlApi.Response(apiResponseList));

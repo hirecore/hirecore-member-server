@@ -1,11 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.file.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.IssueImageUploadUrlUseCase;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.request.ImagePresignedPutUrlCommand;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.GeneratePresignedPutUrlPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveImageFileMetaPort;
-import io.hirecore.hirecorememberserver.modules.file.application.port.out.dto.PresignedPutUrl;
 import io.hirecore.hirecorememberserver.modules.file.application.util.ImageObjectKeyResolver;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacitySharedPort;
@@ -24,12 +21,12 @@ public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCas
     private final SaveImageFileMetaPort saveImageFileMetaPort;
 
     @Override
-    public List<ImagePresignedPutUrlResponse> execute(
+    public List<IssueImageUploadUrlUseCase.Response> execute(
             Long memberAccountId,
-            List<ImagePresignedPutUrlCommand> commandList
+            List<IssueImageUploadUrlUseCase.Command> commandList
     ) {
         Long requestBytesSum = commandList.stream()
-                .mapToLong(ImagePresignedPutUrlCommand::fileSizeBytes)
+                .mapToLong(IssueImageUploadUrlUseCase.Command::fileSizeBytes)
                 .sum();
 
         verifyUserStorageCapacitySharedPort.verifyCapacityFor(memberAccountId, requestBytesSum);
@@ -39,13 +36,13 @@ public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCas
                 .toList();
     }
 
-    private ImagePresignedPutUrlResponse issueUploadUrl(
+    private IssueImageUploadUrlUseCase.Response issueUploadUrl(
             Long memberAccountId,
-            ImagePresignedPutUrlCommand command
+            IssueImageUploadUrlUseCase.Command command
     ) {
         String objectKey = buildObjectKey(memberAccountId, command);
 
-        PresignedPutUrl presignedPutUrl = generatePresignedPutUrlPort.generate(
+        GeneratePresignedPutUrlPort.Result presignedPutUrl = generatePresignedPutUrlPort.generate(
                 objectKey,
                 command.mimeType().getValue(),
                 command.fileSizeBytes()
@@ -68,7 +65,7 @@ public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCas
                 )
         );
 
-        return new ImagePresignedPutUrlResponse(
+        return new IssueImageUploadUrlUseCase.Response(
                 command.clientFileId(),
                 imageFileMeta.getId(),
                 presignedPutUrl.presignedUrl(),
@@ -77,7 +74,7 @@ public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCas
     }
 
     // users/{memberAccountId}/{domainType}/{purpose}/{UUID}.{fileExtension}
-    private static String buildObjectKey(Long memberAccountId, ImagePresignedPutUrlCommand command) {
+    private static String buildObjectKey(Long memberAccountId, IssueImageUploadUrlUseCase.Command command) {
         return String.join("/",
                 "users",
                 String.valueOf(memberAccountId),

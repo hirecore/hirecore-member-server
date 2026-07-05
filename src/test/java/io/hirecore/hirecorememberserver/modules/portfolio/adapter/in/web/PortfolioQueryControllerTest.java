@@ -1130,6 +1130,7 @@ class PortfolioQueryControllerTest {
                     128L,
                     42L,
                     true,
+                    null,
                     Instant.parse("2026-06-10T15:00:00.123456Z")
             );
             LoadPublicPortfolioSummariesUseCase.Response.Item second = new LoadPublicPortfolioSummariesUseCase.Response.Item(
@@ -1147,6 +1148,7 @@ class PortfolioQueryControllerTest {
                     "anotheruser",
                     7L,
                     0L,
+                    false,
                     false,
                     Instant.parse("2026-06-09T09:30:00Z")
             );
@@ -1179,9 +1181,11 @@ class PortfolioQueryControllerTest {
                     .andExpect(jsonPath("$.items[0].externalLinks[0].label").value("GitHub"))
                     .andExpect(jsonPath("$.items[0].thumbnail.imageUrl").value("https://cdn.example.com/portfolio/thumbnail/2026/06/7876543210987654321.webp"))
                     .andExpect(jsonPath("$.items[0].isOwner").value(true))
+                    .andExpect(jsonPath("$.items[0].isInterested").doesNotExist())
                     .andExpect(jsonPath("$.items[0].collaborationType").value("team"))
                     .andExpect(jsonPath("$.items[1].thumbnail").doesNotExist())
                     .andExpect(jsonPath("$.items[1].isOwner").value(false))
+                    .andExpect(jsonPath("$.items[1].isInterested").value(false))
                     .andExpect(jsonPath("$.items[1].collaborationType").value("personal"))
                     .andExpect(jsonPath("$.pagination.hasNext").value(true))
                     .andExpect(jsonPath("$.pagination.nextCursor").value("MTc4MDg4MTYwMDEyMzQ1Nl81MjM0NTY3ODkwMTIzNDU2Nzkw"))
@@ -1221,6 +1225,7 @@ class PortfolioQueryControllerTest {
                                                          - nickname: 작성자 닉네임 해소 실패 시 null.
                                                          - jobCategories: 루트 → 리프 계층. 일괄 조회로 N+1 회피.
                                                          - isOwner: 호출자가 해당 포트폴리오의 작성자인지 여부. 비로그인 호출이면 항상 false. 본인 포트폴리오에 대한 관심 등록 차단 같은 비즈니스 규칙의 클라이언트 측 분기에 사용.
+                                                         - isInterested: 현재 요청자가 해당 포트폴리오에 관심 등록했는지 여부. 비로그인 또는 본인(isOwner=true) 항목은 null(응답 미포함). 페이지 단위 배치 조회로 N+1 을 피한다. 목록 카드의 관심(하트) 토글 상태 렌더에 사용.
                                                          - updatedAt: 위 effective updatedAt 값을 그대로 노출.
                                                     """)
                                             .queryParameters(
@@ -1307,6 +1312,10 @@ class PortfolioQueryControllerTest {
                                                     fieldWithPath("items[].isOwner")
                                                             .type(JsonFieldType.BOOLEAN)
                                                             .description("호출자가 해당 포트폴리오의 작성자인지 여부. 비로그인 호출이면 항상 false."),
+                                                    fieldWithPath("items[].isInterested")
+                                                            .type(JsonFieldType.BOOLEAN)
+                                                            .description("현재 요청자의 관심 등록 여부. 비로그인 또는 본인(isOwner=true) 항목은 null(응답 미포함).")
+                                                            .optional(),
                                                     fieldWithPath("items[].updatedAt")
                                                             .type(JsonFieldType.STRING)
                                                             .description("effective updatedAt (ISO-8601, UTC)"),

@@ -25,6 +25,7 @@ public class LoadPublicPortfolioSummariesApi {
             Long viewCount,
             Long interestCount,
             Boolean isOwner,
+            Boolean isInterested,
             Instant updatedAt
     ){
     }

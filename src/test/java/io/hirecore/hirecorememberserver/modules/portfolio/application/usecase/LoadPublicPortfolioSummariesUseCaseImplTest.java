@@ -2,6 +2,7 @@ package io.hirecore.hirecorememberserver.modules.portfolio.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.portfolio.application.assembler.PublicPortfolioSummariesAssembler;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadPublicPortfolioSummariesUseCase;
+import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.FindInterestedPortfolioIdsPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPublicPortfolioSummaryPort.PublicPortfolioRow;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
@@ -28,6 +29,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,13 +59,17 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
     @Mock
     private LoadImageUrlSharedPort loadImageUrlSharedPort;
 
+    @Mock
+    private FindInterestedPortfolioIdsPort findInterestedPortfolioIdsPort;
+
     // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
     @BeforeEach
     void setUp() {
         PublicPortfolioSummariesAssembler assembler = new PublicPortfolioSummariesAssembler(
                 loadJobCategorySharedPort,
                 loadProfileNicknameSharedPort,
-                loadImageUrlSharedPort
+                loadImageUrlSharedPort,
+                findInterestedPortfolioIdsPort
         );
         sut = new LoadPublicPortfolioSummariesUseCaseImpl(loadPublicPortfolioSummaryPort, assembler);
     }
@@ -372,6 +378,7 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
                     ));
             given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
             given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(findInterestedPortfolioIdsPort.findInterestedPortfolioIds(any(), eq(viewerId))).willReturn(Set.of());
 
             // when
             LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, viewerId);
@@ -430,6 +437,73 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
                             .extracting("categoryCode")
                             .containsExactly("DEV", "DEV_BACKEND")
             );
+        }
+
+        @Test
+        @DisplayName("로그인 사용자가 관심 등록한 포트폴리오는 isInterested=true, 아닌 것은 false")
+        void should_mark_is_interested_per_viewer() {
+            // given
+            Long viewerId = 500L;
+            Portfolio interested = portfolioOf(101L, null);
+            Portfolio notInterested = portfolioOf(202L, null);
+            given(loadPublicPortfolioSummaryPort
+                    .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
+                    .willReturn(List.of(
+                            rowOf(interested, Instant.parse("2026-06-10T15:00:00Z")),
+                            rowOf(notInterested, Instant.parse("2026-06-10T14:00:00Z"))
+                    ));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(findInterestedPortfolioIdsPort.findInterestedPortfolioIds(any(), eq(viewerId)))
+                    .willReturn(Set.of(interested.getId()));
+
+            // when
+            LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, viewerId);
+
+            // then
+            assertThat(response.items().get(0).isInterested()).isTrue();
+            assertThat(response.items().get(1).isInterested()).isFalse();
+        }
+
+        @Test
+        @DisplayName("본인 글(isOwner=true)은 isInterested 가 null 이다 (관심 여부 판단 대상 아님)")
+        void should_set_is_interested_null_for_owner() {
+            // given
+            Long viewerId = 101L;
+            Portfolio mine = portfolioOf(viewerId, null);
+            given(loadPublicPortfolioSummaryPort
+                    .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
+                    .willReturn(List.of(rowOf(mine, Instant.parse("2026-06-10T15:00:00Z"))));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+            given(findInterestedPortfolioIdsPort.findInterestedPortfolioIds(any(), eq(viewerId)))
+                    .willReturn(Set.of());
+
+            // when
+            LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, viewerId);
+
+            // then
+            assertThat(response.items().getFirst().isOwner()).isTrue();
+            assertThat(response.items().getFirst().isInterested()).isNull();
+        }
+
+        @Test
+        @DisplayName("비로그인(viewerId=null)이면 isInterested 는 null 이고 관심 배치 조회를 호출하지 않는다")
+        void should_set_is_interested_null_when_not_logged_in() {
+            // given
+            Portfolio portfolio = portfolioOf(101L, null);
+            given(loadPublicPortfolioSummaryPort
+                    .findPublicPortfoliosOrderByEffectiveUpdatedAtDesc(any(), any(), anyInt()))
+                    .willReturn(List.of(rowOf(portfolio, Instant.parse("2026-06-10T15:00:00Z"))));
+            given(loadJobCategorySharedPort.findJobCategoryHierarchies(any())).willReturn(Map.of());
+            given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
+
+            // when
+            LoadPublicPortfolioSummariesUseCase.Response response = sut.execute(null, 20, null);
+
+            // then
+            assertThat(response.items().getFirst().isInterested()).isNull();
+            then(findInterestedPortfolioIdsPort).should(never()).findInterestedPortfolioIds(any(), any());
         }
     }
 }

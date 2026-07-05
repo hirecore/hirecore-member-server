@@ -9,7 +9,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.Sha
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknameSharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -29,7 +28,7 @@ public class PublicPortfolioSummariesAssembler {
     private final LoadImageUrlSharedPort loadImageUrlSharedPort;
 
     public List<Response.Item> buildItems(List<PublicPortfolioRow> pageRows, Long viewerId) {
-        Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
+        Map<Long, List<LoadJobCategorySharedPort.Result>> hierarchiesByLeafId =
                 loadJobCategorySharedPort.findJobCategoryHierarchies(collectLeafIds(pageRows));
 
         return pageRows.stream()
@@ -39,7 +38,7 @@ public class PublicPortfolioSummariesAssembler {
 
     private Response.Item toItem(
             PublicPortfolioRow row,
-            Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId,
+            Map<Long, List<LoadJobCategorySharedPort.Result>> hierarchiesByLeafId,
             Long viewerId
     ) {
         Portfolio portfolio = row.portfolio();

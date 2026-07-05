@@ -4,7 +4,6 @@ import io.hirecore.hirecorememberserver.modules.coverletter.application.port.in.
 import io.hirecore.hirecorememberserver.modules.coverletter.application.port.in.LoadCoverLetterTitlesUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitleSharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +23,9 @@ public class CoverLetterSharedQueryAdapter implements
     private final LoadCoverLetterTitlesUseCase loadCoverLetterTitlesUseCase;
 
     @Override
-    public Optional<CoverLetterContentResult> findById(Long coverLetterId) {
+    public Optional<LoadCoverLetterContentSharedPort.Result> findById(Long coverLetterId) {
         return loadCoverLetterContentUseCase.execute(coverLetterId)
-                .map(result -> new CoverLetterContentResult(
+                .map(result -> new LoadCoverLetterContentSharedPort.Result(
                         result.id(),
                         result.title(),
                         result.memberAccountId(),

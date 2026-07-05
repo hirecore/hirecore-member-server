@@ -11,7 +11,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.exception.Share
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknameSharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.assertj.core.api.ThrowableAssert;
@@ -414,8 +413,8 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
                     ));
             given(loadJobCategorySharedPort.findJobCategoryHierarchies(any()))
                     .willReturn(Map.of(JOB_CATEGORY_ID, List.of(
-                            new PortfolioJobCategoryHierarchyResult(1001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
+                            new LoadJobCategorySharedPort.Result(1001L, 1L, "DEV", "개발"),
+                            new LoadJobCategorySharedPort.Result(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
                     )));
             given(loadProfileNicknameSharedPort.findNickname(anyLong())).willReturn(Optional.of("nick"));
 

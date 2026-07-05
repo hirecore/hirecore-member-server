@@ -13,11 +13,12 @@ classDiagram
     Portfolio "1" *-- "1" PortfolioContent
     Portfolio "1" *-- "1" PortfolioJobCategory
     Portfolio "1" *-- "0..*" PortfolioTag
-    Portfolio "1" *-- "0..*" PortfolioMemberView
-    Portfolio "1" *-- "0..*" PortfolioMemberInterest
+    Portfolio "1" -- "0..*" PortfolioMemberView : 조회 기록
+    Portfolio "1" -- "0..*" PortfolioMemberInterest : 관심 기록
 ```
 
 > 공통 `AuditingInfo` 는 생략한다.
+> 조회·관심 기록은 Portfolio가 소유하는 자식이 아니라 도메인 이벤트로 별도 저장되는 독립 기록이다(연결은 persistence의 `portfolio_id` FK). 그래서 컴포지션이 아닌 **연관**으로 표기한다.
 
 ## 애그리거트 · 불변식
 

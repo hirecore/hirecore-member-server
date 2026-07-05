@@ -12,10 +12,12 @@ classDiagram
     class UserMembershipPolicy {
         <<Aggregate Root>>
     }
-    UserMembershipEntitlement --> UserMembershipPolicy : userMembershipPolicyId (스냅샷)
+    note for UserMembershipPolicy "policy BC (외부)"
+    UserMembershipEntitlement --> UserMembershipPolicy : userMembershipPolicyId
 ```
 
 > 공통 `AuditingInfo` 는 생략한다.
+> `UserMembershipPolicy`는 policy BC의 애그리거트로 `userMembershipPolicyId`(id)로만 참조한다. 부여 시점의 정책 값(할당량·이름·내용)은 Entitlement의 별도 필드로 **복사·고정**되므로(스냅샷), 원본 정책이 바뀌어도 영향받지 않는다.
 
 ## 애그리거트
 

@@ -10,7 +10,7 @@ classDiagram
         <<Aggregate Root>>
     }
     class ProfileDetail {
-        <<sealed>>
+        <<interface>>
     }
     Profile "1" *-- "1" ProfileDetail
     ProfileDetail <|.. UserProfileDetail

@@ -5,7 +5,6 @@ import io.hirecore.hirecorememberserver.modules.category.application.port.in.Loa
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryIdByCodeUseCase;
 import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -29,14 +28,14 @@ public class JobCategorySharedQueryAdapter implements LoadJobCategorySharedPort 
     }
 
     @Override
-    public List<PortfolioJobCategoryHierarchyResult> findJobCategoryHierarchy(Long leafJobCategoryId) {
+    public List<LoadJobCategorySharedPort.Result> findJobCategoryHierarchy(Long leafJobCategoryId) {
         return findJobCategoryHierarchyUseCase.execute(leafJobCategoryId).stream()
                 .map(JobCategorySharedQueryAdapter::toResult)
                 .toList();
     }
 
     @Override
-    public Map<Long, List<PortfolioJobCategoryHierarchyResult>> findJobCategoryHierarchies(Collection<Long> leafJobCategoryIds) {
+    public Map<Long, List<LoadJobCategorySharedPort.Result>> findJobCategoryHierarchies(Collection<Long> leafJobCategoryIds) {
         return findJobCategoryHierarchiesUseCase.execute(leafJobCategoryIds).entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -48,8 +47,8 @@ public class JobCategorySharedQueryAdapter implements LoadJobCategorySharedPort 
                 ));
     }
 
-    private static PortfolioJobCategoryHierarchyResult toResult(JobCategory category) {
-        return new PortfolioJobCategoryHierarchyResult(
+    private static LoadJobCategorySharedPort.Result toResult(JobCategory category) {
+        return new LoadJobCategorySharedPort.Result(
                 category.getId(),
                 category.getDepth().longValue(),
                 category.getCategoryCode(),

@@ -10,7 +10,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.Sha
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknameSharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,7 @@ public class PublicPortfolioSummariesAssembler {
     private final FindInterestedPortfolioIdsPort findInterestedPortfolioIdsPort;
 
     public List<Response.Item> buildItems(List<PublicPortfolioRow> pageRows, Long viewerId) {
-        Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
+        Map<Long, List<LoadJobCategorySharedPort.Result>> hierarchiesByLeafId =
                 loadJobCategorySharedPort.findJobCategoryHierarchies(collectLeafIds(pageRows));
 
         // 로그인 사용자에 한해, 이 페이지에서 관심 등록한 포트폴리오 ID를 배치로 한 번에 조회 (N+1 회피)
@@ -47,7 +46,7 @@ public class PublicPortfolioSummariesAssembler {
 
     private Response.Item toItem(
             PublicPortfolioRow row,
-            Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId,
+            Map<Long, List<LoadJobCategorySharedPort.Result>> hierarchiesByLeafId,
             Set<Long> interestedPortfolioIds,
             Long viewerId
     ) {

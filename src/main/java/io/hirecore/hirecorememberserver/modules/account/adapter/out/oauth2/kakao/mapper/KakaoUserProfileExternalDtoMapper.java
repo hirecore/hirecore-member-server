@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.mapper;
 
 import io.hirecore.hirecorememberserver.modules.account.adapter.out.oauth2.kakao.dto.result.KakaoUserProfileExternalResult;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -19,5 +19,5 @@ public abstract class KakaoUserProfileExternalDtoMapper {
             @Mapping(target = "emailAgreed", expression = "java(!request.kakaoAccount().emailNeedsAgreement())"),
             @Mapping(target = "profileNicknameAgreed", expression = "java(!request.kakaoAccount().profileNicknameNeedsAgreement())"),
     })
-    public abstract SocialUserProfileResult toSocialUserProfileResult(KakaoUserProfileExternalResult request);
+    public abstract FetchSocialUserProfilePort.Result toSocialUserProfileResult(KakaoUserProfileExternalResult request);
 }

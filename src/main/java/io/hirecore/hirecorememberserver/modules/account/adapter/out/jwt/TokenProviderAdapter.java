@@ -6,7 +6,6 @@ import io.hirecore.hirecorememberserver.common.security.properties.JwtProperties
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.ParseTokenPort;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
@@ -43,7 +42,7 @@ public class TokenProviderAdapter implements
     }
 
     @Override
-    public PairTokenResponse issueTokenPair(TokenClaimsRequest tokenClaims) {
+    public PairTokenResponse issueTokenPair(IssueTokenPort.Request tokenClaims) {
         Instant now = Instant.now();
 
         String accessToken = generateToken(tokenClaims, now, accessTokenExpirationMills);
@@ -71,7 +70,7 @@ public class TokenProviderAdapter implements
         }
     }
 
-    private String generateToken(TokenClaimsRequest claims, Instant now, long expirationMillis) {
+    private String generateToken(IssueTokenPort.Request claims, Instant now, long expirationMillis) {
         return Jwts.builder()
                 .subject(String.valueOf(claims.id()))
                 .claim(CLAIM_EMAIL, claims.email())

@@ -6,7 +6,6 @@ import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.dto.Socia
 import io.hirecore.hirecorememberserver.modules.account.adapter.in.web.mapper.SocialLoginWebMapper;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LogoutUseCase;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +31,8 @@ public class AuthCommandController {
             @PathVariable String provider,
             @Valid @RequestBody SocialLoginApi.Request request
     ) {
-        SocialLoginCommand socialLoginCommand = socialLoginWebMapper.toSocialLoginCommand(provider, request);
-        PairTokenResponse pairTokenResponse = loginSocialUserUseCase.execute(socialLoginCommand);
+        LoginSocialUserUseCase.Command command = socialLoginWebMapper.toSocialLoginCommand(provider, request);
+        PairTokenResponse pairTokenResponse = loginSocialUserUseCase.execute(command);
 
         ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(pairTokenResponse.accessToken());
         ResponseCookie refreshTokenCookie = authCookieUtils.createRefreshTokenCookie(pairTokenResponse.refreshToken());

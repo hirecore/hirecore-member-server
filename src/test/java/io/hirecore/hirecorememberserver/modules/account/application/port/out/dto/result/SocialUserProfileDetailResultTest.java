@@ -2,6 +2,7 @@ package io.hirecore.hirecorememberserver.modules.account.application.port.out.dt
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationException;
+import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.application.exception.SocialAccountApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.OAuth2Provider;
 import io.hirecore.hirecorememberserver.support.FixtureMonkeyFactory;
@@ -36,7 +37,7 @@ class SocialUserProfileDetailResultTest {
         @DisplayName("모든 유효한 값으로 SocialUserProfile을 생성한다")
         void should_create_profile_with_all_valid_values() {
             // when
-            SocialUserProfileResult profile = fm.giveMeOne(SocialUserProfileResult.class);
+            FetchSocialUserProfilePort.Result profile = fm.giveMeOne(FetchSocialUserProfilePort.Result.class);
 
             // then
             assertThat(profile).satisfies(p -> {
@@ -54,7 +55,7 @@ class SocialUserProfileDetailResultTest {
         @DisplayName("동의항목이 false여도 정상 생성된다")
         void should_create_profile_with_false_agreements() {
             // when
-            SocialUserProfileResult profile = fm.giveMeBuilder(SocialUserProfileResult.class)
+            FetchSocialUserProfilePort.Result profile = fm.giveMeBuilder(FetchSocialUserProfilePort.Result.class)
                     .set("emailAgreed", false)
                     .set("profileNicknameAgreed", false)
                     .sample();
@@ -72,7 +73,7 @@ class SocialUserProfileDetailResultTest {
         @Test
         @DisplayName("provider가 null이면 PROVIDER_MISSING 에러코드로 예외가 발생한다")
         void should_throw_when_provider_is_null() {
-            assertThatThrownBy(() -> new SocialUserProfileResult(
+            assertThatThrownBy(() -> new FetchSocialUserProfilePort.Result(
                     null, VALID_PROVIDER_ID, VALID_EMAIL, VALID_NICKNAME, VALID_CONNECTED_AT, true, true))
                     .isInstanceOf(SocialAccountApplicationException.class)
                     .extracting("errorCode")
@@ -82,7 +83,7 @@ class SocialUserProfileDetailResultTest {
         @Test
         @DisplayName("providerId가 null이면 PROVIDER_ID_MISSING 에러코드로 예외가 발생한다")
         void should_throw_when_providerId_is_null() {
-            assertThatThrownBy(() -> new SocialUserProfileResult(
+            assertThatThrownBy(() -> new FetchSocialUserProfilePort.Result(
                     VALID_PROVIDER, null, VALID_EMAIL, VALID_NICKNAME, VALID_CONNECTED_AT, true, true))
                     .isInstanceOf(SocialAccountApplicationException.class)
                     .extracting("errorCode")
@@ -94,7 +95,7 @@ class SocialUserProfileDetailResultTest {
         @ValueSource(strings = {"  "})
         @DisplayName("email이 null이거나 빈 값이면 EMAIL_MISSING 에러코드로 예외가 발생한다")
         void should_throw_when_email_is_blank_or_null(String email) {
-            assertThatThrownBy(() -> new SocialUserProfileResult(
+            assertThatThrownBy(() -> new FetchSocialUserProfilePort.Result(
                     VALID_PROVIDER, VALID_PROVIDER_ID, email,
                     VALID_NICKNAME, VALID_CONNECTED_AT, true, true))
                     .isInstanceOf(SocialAccountApplicationException.class)
@@ -107,7 +108,7 @@ class SocialUserProfileDetailResultTest {
         @ValueSource(strings = {"  "})
         @DisplayName("nickname이 null이거나 빈 값이면 NICKNAME_MISSING 에러코드로 예외가 발생한다")
         void should_throw_when_nickname_is_blank_or_null(String nickname) {
-            assertThatThrownBy(() -> new SocialUserProfileResult(
+            assertThatThrownBy(() -> new FetchSocialUserProfilePort.Result(
                     VALID_PROVIDER, VALID_PROVIDER_ID, VALID_EMAIL,
                     nickname, VALID_CONNECTED_AT, true, true))
                     .isInstanceOf(SocialAccountApplicationException.class)
@@ -118,7 +119,7 @@ class SocialUserProfileDetailResultTest {
         @Test
         @DisplayName("connectedAt이 null이면 CONNECTED_AT_MISSING 에러코드로 예외가 발생한다")
         void should_throw_when_connectedAt_is_null() {
-            assertThatThrownBy(() -> new SocialUserProfileResult(
+            assertThatThrownBy(() -> new FetchSocialUserProfilePort.Result(
                     VALID_PROVIDER, VALID_PROVIDER_ID, VALID_EMAIL, VALID_NICKNAME, null, true, true))
                     .isInstanceOf(SocialAccountApplicationException.class)
                     .extracting("errorCode")
@@ -128,7 +129,7 @@ class SocialUserProfileDetailResultTest {
         @Test
         @DisplayName("emailAgreed가 null이면 CONSENT_INFO_MISSING 에러코드로 예외가 발생한다")
         void should_throw_when_emailAgreed_is_null() {
-            assertThatThrownBy(() -> new SocialUserProfileResult(
+            assertThatThrownBy(() -> new FetchSocialUserProfilePort.Result(
                     VALID_PROVIDER, VALID_PROVIDER_ID, VALID_EMAIL, VALID_NICKNAME, VALID_CONNECTED_AT, null, true))
                     .isInstanceOf(SocialAccountApplicationException.class)
                     .extracting("errorCode")
@@ -138,7 +139,7 @@ class SocialUserProfileDetailResultTest {
         @Test
         @DisplayName("profileNicknameAgreed가 null이면 CONSENT_INFO_MISSING 에러코드로 예외가 발생한다")
         void should_throw_when_profileNicknameAgreed_is_null() {
-            assertThatThrownBy(() -> new SocialUserProfileResult(
+            assertThatThrownBy(() -> new FetchSocialUserProfilePort.Result(
                     VALID_PROVIDER, VALID_PROVIDER_ID, VALID_EMAIL, VALID_NICKNAME, VALID_CONNECTED_AT, true, null))
                     .isInstanceOf(SocialAccountApplicationException.class)
                     .extracting("errorCode")

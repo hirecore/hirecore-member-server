@@ -1,9 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.profile.application.usecase;
 
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.exception.DataConsistencyException;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.in.LoadUserProfileSummaryUseCase;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.out.LoadUserProfileSummaryPort;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.out.dto.result.UserProfileSummaryResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ import static org.mockito.BDDMockito.then;
  * {@link LoadUserProfileSummaryUseCaseImpl} 단위 테스트.
  *
  * <p>JWT에서 추출한 회원 정보와 프로필 테이블 조회 결과를 조합하여
- * {@link UserProfileSummaryResponse}를 정확히 반환하는지 검증합니다.</p>
+ * {@link LoadUserProfileSummaryUseCase.Response}를 정확히 반환하는지 검증합니다.</p>
  */
 @DisplayName("LoadUserProfileSummaryUseCaseImpl 단위 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -49,12 +48,12 @@ class LoadUserProfileSummaryUseCaseImplTest {
         @DisplayName("JWT 정보(id, email)와 프로필 정보(publicCode, nickname, profileImageUrl)를 조합하여 응답을 반환한다")
         void should_return_combined_response_with_jwt_and_profile_data() {
             // given
-            UserProfileSummaryResult profile = new UserProfileSummaryResult(PUBLIC_CODE, NICKNAME, PROFILE_IMAGE_PATH);
+            LoadUserProfileSummaryPort.Result profile = new LoadUserProfileSummaryPort.Result(PUBLIC_CODE, NICKNAME, PROFILE_IMAGE_PATH);
             given(userProfileQueryPort.findUserProfileSummary(MEMBER_ID))
                     .willReturn(Optional.of(profile));
 
             // when
-            UserProfileSummaryResponse response = useCase.execute(MEMBER_ID, EMAIL);
+            LoadUserProfileSummaryUseCase.Response response = useCase.execute(MEMBER_ID, EMAIL);
 
             // then
             assertThat(response).satisfies(r -> {
@@ -70,12 +69,12 @@ class LoadUserProfileSummaryUseCaseImplTest {
         @DisplayName("프로필 이미지가 없으면 profileImageUrl이 null인 응답을 반환한다")
         void should_return_null_profile_image_url_when_image_not_set() {
             // given
-            UserProfileSummaryResult profile = new UserProfileSummaryResult(PUBLIC_CODE, NICKNAME, null);
+            LoadUserProfileSummaryPort.Result profile = new LoadUserProfileSummaryPort.Result(PUBLIC_CODE, NICKNAME, null);
             given(userProfileQueryPort.findUserProfileSummary(MEMBER_ID))
                     .willReturn(Optional.of(profile));
 
             // when
-            UserProfileSummaryResponse response = useCase.execute(MEMBER_ID, EMAIL);
+            LoadUserProfileSummaryUseCase.Response response = useCase.execute(MEMBER_ID, EMAIL);
 
             // then
             assertThat(response.profileImageUrl()).isNull();

@@ -1,10 +1,8 @@
 package io.hirecore.hirecorememberserver.modules.file.application.usecase;
 
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.request.ImagePresignedPutUrlCommand;
-import io.hirecore.hirecorememberserver.modules.file.application.port.in.dto.response.ImagePresignedPutUrlResponse;
+import io.hirecore.hirecorememberserver.modules.file.application.port.in.IssueImageUploadUrlUseCase;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.GeneratePresignedPutUrlPort;
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveImageFileMetaPort;
-import io.hirecore.hirecorememberserver.modules.file.application.port.out.dto.PresignedPutUrl;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacitySharedPort;
@@ -50,8 +48,8 @@ class IssueImageUploadUrlUseCaseImplTest {
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
 
-    private ImagePresignedPutUrlCommand createCommand(Long fileSizeBytes) {
-        return new ImagePresignedPutUrlCommand(
+    private IssueImageUploadUrlUseCase.Command createCommand(Long fileSizeBytes) {
+        return new IssueImageUploadUrlUseCase.Command(
                 1L,
                 "test-image.webp",
                 MimeType.IMAGE_WEBP,
@@ -72,7 +70,7 @@ class IssueImageUploadUrlUseCaseImplTest {
         @DisplayName("가용 용량 내 요청 시 presigned URL 목록을 반환한다")
         void should_return_presigned_url_responses() {
             // given
-            ImagePresignedPutUrlCommand command = createCommand(1048576L);
+            IssueImageUploadUrlUseCase.Command command = createCommand(1048576L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -82,13 +80,13 @@ class IssueImageUploadUrlUseCaseImplTest {
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);
             given(generatePresignedPutUrlPort.generate(anyString(), anyString(), anyLong()))
-                    .willReturn(new PresignedPutUrl(
+                    .willReturn(new GeneratePresignedPutUrlPort.Result(
                             "https://s3.presigned.url",
                             "https://cdn.example.com/users/1/portfolio/content-image/uuid.webp",
                             "test-bucket"));
 
             // when
-            List<ImagePresignedPutUrlResponse> responses = sut.execute(MEMBER_ACCOUNT_ID, List.of(command));
+            List<IssueImageUploadUrlUseCase.Response> responses = sut.execute(MEMBER_ACCOUNT_ID, List.of(command));
 
             // then
             assertThat(responses).hasSize(1);
@@ -106,7 +104,7 @@ class IssueImageUploadUrlUseCaseImplTest {
         @DisplayName("저장되는 ImageFileMeta에 요청 정보가 올바르게 전달된다")
         void should_pass_correct_data_to_save_port() {
             // given
-            ImagePresignedPutUrlCommand command = createCommand(2097152L);
+            IssueImageUploadUrlUseCase.Command command = createCommand(2097152L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -116,7 +114,7 @@ class IssueImageUploadUrlUseCaseImplTest {
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);
             given(generatePresignedPutUrlPort.generate(anyString(), anyString(), anyLong()))
-                    .willReturn(new PresignedPutUrl(
+                    .willReturn(new GeneratePresignedPutUrlPort.Result(
                             "https://s3.presigned.url",
                             "https://cdn.example.com/users/1/portfolio/content-image/uuid.webp",
                             "test-bucket"));
@@ -147,7 +145,7 @@ class IssueImageUploadUrlUseCaseImplTest {
         @DisplayName("presigned URL 생성 시 올바른 contentType과 contentLength가 전달된다")
         void should_pass_correct_params_to_presigned_url_port() {
             // given
-            ImagePresignedPutUrlCommand command = createCommand(1048576L);
+            IssueImageUploadUrlUseCase.Command command = createCommand(1048576L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -157,7 +155,7 @@ class IssueImageUploadUrlUseCaseImplTest {
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);
             given(generatePresignedPutUrlPort.generate(anyString(), eq("image/webp"), eq(1048576L)))
-                    .willReturn(new PresignedPutUrl(
+                    .willReturn(new GeneratePresignedPutUrlPort.Result(
                             "https://s3.presigned.url",
                             "https://cdn.example.com/users/1/portfolio/content-image/uuid.webp",
                             "test-bucket"));
@@ -173,8 +171,8 @@ class IssueImageUploadUrlUseCaseImplTest {
         @DisplayName("여러 파일 요청 시 합계 크기로 용량 검증을 위임하고 각각 presigned URL을 발급한다")
         void should_verify_total_size_and_return_multiple_responses() {
             // given
-            ImagePresignedPutUrlCommand command1 = createCommand(1048576L);
-            ImagePresignedPutUrlCommand command2 = createCommand(2097152L);
+            IssueImageUploadUrlUseCase.Command command1 = createCommand(1048576L);
+            IssueImageUploadUrlUseCase.Command command2 = createCommand(2097152L);
 
             ImageFileMeta savedMeta = ImageFileMeta.create(
                     MEMBER_ACCOUNT_ID, DomainType.PORTFOLIO, Purpose.CONTENT_IMAGE,
@@ -184,13 +182,13 @@ class IssueImageUploadUrlUseCaseImplTest {
             );
             given(saveImageFileMetaPort.save(any(ImageFileMeta.class))).willReturn(savedMeta);
             given(generatePresignedPutUrlPort.generate(anyString(), anyString(), anyLong()))
-                    .willReturn(new PresignedPutUrl(
+                    .willReturn(new GeneratePresignedPutUrlPort.Result(
                             "https://s3.presigned.url",
                             "https://cdn.example.com/users/1/portfolio/content-image/uuid.webp",
                             "test-bucket"));
 
             // when
-            List<ImagePresignedPutUrlResponse> responses = sut.execute(MEMBER_ACCOUNT_ID, List.of(command1, command2));
+            List<IssueImageUploadUrlUseCase.Response> responses = sut.execute(MEMBER_ACCOUNT_ID, List.of(command1, command2));
 
             // then
             assertThat(responses).hasSize(2);
@@ -206,7 +204,7 @@ class IssueImageUploadUrlUseCaseImplTest {
         @DisplayName("용량 검증이 실패하면 예외가 그대로 전파되고 저장/URL 발급은 호출되지 않는다")
         void should_short_circuit_when_capacity_verification_fails() {
             // given
-            ImagePresignedPutUrlCommand command = createCommand(10485760L);
+            IssueImageUploadUrlUseCase.Command command = createCommand(10485760L);
             RuntimeException capacityError = new RuntimeException("storage quota exceeded");
             willThrow(capacityError)
                     .given(verifyUserStorageCapacitySharedPort)

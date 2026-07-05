@@ -4,7 +4,6 @@ import io.hirecore.hirecorememberserver.modules.resume.application.port.in.LoadR
 import io.hirecore.hirecorememberserver.modules.resume.application.port.in.LoadResumeTitlesUseCase;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitleSharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.ResumeContentResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +23,9 @@ public class ResumeSharedQueryAdapter implements
     private final LoadResumeTitlesUseCase loadResumeTitlesUseCase;
 
     @Override
-    public Optional<ResumeContentResult> findById(Long resumeId) {
+    public Optional<LoadResumeContentSharedPort.Result> findById(Long resumeId) {
         return loadResumeContentUseCase.execute(resumeId)
-                .map(result -> new ResumeContentResult(
+                .map(result -> new LoadResumeContentSharedPort.Result(
                         result.id(),
                         result.title(),
                         result.memberAccountId(),

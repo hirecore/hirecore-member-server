@@ -11,9 +11,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.Sha
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentSharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.ResumeContentResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -66,7 +63,7 @@ public class PortfolioDetailAssembler {
                     return pjc.getLeafJobCategoryId();
                 })
                 .toList();
-        Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =
+        Map<Long, List<LoadJobCategorySharedPort.Result>> hierarchiesByLeafId =
                 loadJobCategorySharedPort.findJobCategoryHierarchies(otherLeafIds);
 
         List<Response.Publisher.OtherPortfolioSummary> otherPortfolios = otherPublicPortfolios.stream()
@@ -80,7 +77,7 @@ public class PortfolioDetailAssembler {
         if (resumeId == null) {
             return null;
         }
-        ResumeContentResult result = loadResumeContentSharedPort.findById(resumeId).orElse(null);
+        LoadResumeContentSharedPort.Result result = loadResumeContentSharedPort.findById(resumeId).orElse(null);
         if (result == null) {
             return null;
         }
@@ -94,7 +91,7 @@ public class PortfolioDetailAssembler {
         if (coverLetterId == null) {
             return null;
         }
-        CoverLetterContentResult result = loadCoverLetterContentSharedPort.findById(coverLetterId).orElse(null);
+        LoadCoverLetterContentSharedPort.Result result = loadCoverLetterContentSharedPort.findById(coverLetterId).orElse(null);
         if (result == null) {
             return null;
         }
@@ -106,7 +103,7 @@ public class PortfolioDetailAssembler {
 
     private Response.Publisher.OtherPortfolioSummary toOtherPortfolioSummary(
             Portfolio other,
-            Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId
+            Map<Long, List<LoadJobCategorySharedPort.Result>> hierarchiesByLeafId
     ) {
         Long leafId = other.getPortfolioJobCategory().getLeafJobCategoryId();
         List<SharedResponseDto.JobCategory> jobCategories = hierarchiesByLeafId

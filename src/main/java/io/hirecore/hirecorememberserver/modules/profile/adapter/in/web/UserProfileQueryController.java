@@ -4,7 +4,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPr
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.dto.UserProfileSummaryApi;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.in.web.mapper.UserProfileWebMapper;
 import io.hirecore.hirecorememberserver.modules.profile.application.port.in.LoadUserProfileSummaryUseCase;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.in.dto.response.UserProfileSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +24,7 @@ public class UserProfileQueryController {
     public ResponseEntity<UserProfileSummaryApi.Response> getUserProfileSummary(
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
-        UserProfileSummaryResponse response = loadUserProfileSummaryUseCase.execute(
+        LoadUserProfileSummaryUseCase.Response response = loadUserProfileSummaryUseCase.execute(
                 principal.id(), principal.email()
         );
         return ResponseEntity.ok(userProfileWebMapper.toApiResponse(response));

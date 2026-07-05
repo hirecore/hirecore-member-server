@@ -6,7 +6,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.jpa
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.ProfileJpaEntity;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.vo.ProfileImageJpaInfo;
 import io.hirecore.hirecorememberserver.modules.profile.adapter.out.persistence.jpa.entity.vo.PublicCodeJpaInfo;
-import io.hirecore.hirecorememberserver.modules.profile.application.port.out.dto.result.UserProfileSummaryResult;
+import io.hirecore.hirecorememberserver.modules.profile.application.port.out.LoadUserProfileSummaryPort;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -69,7 +69,7 @@ class UserProfileJpaQueryAdapterTest {
             insertProfile(MEMBER_ACCOUNT_ID, PUBLIC_CODE, NICKNAME, PROFILE_IMAGE_PATH);
 
             // when
-            Optional<UserProfileSummaryResult> result = adapter.findUserProfileSummary(MEMBER_ACCOUNT_ID);
+            Optional<LoadUserProfileSummaryPort.Result> result = adapter.findUserProfileSummary(MEMBER_ACCOUNT_ID);
 
             // then
             assertThat(result).hasValueSatisfying(profile -> {
@@ -86,7 +86,7 @@ class UserProfileJpaQueryAdapterTest {
             insertProfile(MEMBER_ACCOUNT_ID, PUBLIC_CODE, NICKNAME, null);
 
             // when
-            Optional<UserProfileSummaryResult> result = adapter.findUserProfileSummary(MEMBER_ACCOUNT_ID);
+            Optional<LoadUserProfileSummaryPort.Result> result = adapter.findUserProfileSummary(MEMBER_ACCOUNT_ID);
 
             // then
             assertThat(result).hasValueSatisfying(profile -> {
@@ -99,7 +99,7 @@ class UserProfileJpaQueryAdapterTest {
         @DisplayName("프로필이 없는 회원 ID로 조회하면 빈 Optional을 반환한다")
         void should_return_empty_when_profile_not_found() {
             // when
-            Optional<UserProfileSummaryResult> result = adapter.findUserProfileSummary(99999L);
+            Optional<LoadUserProfileSummaryPort.Result> result = adapter.findUserProfileSummary(99999L);
 
             // then
             assertThat(result).isEmpty();

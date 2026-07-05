@@ -8,7 +8,6 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCo
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitleSharedPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,8 +130,8 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     .willReturn(Map.of(coverLetterId, "B사 지원용 자소서"));
             given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
-                            new PortfolioJobCategoryHierarchyResult(1001L, 1L, "DEV", "개발"),
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
+                            new LoadJobCategorySharedPort.Result(1001L, 1L, "DEV", "개발"),
+                            new LoadJobCategorySharedPort.Result(JOB_CATEGORY_ID, 2L, "DEV_BACKEND", "백엔드")
                     ));
             given(loadImageUrlSharedPort.findUrlById(thumbnailImageId))
                     .willReturn(Optional.of("https://cdn.example.com/portfolio/thumbnail/abc.webp"));
@@ -166,7 +165,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             given(loadCoverLetterTitleSharedPort.findTitleMapByIds(Set.of())).willReturn(Map.of());
             given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+                            new LoadJobCategorySharedPort.Result(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
 
             // when
@@ -193,7 +192,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
             given(loadCoverLetterTitleSharedPort.findTitleMapByIds(Set.of())).willReturn(Map.of());
             given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+                            new LoadJobCategorySharedPort.Result(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
 
             // when
@@ -217,7 +216,7 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
                     .willReturn(List.of(first, second, third));
             given(loadJobCategorySharedPort.findJobCategoryHierarchy(JOB_CATEGORY_ID))
                     .willReturn(List.of(
-                            new PortfolioJobCategoryHierarchyResult(JOB_CATEGORY_ID, 1L, "DEV", "개발")
+                            new LoadJobCategorySharedPort.Result(JOB_CATEGORY_ID, 1L, "DEV", "개발")
                     ));
             given(loadResumeTitleSharedPort.findTitleMapByIds(Set.of(sharedResumeId, otherResumeId)))
                     .willReturn(Map.of(

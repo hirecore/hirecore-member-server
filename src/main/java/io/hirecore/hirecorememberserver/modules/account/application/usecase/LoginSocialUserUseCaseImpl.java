@@ -1,15 +1,12 @@
 package io.hirecore.hirecorememberserver.modules.account.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.LoginSocialUserUseCase;
-import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.request.SocialLoginCommand;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.dto.response.PairTokenResponse;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.FetchSocialUserProfilePort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.IssueTokenPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadMemberAccountPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.LoadSocialAccountPort;
 import io.hirecore.hirecorememberserver.modules.account.application.port.out.SaveMemberAccountPort;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.request.TokenClaimsRequest;
-import io.hirecore.hirecorememberserver.modules.account.application.port.out.dto.result.SocialUserProfileResult;
 import io.hirecore.hirecorememberserver.modules.account.domain.MemberAccount;
 import io.hirecore.hirecorememberserver.modules.account.application.mapper.SocialUserProfileInfoMapper;
 import io.hirecore.hirecorememberserver.modules.account.domain.vo.MemberRole;
@@ -32,12 +29,12 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
     private final SocialUserProfileInfoMapper socialUserProfileInfoMapper;
 
     @Override
-    public PairTokenResponse execute(SocialLoginCommand socialLoginCommand) {
-        SocialUserProfileResult profile = fetchSocialUserProfilePort.fetchByAuthorizationCode(socialLoginCommand.authorizationCode());
+    public PairTokenResponse execute(LoginSocialUserUseCase.Command command) {
+        FetchSocialUserProfilePort.Result profile = fetchSocialUserProfilePort.fetchByAuthorizationCode(command.authorizationCode());
         return transactionTemplate.execute(status -> processLoginOrRegistration(profile));
     }
 
-    private PairTokenResponse processLoginOrRegistration(SocialUserProfileResult profile) {
+    private PairTokenResponse processLoginOrRegistration(FetchSocialUserProfilePort.Result profile) {
         return loadSocialAccountPort
                 .findByProviderAndProviderId(profile.provider(), profile.providerId())
                 .map(social -> loadMemberAccountPort.findById(social.getMemberAccountId()))
@@ -46,7 +43,7 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
     }
 
     private PairTokenResponse issueToken(MemberAccount memberAccount) {
-        return tokenUtilsPort.issueTokenPair(new TokenClaimsRequest(
+        return tokenUtilsPort.issueTokenPair(new IssueTokenPort.Request(
                 memberAccount.getId(),
                 memberAccount.getEmail(),
                 memberAccount.getRole(),
@@ -55,7 +52,7 @@ public class LoginSocialUserUseCaseImpl implements LoginSocialUserUseCase {
     }
 
 
-    private MemberAccount registerNewMember(SocialUserProfileResult profile) {
+    private MemberAccount registerNewMember(FetchSocialUserProfilePort.Result profile) {
         SocialUserProfileInfo socialInfo = socialUserProfileInfoMapper.toSocialUserProfileInfo(profile);
         MemberAccount member = MemberAccount.createWithSocial(socialInfo.email(), MemberRole.USER, socialInfo);
         return saveMemberAccountPort.save(member);

@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.category.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryMapper;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
+import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryTreeUseCase;
 import io.hirecore.hirecorememberserver.modules.category.application.port.out.LoadJobCategoryPort;
 import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.AuditingInfo;
@@ -55,8 +55,8 @@ class LoadJobCategoryTreeUseCaseImplTest {
                 .build();
     }
 
-    private static JobCategoryResponse response(Long id, Long parentId, Integer depth, Integer sortOrder) {
-        return new JobCategoryResponse(id, depth, sortOrder, parentId, "NAME_" + id, "CODE_" + id, false);
+    private static LoadJobCategoryTreeUseCase.Response response(Long id, Long parentId, Integer depth, Integer sortOrder) {
+        return new LoadJobCategoryTreeUseCase.Response(id, depth, sortOrder, parentId, "NAME_" + id, "CODE_" + id, false);
     }
 
     @Nested
@@ -69,8 +69,8 @@ class LoadJobCategoryTreeUseCaseImplTest {
             // given
             JobCategory root = category(1L, null, 1, 1);
             JobCategory child = category(11L, 1L, 2, 1);
-            JobCategoryResponse rootResponse = response(1L, null, 1, 1);
-            JobCategoryResponse childResponse = response(11L, 1L, 2, 1);
+            LoadJobCategoryTreeUseCase.Response rootResponse = response(1L, null, 1, 1);
+            LoadJobCategoryTreeUseCase.Response childResponse = response(11L, 1L, 2, 1);
 
             given(loadJobCategoryPort.findAllWithinDepth(2))
                     .willReturn(List.of(root, child));
@@ -78,7 +78,7 @@ class LoadJobCategoryTreeUseCaseImplTest {
             given(jobCategoryMapper.toResponse(child)).willReturn(childResponse);
 
             // when
-            List<JobCategoryResponse> result = useCase.execute(2);
+            List<LoadJobCategoryTreeUseCase.Response> result = useCase.execute(2);
 
             // then
             assertThat(result).containsExactly(rootResponse, childResponse);
@@ -94,7 +94,7 @@ class LoadJobCategoryTreeUseCaseImplTest {
             given(loadJobCategoryPort.findAllWithinDepth(1)).willReturn(List.of());
 
             // when
-            List<JobCategoryResponse> result = useCase.execute(1);
+            List<LoadJobCategoryTreeUseCase.Response> result = useCase.execute(1);
 
             // then
             assertThat(result).isEmpty();

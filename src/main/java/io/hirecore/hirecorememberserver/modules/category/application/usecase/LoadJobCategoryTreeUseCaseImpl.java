@@ -2,7 +2,6 @@ package io.hirecore.hirecorememberserver.modules.category.application.usecase;
 
 import io.hirecore.hirecorememberserver.modules.category.application.mapper.JobCategoryMapper;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryTreeUseCase;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
 import io.hirecore.hirecorememberserver.modules.category.application.port.out.LoadJobCategoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class LoadJobCategoryTreeUseCaseImpl implements LoadJobCategoryTreeUseCas
 
     @Override
     @Transactional(readOnly = true)
-    public List<JobCategoryResponse> execute(Integer maxDepth) {
+    public List<LoadJobCategoryTreeUseCase.Response> execute(Integer maxDepth) {
         return loadJobCategoryPort.findAllWithinDepth(maxDepth).stream()
                 .map(jobCategoryMapper::toResponse)
                 .toList();

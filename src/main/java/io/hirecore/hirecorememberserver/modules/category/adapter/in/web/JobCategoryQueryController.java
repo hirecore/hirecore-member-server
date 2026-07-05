@@ -4,7 +4,6 @@ import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.JobC
 import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.dto.JobCategoryApi;
 import io.hirecore.hirecorememberserver.modules.category.adapter.in.web.mapper.JobCategoryWebMapper;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryTreeUseCase;
-import io.hirecore.hirecorememberserver.modules.category.application.port.in.dto.response.JobCategoryResponse;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class JobCategoryQueryController {
     public ResponseEntity<JobCategoriesApi.Response> getCategories(
             @RequestParam(name="max-depth", required=true) @Min(1) @Max(3) Integer maxDepth
     ) {
-        List<JobCategoryResponse> applicationResponse = loadJobCategoryTreeUseCase.execute(maxDepth);
+        List<LoadJobCategoryTreeUseCase.Response> applicationResponse = loadJobCategoryTreeUseCase.execute(maxDepth);
         List<JobCategoryApi.Response> apiResponses = jobCategoryWebMapper.toApiResponses(applicationResponse);
 
         return ResponseEntity.ok().body(new JobCategoriesApi.Response(apiResponses));

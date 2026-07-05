@@ -280,7 +280,7 @@ classDiagram
 ### 6.1 클래스 · 스테레오타입
 
 - `class Name { }` 로 선언한다.
-- 본문에 `<<...>>` 로 **스테레오타입**을 붙인다: `<<Aggregate Root>>`, `<<interface>>`, `<<enumeration>>` …
+- 본문에 `<<...>>` 로 **스테레오타입**을 붙인다: `<<Aggregate Root>>`, `<<interface>>`, `<<abstract>>`, `<<enumeration>>` …
 
 ### 6.2 관계 (UML 표준)
 

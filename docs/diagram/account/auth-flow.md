@@ -51,11 +51,11 @@ sequenceDiagram
     participant AL as SocialSignupListener (account)
 
     Client->>Ctrl: POST /api/auth/login/user/{provider}<br/>authorizationCode
-    Ctrl->>UC: execute(SocialLoginCommand)
+    Ctrl->>UC: execute(로그인 커맨드)
     UC->>Fetch: fetchByAuthorizationCode(code)
     Fetch->>Kakao: 토큰 발급 + 프로필 조회
     Kakao-->>Fetch: providerId · email · nickname · 동의여부
-    Fetch-->>UC: SocialUserProfileResult
+    Fetch-->>UC: 소셜 프로필 결과
 
     alt 기존 소셜계정 존재
         UC->>UC: LoadSocialAccountPort · LoadMemberAccountPort
@@ -70,9 +70,9 @@ sequenceDiagram
         AL->>AL: SocialAccount 생성·저장
     end
 
-    UC->>Token: issueTokenPair(TokenClaimsRequest)
+    UC->>Token: issueTokenPair(토큰 클레임)
     Token-->>UC: accessToken · refreshToken
-    UC-->>Ctrl: PairTokenResponse
+    UC-->>Ctrl: 토큰 쌍(access·refresh)
     Ctrl-->>Client: 200 OK · Set-Cookie(accessToken, refreshToken)
 ```
 

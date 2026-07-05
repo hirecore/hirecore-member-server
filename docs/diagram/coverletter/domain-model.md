@@ -32,4 +32,4 @@ flowchart TB
 | `CoverLetterStatus` | `TEMP_SAVE` · `PUBLISHED` |
 | 공유 VO | `Visibility` · `CollaborationType` · `ExternalLink` · `AuditingInfo` |
 
-> 본문은 다른 BC(portfolio)가 공용 포트로 가져간다 — 계약은 sharedkernel `CoverLetterContentResult`.
+> 본문은 다른 BC(portfolio)가 공용 포트로 가져간다 — 계약은 sharedkernel `LoadCoverLetterContentSharedPort.Result`.

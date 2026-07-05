@@ -77,7 +77,7 @@ flowchart TB
 
 - **안쪽으로만 의존한다**: `adapter → application → domain`. 도메인은 바깥을 모른다.
 - **애플리케이션은 포트에만 의존한다**: 구현(어댑터)이 아니라 인터페이스에 의존해 기술 교체가 자유롭다.
-- **BC 간 직접 참조 금지**: 다른 모듈이 필요하면 **포트(out)** 로 요청하고, 상대 모듈의 **`adapter.in.shared`** 어댑터가 구현한다. (예: `portfolio` → `MarkImagesAsUploadedPort` ← `file`)
+- **BC 간 직접 참조 금지**: 다른 모듈이 필요하면 **포트(out)** 로 요청하고, 상대 모듈의 **`adapter.in.shared`** 어댑터가 구현한다. (예: `portfolio` → `MarkImagesAsUploadedSharedPort` ← `file`)
 - **공유는 `sharedkernel`, 기술 공통은 `common`** 으로 모은다.
 
 > 특정 기능의 계층 흐름 예시는 [portfolio/register-flow.md](portfolio/register-flow.md)의 "구조 · 헥사고날 계층" 참고.

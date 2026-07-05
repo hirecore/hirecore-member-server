@@ -35,7 +35,7 @@ stateDiagram-v2
 ```mermaid
 sequenceDiagram
     participant BC as 타 BC (portfolio 등)
-    participant Port as MarkImagesAsUploadedPort
+    participant Port as MarkImagesAsUploadedSharedPort
     participant UC as MarkImageFileMetasAsUploadedUseCase
     participant Img as ImageFileMeta
     participant Store as storage (리스너)

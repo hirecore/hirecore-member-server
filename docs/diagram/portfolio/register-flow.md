@@ -37,14 +37,14 @@ sequenceDiagram
     actor Client
     participant Ctrl as UserFileCommandController
     participant UC as IssueImageUploadUrlUseCase
-    participant S3Adapter as S3PresignedPutUrlAdapter
+    participant S3Adapter as S3발급 결과Adapter
     participant Meta as ImageFileMeta
     participant Repo as ImageFileMetaJpaCommandAdapter
     participant S3
 
     Client->>Ctrl: POST /files/images/presigned-put-url
     Ctrl->>UC: execute(memberId, commandList)
-    UC->>UC: verifyUserStorageCapacityPort.verifyCapacityFor()
+    UC->>UC: 저장 용량 초과 검증
     alt 용량 초과 (업로드요청 + 사용중 > 한도)
         UC-->>Ctrl: STORAGE_QUOTA_EXCEEDED 예외
         Ctrl-->>Client: 400 Bad Request (저장 공간 부족)
@@ -53,7 +53,7 @@ sequenceDiagram
             UC->>S3Adapter: generate(objectKey, contentType, size)
             S3Adapter->>S3: presignPutObject()
             S3-->>S3Adapter: presignedUrl
-            S3Adapter-->>UC: PresignedPutUrl(presignedUrl, publicUrl)
+            S3Adapter-->>UC: 발급 결과(presignedUrl, publicUrl)
             UC->>Meta: create() · status=PENDING
             UC->>Repo: save(imageFileMeta)
             Repo-->>UC: imageFileMetaId
@@ -99,7 +99,7 @@ sequenceDiagram
     else 검증 통과
         Img-->>UC: PENDING→UPLOADED 확정
         Note right of Img: ImageUploadedEvent 등록
-        UC->>UC: loadJobCategoryPort.findIdByCode(code)
+        UC->>UC: 직무 코드→ID 조회
         alt 카테고리 코드 없음/비활성
             UC-->>Ctrl: JOB_CATEGORY_CODE_NOT_FOUND
             Ctrl-->>Client: 404 Not Found (유효하지 않은 카테고리 코드)
@@ -134,8 +134,8 @@ flowchart LR
     subgraph app[application]
         UC[CreatePortfolioUseCase]
         SavePort{{SavePortfolioPort}}
-        MarkPort{{MarkImagesAsUploadedPort}}
-        JobPort{{LoadJobCategoryPort}}
+        MarkPort{{MarkImagesAsUploadedSharedPort}}
+        JobPort{{LoadJobCategorySharedPort}}
     end
 
     subgraph domain[domain]
@@ -163,4 +163,4 @@ flowchart LR
 ```
 
 - `{{...}}`(육각형) = 포트(interface)
-- BC 경계를 넘는 호출(`MarkImagesAsUploadedPort`)은 **포트로만** 이루어지며, `file` 모듈의 shared 어댑터가 구현한다.
+- BC 경계를 넘는 호출(`MarkImagesAsUploadedSharedPort`)은 **포트로만** 이루어지며, `file` 모듈의 shared 어댑터가 구현한다.

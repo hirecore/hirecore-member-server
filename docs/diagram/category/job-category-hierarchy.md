@@ -32,7 +32,7 @@ sequenceDiagram
     Ctrl->>UC: execute(maxDepth)
     UC->>Repo: findAllWithinDepth(maxDepth) · isActive
     Repo-->>UC: List<JobCategory>
-    UC-->>Ctrl: List<JobCategoryResponse>
+    UC-->>Ctrl: 직무 카테고리 목록 응답
     Ctrl-->>Client: 200 OK (flat list · parentId 로 트리 구성)
 ```
 
@@ -57,7 +57,7 @@ sequenceDiagram
     DB-->>Repo: 경로 rows
     Repo-->>UC: Map<leafId, List<JobCategory>> (root→leaf 순)
     UC-->>Port: 〃
-    Port-->>BC: Map<leafId, List<PortfolioJobCategoryHierarchyResult>>
+    Port-->>BC: Map<leafId, 직무 계층 목록>
 ```
 
 > 태그 저장 시 코드→ID 변환은 `findIdByCode(categoryCode)` 로 한다(존재하지 않으면 404 `JOB_CATEGORY_CODE_NOT_FOUND`).
@@ -68,7 +68,7 @@ sequenceDiagram
 
 - **재귀 CTE**: leaf→root 경로를 단일 SQL로 조회해 N+1 을 피한다.
 - **bulk 최적화**: `start_leaf_id` 컬럼으로 여러 leaf 의 경로를 한 쿼리로 조회 후 `Map` 으로 그룹화한다.
-- **공용 DTO 최소화**: 타 BC 에는 `PortfolioJobCategoryHierarchyResult(id, depth, categoryCode, name)` 만 노출한다(`isAssignable` 등 내부 플래그 제외).
+- **공용 DTO 최소화**: 타 BC 에는 `LoadJobCategorySharedPort.Result(id, depth, categoryCode, name)` 만 노출한다(`isAssignable` 등 내부 플래그 제외).
 
 ---
 

@@ -16,6 +16,18 @@
 | [storage/storage-usage.md](storage/storage-usage.md) | 시퀀스 | 스토리지 용량: 할당량(membership)·사용량(storage)·발급 전 용량 검증·이미지 이벤트 연동 |
 | [category/job-category-hierarchy.md](category/job-category-hierarchy.md) | 시퀀스·구조 | 직무 카테고리 계층: 트리 조회(공개 API) + 계층 경로 조회(공용 포트·재귀 CTE) |
 
+## 도메인 모델
+
+각 BC의 **애그리거트·자식 엔티티·값 객체·불변식·도메인 이벤트**를 도메인별로 분리해 정리한다. (흐름 문서는 "무엇이 순서대로 일어나나", 도메인 모델은 "무엇으로 이루어져 있나"를 답한다.)
+
+| BC | 문서 | BC | 문서 |
+|---|---|---|---|
+| account | [account/domain-model.md](account/domain-model.md) | portfolio | [portfolio/domain-model.md](portfolio/domain-model.md) |
+| profile | [profile/domain-model.md](profile/domain-model.md) | resume | [resume/domain-model.md](resume/domain-model.md) |
+| category | [category/domain-model.md](category/domain-model.md) | coverletter | [coverletter/domain-model.md](coverletter/domain-model.md) |
+| file | [file/domain-model.md](file/domain-model.md) | storage | [storage/domain-model.md](storage/domain-model.md) |
+| membership | [membership/domain-model.md](membership/domain-model.md) | policy | [policy/domain-model.md](policy/domain-model.md) |
+
 ## 구조 & 네이밍
 
 - **도메인/기능별** 폴더로 묶는다(`portfolio/`, `file/` …). 다이어그램 유형이 아니라 주제로 나눈다.

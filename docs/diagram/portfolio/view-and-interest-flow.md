@@ -94,26 +94,60 @@ sequenceDiagram
 
 ---
 
-## 도메인 & 구조
+## 구조 · 헥사고날 계층
 
-`Portfolio` 애그리거트가 조회·관심 기록을 자식으로 가진다.
+> 조회·관심 유스케이스의 계층 흐름. 의존은 `adapter.in → application(port) → domain`, `application(port) ← adapter.out`.
+> 애그리거트·자식·불변식 등 **도메인 모델은 [domain-model.md](domain-model.md)** 로 분리했다.
 
 ```mermaid
 flowchart LR
-    subgraph domain[portfolio.domain]
-        PF[Portfolio<br/>cachedViewCount · cachedInterestCount]
-        V[PortfolioMemberView]
-        I[PortfolioMemberInterest]
-        PF -->|1:N| V
-        PF -->|1:N| I
+    Client([Client / FE])
+
+    subgraph web[adapter.in.web]
+        QCtrl[PortfolioQueryController]
+        CCtrl[PortfolioCommandController]
+    end
+    subgraph app[application]
+        DUC[LoadPortfolioDetailUseCase]
+        IUC[Register·CancelPortfolioInterestUseCase]
+        LoadP{{LoadPortfolioPort}}
+        ExistsP{{Exists...MemberView·InterestPort}}
+        Nick{{LoadProfileNicknameSharedPort}}
+        Pub{{PublishDomainEventsSharedPort}}
+    end
+    subgraph domain[domain]
+        PF[Portfolio]
+    end
+    subgraph out[adapter.out]
+        PQ[PortfolioJpaQueryAdapter]
+        PC[PortfolioJpaCommandAdapter]
+        DB[(portfolio RDB)]
     end
     subgraph ev[adapter.in.event]
         VL[PortfolioViewedListener]
         IL[PortfolioInterestListener]
     end
-    PF -. PortfolioViewedEvent .-> VL
-    PF -. PortfolioInterest Registered/Cancelled Event .-> IL
+
+    Client -->|GET 상세| QCtrl
+    Client -->|POST·DELETE 관심| CCtrl
+    QCtrl -->|execute| DUC
+    CCtrl -->|execute| IUC
+    DUC --> PF
+    IUC --> PF
+    DUC -.-> LoadP
+    DUC -.-> Nick
+    DUC -.-> Pub
+    IUC -.-> LoadP
+    IUC -.-> ExistsP
+    IUC -.-> Pub
+    LoadP -.->|구현| PQ
+    PQ --> DB
+    PF -. 이벤트 .-> VL
+    PF -. 이벤트 .-> IL
+    VL --> PC
+    IL --> PC
+    PC --> DB
 ```
 
-- `PortfolioMemberView` · `PortfolioMemberInterest` 는 `UNIQUE(portfolio, member)` 로 중복을 막는다.
-- 조회/관심 **수**는 애그리거트의 캐시 컬럼을 증감(`Increment/Decrement…CountPort`)해 유지한다.
+- `{{...}}`(육각형) = 포트(interface). 조회수·관심수 갱신은 **이벤트 리스너**가 `adapter.out` 커맨드 어댑터로 수행한다.
+- 도메인 애그리거트·자식 엔티티·불변식은 [domain-model.md](domain-model.md) 로 분리했다.

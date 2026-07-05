@@ -7,7 +7,7 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveIm
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.dto.PresignedPutUrl;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
 import io.hirecore.hirecorememberserver.modules.file.domain.vo.*;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacityPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacitySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.DomainType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Purpose;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +40,7 @@ class IssueImageUploadUrlUseCaseImplTest {
     private IssueImageUploadUrlUseCaseImpl sut;
 
     @Mock
-    private VerifyUserStorageCapacityPort verifyUserStorageCapacityPort;
+    private VerifyUserStorageCapacitySharedPort verifyUserStorageCapacityPort;
 
     @Mock
     private GeneratePresignedPutUrlPort generatePresignedPutUrlPort;

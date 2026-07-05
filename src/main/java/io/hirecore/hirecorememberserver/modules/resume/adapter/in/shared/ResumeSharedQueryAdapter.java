@@ -2,8 +2,8 @@ package io.hirecore.hirecorememberserver.modules.resume.adapter.in.shared;
 
 import io.hirecore.hirecorememberserver.modules.resume.application.port.in.LoadResumeContentUseCase;
 import io.hirecore.hirecorememberserver.modules.resume.application.port.in.LoadResumeTitlesUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitlePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitleSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.ResumeContentResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,8 +16,8 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class ResumeSharedQueryAdapter implements
-        LoadResumeContentPort,
-        LoadResumeTitlePort
+        LoadResumeContentSharedPort,
+        LoadResumeTitleSharedPort
 {
 
     private final LoadResumeContentUseCase loadResumeContentUseCase;

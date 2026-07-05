@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.re
 
 import java.util.Optional;
 
-public interface LoadCoverLetterContentPort {
+public interface LoadCoverLetterContentSharedPort {
 
     /**
      * 식별자로 자기소개서의 메타와 본문을 한 번에 적재한다.

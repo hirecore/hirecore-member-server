@@ -7,6 +7,6 @@ package io.hirecore.hirecorememberserver.sharedkernel.application.port.out;
  * 도메인 객체가 필요한 storage BC 내부 흐름은 별도로 {@code modules/storage/application/port/out/LoadUserStorageUsagePort}
  * ({@code Optional<UserStorageUsage>} 반환)를 사용합니다.</p>
  */
-public interface LoadUserUsedQuotaPort {
+public interface LoadUserUsedQuotaSharedPort {
     Long findUsedQuotaBytes(Long memberAccountId);
 }

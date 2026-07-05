@@ -8,11 +8,11 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.E
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknameSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.ResumeContentResult;
@@ -44,13 +44,13 @@ class LoadPortfolioDetailUseCaseImplTest {
     private LoadPortfolioDetailUseCaseImpl sut;
 
     @Mock private LoadPortfolioPort loadPortfolioPort;
-    @Mock private LoadProfileNicknamePort loadProfileNicknamePort;
-    @Mock private LoadJobCategoryPort loadJobCategoryPort;
-    @Mock private LoadResumeContentPort loadResumeContentPort;
-    @Mock private LoadCoverLetterContentPort loadCoverLetterContentPort;
+    @Mock private LoadProfileNicknameSharedPort loadProfileNicknamePort;
+    @Mock private LoadJobCategorySharedPort loadJobCategoryPort;
+    @Mock private LoadResumeContentSharedPort loadResumeContentPort;
+    @Mock private LoadCoverLetterContentSharedPort loadCoverLetterContentPort;
     @Mock private ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
     @Mock private ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
-    @Mock private PublishDomainEventsPort publishDomainEventsPort;
+    @Mock private PublishDomainEventsSharedPort publishDomainEventsPort;
 
     // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
     @BeforeEach

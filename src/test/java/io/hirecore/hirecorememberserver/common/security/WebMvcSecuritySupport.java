@@ -1,8 +1,8 @@
 package io.hirecore.hirecorememberserver.common.security;
 
 import io.hirecore.hirecorememberserver.common.web.logging.StructuredErrorLogger;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionSharedPort;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -15,13 +15,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @TestConfiguration
 public class WebMvcSecuritySupport {
     @Bean
-    public ResolveTokenPort tokenResolverPort() {
-        return Mockito.mock(ResolveTokenPort.class);
+    public ResolveTokenSharedPort tokenResolverPort() {
+        return Mockito.mock(ResolveTokenSharedPort.class);
     }
 
     @Bean
-    public ValidateTokenVersionPort tokenVersionValidationPort() {
-        return Mockito.mock(ValidateTokenVersionPort.class);
+    public ValidateTokenVersionSharedPort tokenVersionValidationPort() {
+        return Mockito.mock(ValidateTokenVersionSharedPort.class);
     }
 
     @Bean

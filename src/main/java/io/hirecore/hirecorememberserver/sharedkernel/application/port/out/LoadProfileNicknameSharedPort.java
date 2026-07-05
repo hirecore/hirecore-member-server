@@ -2,6 +2,6 @@ package io.hirecore.hirecorememberserver.sharedkernel.application.port.out;
 
 import java.util.Optional;
 
-public interface LoadProfileNicknamePort {
+public interface LoadProfileNicknameSharedPort {
     Optional<String> findNickname(Long accountId);
 }

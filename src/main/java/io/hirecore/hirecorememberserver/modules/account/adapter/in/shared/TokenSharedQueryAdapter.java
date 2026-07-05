@@ -2,8 +2,8 @@ package io.hirecore.hirecorememberserver.modules.account.adapter.in.shared;
 
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.ResolveTokenUseCase;
 import io.hirecore.hirecorememberserver.modules.account.application.port.in.ValidateTokenVersionUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.security.AuthPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TokenSharedQueryAdapter implements
-        ResolveTokenPort,
-        ValidateTokenVersionPort
+        ResolveTokenSharedPort,
+        ValidateTokenVersionSharedPort
 {
 
     private final ResolveTokenUseCase resolveTokenUseCase;

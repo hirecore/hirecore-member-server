@@ -2,8 +2,8 @@ package io.hirecore.hirecorememberserver.modules.coverletter.adapter.in.shared;
 
 import io.hirecore.hirecorememberserver.modules.coverletter.application.port.in.LoadCoverLetterContentUseCase;
 import io.hirecore.hirecorememberserver.modules.coverletter.application.port.in.LoadCoverLetterTitlesUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitleSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,8 +16,8 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class CoverLetterSharedQueryAdapter implements
-        LoadCoverLetterContentPort,
-        LoadCoverLetterTitlePort
+        LoadCoverLetterContentSharedPort,
+        LoadCoverLetterTitleSharedPort
 {
 
     private final LoadCoverLetterContentUseCase loadCoverLetterContentUseCase;

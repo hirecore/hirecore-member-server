@@ -7,7 +7,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.L
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainException;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.exception.PortfolioDomainExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -42,7 +42,7 @@ class DeletePortfolioUseCaseImplTest {
     private DeletePortfolioPort deletePortfolioPort;
 
     @Mock
-    private PublishDomainEventsPort publishDomainEventsPort;
+    private PublishDomainEventsSharedPort publishDomainEventsPort;
 
     private static final Long OWNER_ID = 1L;
     private static final Long OTHER_USER_ID = 2L;

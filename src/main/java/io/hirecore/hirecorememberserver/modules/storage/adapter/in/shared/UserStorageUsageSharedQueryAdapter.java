@@ -3,19 +3,19 @@ package io.hirecore.hirecorememberserver.modules.storage.adapter.in.shared;
 import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationException;
 import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.storage.application.port.in.LoadUserStorageUsageUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserUsedQuotaPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacityPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserUsedQuotaSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacitySharedPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserStorageUsageSharedQueryAdapter implements VerifyUserStorageCapacityPort
+public class UserStorageUsageSharedQueryAdapter implements VerifyUserStorageCapacitySharedPort
 {
 
     private final LoadUserStorageUsageUseCase loadUserStorageUsageUseCase;
-    private final LoadUserStorageLimitPort loadUserStorageLimitPort;
+    private final LoadUserStorageLimitSharedPort loadUserStorageLimitPort;
 
 
     @Override

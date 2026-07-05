@@ -8,9 +8,9 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterContentSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeContentSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.CoverLetterContentResult;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.ResumeContentResult;
@@ -29,9 +29,9 @@ import java.util.Map;
 public class PortfolioDetailAssembler {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final LoadJobCategoryPort loadJobCategoryPort;
-    private final LoadResumeContentPort loadResumeContentPort;
-    private final LoadCoverLetterContentPort loadCoverLetterContentPort;
+    private final LoadJobCategorySharedPort loadJobCategoryPort;
+    private final LoadResumeContentSharedPort loadResumeContentPort;
+    private final LoadCoverLetterContentSharedPort loadCoverLetterContentPort;
 
     public Response.Body buildBody(Portfolio portfolio) {
         return new Response.Body(

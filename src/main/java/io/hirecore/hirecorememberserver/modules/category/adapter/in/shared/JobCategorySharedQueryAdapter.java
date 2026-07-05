@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.modules.category.application.port.in.Loa
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryHierarchyUseCase;
 import io.hirecore.hirecorememberserver.modules.category.application.port.in.LoadJobCategoryIdByCodeUseCase;
 import io.hirecore.hirecorememberserver.modules.category.domain.JobCategory;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class JobCategorySharedQueryAdapter implements LoadJobCategoryPort {
+public class JobCategorySharedQueryAdapter implements LoadJobCategorySharedPort {
 
     private final LoadJobCategoryIdByCodeUseCase loadJobCategoryIdByCodeUseCase;
     private final LoadJobCategoryHierarchyUseCase findJobCategoryHierarchyUseCase;

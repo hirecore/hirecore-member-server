@@ -8,9 +8,9 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.sharedkernel.application.cursor.EffectiveTimeCursor;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.SharedKernelApplicationException;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.SharedKernelApplicationExceptionCodeCluster;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknameSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -49,13 +49,13 @@ class LoadPublicPortfolioSummariesUseCaseImplTest {
     private LoadPublicPortfolioSummaryPort loadPublicPortfolioSummaryPort;
 
     @Mock
-    private LoadJobCategoryPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategoryPort;
 
     @Mock
-    private LoadProfileNicknamePort loadProfileNicknamePort;
+    private LoadProfileNicknameSharedPort loadProfileNicknamePort;
 
     @Mock
-    private LoadImageUrlPort loadImageUrlPort;
+    private LoadImageUrlSharedPort loadImageUrlPort;
 
     // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
     @BeforeEach

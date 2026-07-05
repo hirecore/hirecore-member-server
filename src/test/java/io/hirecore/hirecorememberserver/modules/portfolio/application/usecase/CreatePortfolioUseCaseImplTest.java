@@ -5,8 +5,8 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.Sha
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.CreatePortfolioUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.SavePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -43,10 +43,10 @@ class CreatePortfolioUseCaseImplTest {
     private CreatePortfolioUseCaseImpl sut;
 
     @Mock
-    private MarkImagesAsUploadedPort markImagesAsUploadedPort;
+    private MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
 
     @Mock
-    private LoadJobCategoryPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategoryPort;
 
     @Mock
     private SavePortfolioPort savePortfolioPort;

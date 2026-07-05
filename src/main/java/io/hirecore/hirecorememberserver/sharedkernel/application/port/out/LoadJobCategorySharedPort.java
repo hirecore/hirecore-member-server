@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public interface LoadJobCategoryPort {
+public interface LoadJobCategorySharedPort {
     Long findIdByCode(String categoryCode);
     List<PortfolioJobCategoryHierarchyResult> findJobCategoryHierarchy(Long leafJobCategoryId);
 

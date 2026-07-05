@@ -8,7 +8,7 @@ import io.hirecore.hirecorememberserver.modules.file.application.port.out.SaveIm
 import io.hirecore.hirecorememberserver.modules.file.application.port.out.dto.PresignedPutUrl;
 import io.hirecore.hirecorememberserver.modules.file.application.util.ImageObjectKeyResolver;
 import io.hirecore.hirecorememberserver.modules.file.domain.ImageFileMeta;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacityPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.VerifyUserStorageCapacitySharedPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class IssueImageUploadUrlUseCaseImpl implements IssueImageUploadUrlUseCase {
 
-    private final VerifyUserStorageCapacityPort verifyUserStorageCapacityPort;
+    private final VerifyUserStorageCapacitySharedPort verifyUserStorageCapacityPort;
     private final GeneratePresignedPutUrlPort generatePresignedPutUrlPort;
     private final SaveImageFileMetaPort saveImageFileMetaPort;
 

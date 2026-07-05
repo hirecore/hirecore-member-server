@@ -7,8 +7,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PortfolioEditAssembler {
 
-    private final LoadJobCategoryPort loadJobCategoryPort;
-    private final LoadImageUrlPort loadImageUrlPort;
+    private final LoadJobCategorySharedPort loadJobCategoryPort;
+    private final LoadImageUrlSharedPort loadImageUrlPort;
 
     public Response buildResponse(Portfolio portfolio) {
         String thumbnailImageUrl = loadImageUrlPort.findUrlById(portfolio.getThumbnailImageId())

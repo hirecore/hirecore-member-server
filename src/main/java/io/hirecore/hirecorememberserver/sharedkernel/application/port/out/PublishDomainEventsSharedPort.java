@@ -9,7 +9,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventP
  * 영구화 트리거(`repository.save()`)가 없는 경로(예: readOnly 트랜잭션 안의 도메인 사건)에서
  * 명시적 발행 호출에 사용한다.</p>
  */
-public interface PublishDomainEventsPort {
+public interface PublishDomainEventsSharedPort {
 
     void publishAll(AbstractDomainEventPublisher source);
 }

@@ -10,8 +10,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ReferencedImageIds;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CreatePortfolioUseCaseImpl implements CreatePortfolioUseCase {
 
-    private final MarkImagesAsUploadedPort markImagesAsUploadedPort;
-    private final LoadJobCategoryPort loadJobCategoryPort;
+    private final MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
+    private final LoadJobCategorySharedPort loadJobCategoryPort;
     private final SavePortfolioPort savePortfolioPort;
     private final ObjectMapper objectMapper;
 

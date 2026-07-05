@@ -3,7 +3,7 @@ package io.hirecore.hirecorememberserver.modules.storage.adapter.in.shared;
 import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationException;
 import io.hirecore.hirecorememberserver.modules.storage.application.exception.UserStorageApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.storage.application.port.in.LoadUserStorageUsageUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadUserStorageLimitSharedPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class UserStorageUsageSharedQueryAdapterTest {
     private LoadUserStorageUsageUseCase loadUserStorageUsageUseCase;
 
     @Mock
-    private LoadUserStorageLimitPort loadUserStorageLimitPort;
+    private LoadUserStorageLimitSharedPort loadUserStorageLimitPort;
 
     private static final Long MEMBER_ACCOUNT_ID = 1L;
     private static final Long STORAGE_QUOTA_BYTES = 10_000L;

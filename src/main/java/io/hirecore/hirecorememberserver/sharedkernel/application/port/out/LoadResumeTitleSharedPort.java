@@ -9,7 +9,7 @@ import java.util.Map;
  * <p>resume 도메인 전체가 아닌 표시용 식별 정보(제목) 만 sharedkernel 계약으로 노출한다.
  * 구현은 resume BC 의 {@code adapter/in/shared/} 에서 제공된다.</p>
  */
-public interface LoadResumeTitlePort {
+public interface LoadResumeTitleSharedPort {
 
     /**
      * 주어진 이력서 ID 들에 대해 제목을 한 번에 조회한다.

@@ -9,8 +9,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.Up
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.UpdatePortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
 import org.junit.jupiter.api.DisplayName;
@@ -53,10 +53,10 @@ class UpdatePortfolioUseCaseImplTest {
     private UpdatePortfolioPort updatePortfolioPort;
 
     @Mock
-    private LoadJobCategoryPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategoryPort;
 
     @Mock
-    private MarkImagesAsUploadedPort markImagesAsUploadedPort;
+    private MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();

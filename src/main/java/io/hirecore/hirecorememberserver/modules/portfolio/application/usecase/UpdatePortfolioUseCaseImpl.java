@@ -11,8 +11,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.vo.ReferencedImageIds;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedCommandDto;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.MarkImagesAsUploadedSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.utils.AssertionUtils;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,8 @@ public class UpdatePortfolioUseCaseImpl implements UpdatePortfolioUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
     private final UpdatePortfolioPort updatePortfolioPort;
-    private final LoadJobCategoryPort loadJobCategoryPort;
-    private final MarkImagesAsUploadedPort markImagesAsUploadedPort;
+    private final LoadJobCategorySharedPort loadJobCategoryPort;
+    private final MarkImagesAsUploadedSharedPort markImagesAsUploadedPort;
     private final ObjectMapper objectMapper;
 
     // 본인 소유 포트폴리오 수정

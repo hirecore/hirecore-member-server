@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.re
 
 import java.util.Optional;
 
-public interface LoadResumeContentPort {
+public interface LoadResumeContentSharedPort {
 
     /**
      * 식별자로 이력서의 메타와 본문을 한 번에 적재한다.

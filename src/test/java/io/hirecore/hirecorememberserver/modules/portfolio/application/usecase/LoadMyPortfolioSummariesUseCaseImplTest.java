@@ -4,10 +4,10 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.assembler.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.in.LoadMyPortfolioSummariesUseCase;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlePort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitlePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitleSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitleSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -41,16 +41,16 @@ class LoadMyPortfolioSummariesUseCaseImplTest {
     private LoadPortfolioPort loadPortfolioPort;
 
     @Mock
-    private LoadResumeTitlePort loadResumeTitlePort;
+    private LoadResumeTitleSharedPort loadResumeTitlePort;
 
     @Mock
-    private LoadCoverLetterTitlePort loadCoverLetterTitlePort;
+    private LoadCoverLetterTitleSharedPort loadCoverLetterTitlePort;
 
     @Mock
-    private LoadJobCategoryPort loadJobCategoryPort;
+    private LoadJobCategorySharedPort loadJobCategoryPort;
 
     @Mock
-    private LoadImageUrlPort loadImageUrlPort;
+    private LoadImageUrlSharedPort loadImageUrlPort;
 
     // 어셈블러는 실제 구현을 목 포트로 배선 — execute 를 통한 응답 조립 동작을 그대로 검증
     @BeforeEach

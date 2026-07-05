@@ -8,8 +8,8 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.E
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.ExistsPortfolioMemberViewPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknameSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsSharedPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoadPortfolioDetailUseCaseImpl implements LoadPortfolioDetailUseCase {
 
     private final LoadPortfolioPort loadPortfolioPort;
-    private final LoadProfileNicknamePort loadProfileNicknamePort;
+    private final LoadProfileNicknameSharedPort loadProfileNicknamePort;
     private final ExistsPortfolioMemberViewPort existsPortfolioMemberViewPort;
     private final ExistsPortfolioMemberInterestPort existsPortfolioMemberInterestPort;
-    private final PublishDomainEventsPort publishDomainEventsPort;
+    private final PublishDomainEventsSharedPort publishDomainEventsPort;
     private final PortfolioDetailAssembler portfolioDetailAssembler;
 
     @Override

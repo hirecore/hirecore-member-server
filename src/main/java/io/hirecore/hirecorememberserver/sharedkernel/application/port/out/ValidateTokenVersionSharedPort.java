@@ -6,7 +6,7 @@ package io.hirecore.hirecorememberserver.sharedkernel.application.port.out;
  * <p>JWT에 포함된 토큰 버전과 DB에 저장된 현재 버전을 비교하여
  * 로그아웃된(무효화된) 토큰인지 판별합니다.</p>
  */
-public interface ValidateTokenVersionPort {
+public interface ValidateTokenVersionSharedPort {
 
     boolean isValidTokenVersion(Long memberId, int tokenVersion);
 }

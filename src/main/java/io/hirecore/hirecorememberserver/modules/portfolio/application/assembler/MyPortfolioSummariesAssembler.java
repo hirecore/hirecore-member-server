@@ -5,10 +5,10 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitlePort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitlePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadCoverLetterTitleSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadResumeTitleSharedPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +24,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class MyPortfolioSummariesAssembler {
 
-    private final LoadResumeTitlePort loadResumeTitlePort;
-    private final LoadCoverLetterTitlePort loadCoverLetterTitlePort;
-    private final LoadJobCategoryPort loadJobCategoryPort;
-    private final LoadImageUrlPort loadImageUrlPort;
+    private final LoadResumeTitleSharedPort loadResumeTitlePort;
+    private final LoadCoverLetterTitleSharedPort loadCoverLetterTitlePort;
+    private final LoadJobCategorySharedPort loadJobCategoryPort;
+    private final LoadImageUrlSharedPort loadImageUrlPort;
 
     public List<Response.Item> buildItems(List<Portfolio> portfolios) {
         Map<Long, String> resumeTitles = loadResumeTitlePort

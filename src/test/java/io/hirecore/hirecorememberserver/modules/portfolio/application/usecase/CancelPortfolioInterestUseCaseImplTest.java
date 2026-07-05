@@ -4,7 +4,7 @@ import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.
 import io.hirecore.hirecorememberserver.modules.portfolio.application.exception.PortfolioApplicationExceptionCodeCluster;
 import io.hirecore.hirecorememberserver.modules.portfolio.application.port.out.LoadPortfolioPort;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.PublishDomainEventsSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.AbstractDomainEventPublisher;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.CollaborationType;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.Visibility;
@@ -36,7 +36,7 @@ class CancelPortfolioInterestUseCaseImplTest {
     private LoadPortfolioPort loadPortfolioPort;
 
     @Mock
-    private PublishDomainEventsPort publishDomainEventsPort;
+    private PublishDomainEventsSharedPort publishDomainEventsPort;
 
     private static final Long OWNER_ID = 1L;
     private static final Long MEMBER_ACCOUNT_ID = 2L;

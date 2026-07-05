@@ -1,7 +1,7 @@
 package io.hirecore.hirecorememberserver.modules.file.adapter.in.shared;
 
 import io.hirecore.hirecorememberserver.modules.file.application.port.in.LoadImageUrlUseCase;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class ImageFileMetaSharedQueryAdapter implements LoadImageUrlPort {
+public class ImageFileMetaSharedQueryAdapter implements LoadImageUrlSharedPort {
 
     private final LoadImageUrlUseCase loadImageUrlUseCase;
 

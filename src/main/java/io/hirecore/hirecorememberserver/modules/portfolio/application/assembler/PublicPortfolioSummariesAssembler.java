@@ -6,9 +6,9 @@ import io.hirecore.hirecorememberserver.modules.portfolio.domain.Portfolio;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioJobCategory;
 import io.hirecore.hirecorememberserver.modules.portfolio.domain.PortfolioTag;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.in.dto.SharedResponseDto;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategoryPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknamePort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadImageUrlSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadJobCategorySharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.LoadProfileNicknameSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.dto.response.PortfolioJobCategoryHierarchyResult;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.vo.ExternalLink;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PublicPortfolioSummariesAssembler {
 
-    private final LoadJobCategoryPort loadJobCategoryPort;
-    private final LoadProfileNicknamePort loadProfileNicknamePort;
-    private final LoadImageUrlPort loadImageUrlPort;
+    private final LoadJobCategorySharedPort loadJobCategoryPort;
+    private final LoadProfileNicknameSharedPort loadProfileNicknamePort;
+    private final LoadImageUrlSharedPort loadImageUrlPort;
 
     public List<Response.Item> buildItems(List<PublicPortfolioRow> pageRows, Long viewerId) {
         Map<Long, List<PortfolioJobCategoryHierarchyResult>> hierarchiesByLeafId =

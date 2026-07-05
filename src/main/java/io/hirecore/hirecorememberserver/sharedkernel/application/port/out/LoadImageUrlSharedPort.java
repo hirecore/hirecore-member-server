@@ -2,7 +2,7 @@ package io.hirecore.hirecorememberserver.sharedkernel.application.port.out;
 
 import java.util.Optional;
 
-public interface LoadImageUrlPort {
+public interface LoadImageUrlSharedPort {
     /**
      * 이미지 식별자로 공개 URL 을 조회합니다.
      *

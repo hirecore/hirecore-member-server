@@ -3,8 +3,8 @@ package io.hirecore.hirecorememberserver.common.web.exception;
 import io.hirecore.hirecorememberserver.common.web.logging.StructuredErrorLogger;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.ApplicationExceptionCode;
 import io.hirecore.hirecorememberserver.sharedkernel.application.exception.BaseApplicationException;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenPort;
-import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ResolveTokenSharedPort;
+import io.hirecore.hirecorememberserver.sharedkernel.application.port.out.ValidateTokenVersionSharedPort;
 import io.hirecore.hirecorememberserver.sharedkernel.adapter.out.persistence.exception.DataConsistencyException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.BaseDomainException;
 import io.hirecore.hirecorememberserver.sharedkernel.domain.exception.DomainExceptionCode;
@@ -51,12 +51,12 @@ class GlobalExceptionHandlerTest {
     private StructuredErrorLogger structuredErrorLogger;
 
     // JwtAuthenticationFilter(@Component)가 @WebMvcTest 스캔 대상에 포함되므로
-    // 해당 필터의 의존성인 ResolveTokenPort, TokenBlacklistPort를 모킹하여 컨텍스트 로딩을 허용한다.
+    // 해당 필터의 의존성인 ResolveTokenSharedPort, TokenBlacklistPort를 모킹하여 컨텍스트 로딩을 허용한다.
     @MockitoBean
-    private ResolveTokenPort tokenResolverPort;
+    private ResolveTokenSharedPort tokenResolverPort;
 
     @MockitoBean
-    private ValidateTokenVersionPort tokenVersionValidationPort;
+    private ValidateTokenVersionSharedPort tokenVersionValidationPort;
 
     // =========================================================================
     // 테스트 전용 예외 코드 (계층 경계 위반 방지 — modules 패키지 임포트 금지)

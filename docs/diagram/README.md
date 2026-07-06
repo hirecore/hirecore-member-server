@@ -12,9 +12,16 @@
 | [account/auth-flow.md](account/auth-flow.md) | 시퀀스·구조 | 소셜 로그인·인증: OAuth2 로그인 + JWT 쿠키 인증(횡단) + 로그아웃 + 프로필·소셜계정 자동 생성 이벤트 |
 | [portfolio/register-flow.md](portfolio/register-flow.md) | 시퀀스·구조 | 포트폴리오 등록: 계약 플로우 + 내부 처리(실패 분기) + 헥사고날 구조 |
 | [portfolio/view-and-interest-flow.md](portfolio/view-and-interest-flow.md) | 시퀀스 | 포트폴리오 조회·관심·조회수: 조회수(AFTER_COMMIT·REQUIRES_NEW) + 관심 등록/해제(동기) |
+| [portfolio/edit-and-update-flow.md](portfolio/edit-and-update-flow.md) | 시퀀스·구조 | 포트폴리오 편집 조회·수정: 소유 검증 + modify(태그·이미지 교체) + 이미지 언링크 이벤트(file BC·BEFORE_COMMIT) |
+| [portfolio/delete-flow.md](portfolio/delete-flow.md) | 시퀀스·구조 | 포트폴리오 삭제: 하드 딜리트(태그 cascade·조회/관심 정리) + 이미지 회수 이벤트(file BC) |
+| [portfolio/summaries-flow.md](portfolio/summaries-flow.md) | 시퀀스·구조 | 포트폴리오 목록: 내 목록 + 공개 목록(isInterested 배치 IN 쿼리로 N+1 회피·커서 페이징) |
 | [file/image-lifecycle.md](file/image-lifecycle.md) | 상태·시퀀스 | file 도메인 흐름: 생명주기(PENDING→UPLOADED→ORPHANED→DELETED) + 확정·고아화·정리 |
 | [storage/storage-usage.md](storage/storage-usage.md) | 시퀀스 | 스토리지 용량: 할당량(membership)·사용량(storage)·발급 전 용량 검증·이미지 이벤트 연동 |
 | [category/job-category-hierarchy.md](category/job-category-hierarchy.md) | 시퀀스·구조 | 직무 카테고리 계층: 트리 조회(공개 API) + 계층 경로 조회(공용 포트·재귀 CTE) |
+| [profile/profile-query-flow.md](profile/profile-query-flow.md) | 시퀀스·구조 | 프로필 요약(본인)·닉네임 조회: 닉네임은 웹 엔드포인트 없이 공용 포트로 portfolio가 소비 |
+| [resume/content-and-titles-flow.md](resume/content-and-titles-flow.md) | 시퀀스·구조 | 이력서 본문·제목 조회: 웹 엔드포인트 없음, portfolio가 공용 포트로 소비(본문 마스킹·제목 IN 배치) |
+| [coverletter/content-and-titles-flow.md](coverletter/content-and-titles-flow.md) | 시퀀스·구조 | 자기소개서 본문·제목 조회: resume와 동일 구조, 공용 포트로 portfolio가 소비 |
+| [membership/entitlement-quota-flow.md](membership/entitlement-quota-flow.md) | 시퀀스·구조 | 멤버십 할당량 조회: 웹 엔드포인트 없음, storage가 공용 포트로 소비(스냅샷 할당량) |
 
 ## 도메인 모델
 

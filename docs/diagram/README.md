@@ -9,7 +9,8 @@
 
 | 문서 | 종류 | 내용 |
 |---|---|---|
-| [account/auth-flow.md](account/auth-flow.md) | 시퀀스·구조 | 소셜 로그인·인증: OAuth2 로그인 + JWT 쿠키 인증(횡단) + 로그아웃 + 프로필·소셜계정 자동 생성 이벤트 |
+| [account/auth-flow.md](account/auth-flow.md) | 시퀀스·구조 | 소셜 로그인·인증: OAuth2 로그인 + JWT 쿠키 인증(횡단) + 토큰 폐기 원리(tokenVersion 세대 비교) + 로그아웃 + 프로필·소셜계정 자동 생성 이벤트 |
+| [account/token-issue-and-verify-flow.md](account/token-issue-and-verify-flow.md) | 플로우차트 | JWT 토큰 발급·검증 내부 처리: 클레임·서명(HMAC 대칭키) + Base64 포장/서명 2계층 + 검증 2관문(서명·버전) + 예외 처리 |
 | [portfolio/register-flow.md](portfolio/register-flow.md) | 시퀀스·구조 | 포트폴리오 등록: 계약 플로우 + 내부 처리(실패 분기) + 헥사고날 구조 |
 | [portfolio/view-and-interest-flow.md](portfolio/view-and-interest-flow.md) | 시퀀스 | 포트폴리오 조회·관심·조회수: 조회수(AFTER_COMMIT·REQUIRES_NEW) + 관심 등록/해제(동기) |
 | [portfolio/edit-and-update-flow.md](portfolio/edit-and-update-flow.md) | 시퀀스·구조 | 포트폴리오 편집 조회·수정: 소유 검증 + modify(태그·이미지 교체) + 이미지 언링크 이벤트(file BC·BEFORE_COMMIT) |

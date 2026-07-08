@@ -123,6 +123,50 @@ sequenceDiagram
 
 ---
 
+## 토큰 폐기 원리 (tokenVersion)
+
+> JWT는 stateless라 **발급하면 만료 전까지 취소되지 않는다**. 이 프로젝트는 회원 테이블의 **`tokenVersion`(세대 카운터)** 으로 폐기를 구현한다 — 토큰을 손대지 않고 **서버의 version만 바꿔** 불일치를 만든다.
+
+**두 관문** — 인증은 성격이 다른 두 검사를 **모두** 통과해야 한다.
+
+```mermaid
+flowchart TB
+    T["accessToken (tv 클레임 포함)"] --> G1{"① 서명 검증<br/>위조·변조 안 된 진짜인가?"}
+    G1 -->|실패| R1["거부 · 401"]
+    G1 -->|통과| G2{"② 버전 비교<br/>토큰 tv == DB tokenVersion?"}
+    G2 -->|다름| R2["폐기된 토큰 · 미인증"]
+    G2 -->|같음| OK["인증 성립"]
+```
+
+> ① 서명 = **"진짜인가"**, ② 버전 = **"아직 유효한가"**. `tv`는 **서명된 페이로드 안**에 있어 클라이언트가 DB 값에 맞춰 몰래 고칠 수 없다(고치면 서명이 깨져 ①에서 탈락). 즉 버전 방식이 위조 불가능하게 성립하는 것은 **서명이 tv를 보호하기 때문** — 둘은 무관한 게 아니라 상호 보완이다.
+
+**세대 카운터** — bump 한 번으로 이전 토큰이 일괄 폐기된다.
+
+```mermaid
+sequenceDiagram
+    actor C as Client
+    participant F as JwtAuthenticationFilter
+    participant DB as tokenVersion (account DB)
+
+    Note over C,DB: 로그인 — tv=0 으로 발급
+    C->>F: 요청 (토큰 tv=0)
+    F->>DB: 현재 tokenVersion?
+    DB-->>F: 0
+    Note right of F: 0 == 0 → 통과
+
+    Note over C,DB: 로그아웃 → tokenVersion +1 (0 → 1)
+    C->>F: 옛 토큰 그대로 요청 (여전히 tv=0)
+    F->>DB: 현재 tokenVersion?
+    DB-->>F: 1
+    Note right of F: 0 ≠ 1 → 폐기된 토큰, 거부
+```
+
+> 옛 토큰은 **바뀐 게 없고 서명도 여전히 유효**하지만, DB가 세대를 올렸으므로 **의미상 무효**가 된다. 폐기 목록·토큰 저장소 없이 **숫자 하나**(`UPDATE … SET token_version = token_version + 1`)로 그 회원의 이전 토큰이 전부 낡는다.
+> - **트레이드오프**: 매 인증 요청마다 DB version 조회 1회. 폐기 단위는 **사용자 전체**다 — 특정 토큰 하나만 콕 집어 폐기하려면 Redis 블랙리스트 같은 별도 장치가 필요하다.
+> - 현재 version을 올리는 곳은 `LogoutUseCase` 한 곳뿐. 같은 방식으로 비밀번호·권한 변경, "전 기기 로그아웃"에도 확장할 수 있다.
+
+---
+
 ## 실패 분기
 
 | 상황 | 응답 |
